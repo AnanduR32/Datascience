@@ -250,4 +250,30 @@ ggplot(
     )
 )
 
+ggplot(
+  mpg,
+  aes(
+    x = class
+  )
+) + geom_bar(
+  color = 'black',
+  aes(
+    fill = drv
+  ),
+  position = "dodge"
+)
+
+ggplot(
+  mpg,
+  aes(
+    x = class
+  )
+) + geom_bar(
+  color = 'black',
+  aes(
+    fill = drv
+  ),
+  position = "fill"
+)
+
 # -----------------------------END--------------------------------------------------#
