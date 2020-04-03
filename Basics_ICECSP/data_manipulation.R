@@ -171,5 +171,7 @@ library(ggplot2movies)
 View(movies)
 nrow(movies)
 
+## Creating a histogram to find the frequency distribution of movie ratings
+ggplot(movies, aes(x = rating, color=cut)) + geom_histogram(color = 'white',bins = 10, fill = 'orange')
 
 # -----------------------------END--------------------------------------------------#
