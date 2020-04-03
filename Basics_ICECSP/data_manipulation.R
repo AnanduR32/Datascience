@@ -173,10 +173,11 @@ nrow(movies)
 
 ## Creating a histogram to find the frequency distribution of movie ratings
 ggplot(movies, aes(x = rating, color=cut)) + geom_histogram(color = 'white',bins = 10, fill = 'orange')
-## Question : Create a histogram on the mtcars dataset to show how many cars have mileage different groups
+## Question : Create a histogram on the mtcars dataset to show how many cars have milage different groups
 View(mtcars)
-ggplot(mtcars, aes(x = mpg, color=cut)) + geom_histogram(color = 'white',binwidth = 5, fill = 'orange') + ggtitle('Mileage Ranges for Cars')
+ggplot(mtcars, aes(x = mpg, color=cut)) + geom_histogram(color = 'white',binwidth = 5, fill = 'orange', alpha = 0.8) + ggtitle('Mileage Ranges for Cars') + labs(x = 'mileage', y = 'frequency')
 
+## Scatterplot 
 
 
 
