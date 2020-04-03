@@ -1,3 +1,4 @@
+# -------------------------------- Assignment to variables -------------------------------#
 a = 15
 b = 13
 c = a + b;
@@ -8,17 +9,14 @@ class(comp)
 
 print('hello');
 
+# ---------------------------------- Creating vectors ------------------------------------#
+
 stu.countries = c("India","Pakistan","China","USA");
 rm(stu.countries)
 
-if vec<-c(1:10)
-and then we create mat<-matrix(vec,nrow=5) will it throw error
-also if we create mat<-matrix(vec,nrow=5,ncol=3) will the matrix be created with 0 values occu
+if vect_1<-c(1:10)
 
-
-
-
-
+# ---------------- ---------- Assigning row and column names -----------------------------#
 row.names(google) = rn
 
 google = c(1:5)
@@ -35,8 +33,7 @@ print(stocks_mat)
 amazon = c(11:15)
 stocks_mat = cbind(stocks_mat,amazon)
 
-sum(google)
-mean(google)
+# ----------------------- Deriving various results from matrices -------------------------#
 
 rowMeans(stocks_mat)
 colMeans(stocks_mat)
@@ -51,6 +48,7 @@ colnames(stocks_mat) = c(n,"Amazon","Average")
 round(stocks_mat,0) #round to 0 decimal place 
 
 
+# ---------------------------------- Creating Dataframes ---------------------------------#
 std_id=c(1:5)
 std_names=c("a","b","c","d","e")
 isMale=c(T,T,F,F,F)
@@ -87,7 +85,7 @@ View(iris)
 data_iris=data.frame(iris)
 df_iris_setosa = data_iris[data_iris$Species=="setosa",]
 write.csv(df_iris_setosa,"iris_setosa.csv")
-iris[iris$Species=="Setosa"]
+iris[iris$Species=="setosa"]
 setosa=matrix("")
 View(read.csv("iris_setosa.csv"))
 View(df_iris_setosa)
@@ -95,6 +93,9 @@ x=20
 if(x%%2==0){
   print("Yes")
 }
+
+# ----------------------------- Melt and cast --------------------------------------#
+
 library(reshape)
 install.packages("reshape")
 
