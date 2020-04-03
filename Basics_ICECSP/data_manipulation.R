@@ -285,8 +285,16 @@ ggplot(
     y = mpg
   )
 ) + geom_boxplot(
-  
+  aes(fill=cyl)
 )
-
+ggplot(
+  mtcars,
+  aes(
+    x = factor(cyl), # factor converts numeric variable into groups - continous variable to discrete 
+    y = mpg
+  )
+) + geom_boxplot(
+  aes(fill=cyl)
+) + coord_flip()
 
 # -----------------------------END--------------------------------------------------#
