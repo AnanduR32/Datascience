@@ -45,6 +45,7 @@ View(arrange(select(flights,carrier,arr_delay,dep_delay),desc(dep_delay)))
 
 ### Outputs the unique values in the dataframe
 View(distinct(flights,carrier))
+### When multiple parameters are specified the unique values are joined by inner joins constraint 
 View(distinct(flights,carrier,origin))
 
 ## filter
