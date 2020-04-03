@@ -144,8 +144,10 @@ View(df_names)
 
 inner_join(df_names,df_ages, by = c("id_n" = "id_a"))
 left_join(df_names,df_ages, by = c("id_n" = "id_a"))
-right_join(df_names,df_ages, by = c("id_n" = "id_a"))
-full_join(df_names,df_ages, by = c("id_n" = "id_a"))
+right_join(df_names,df_ages, by = c("id_n" = "id_a"))# 
+full_join(df_names,df_ages, by = c("id_n" = "id_a")) # All data from both the tables 
+anti_join(df_names,df_ages, by = c("id_n" = "id_a")) # data in first table which is not in second table 
+semi_join(df_names,df_ages, by = c("id_n" = "id_a")) # Common matching fields but only those which are present in first table
 
 
 
