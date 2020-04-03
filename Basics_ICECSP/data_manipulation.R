@@ -149,7 +149,16 @@ full_join(df_names,df_ages, by = c("id_n" = "id_a")) # All data from both the ta
 anti_join(df_names,df_ages, by = c("id_n" = "id_a")) # data in first table which is not in second table 
 semi_join(df_names,df_ages, by = c("id_n" = "id_a")) # Common matching fields but only those which are present in first table
 
-
+# ------------------------ Graphical Presentations ---------------------------------#
+install.packages("ggplot2")
+## ggplot - grammar of graphics plot
+## A plot has :
+##    1. Data
+##    2. Aesthetics
+##    3. Geometry type of chart
+##    4. Facet - breaking the chart into multiple subcharts 
+##    5. Theme
+##    6. Statistics
 
 
 # -----------------------------END--------------------------------------------------#
