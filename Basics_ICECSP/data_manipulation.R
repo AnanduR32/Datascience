@@ -144,6 +144,10 @@ View(df_names)
 
 inner_join(df_names,df_ages, by = c("id_n" = "id_a"))
 left_join(df_names,df_ages, by = c("id_n" = "id_a"))
+right_join(df_names,df_ages, by = c("id_n" = "id_a"))
+full_join(df_names,df_ages, by = c("id_n" = "id_a"))
+
+
 
 
 # -----------------------------END--------------------------------------------------#
