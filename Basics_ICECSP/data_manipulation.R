@@ -294,7 +294,11 @@ ggplot(
     y = mpg
   )
 ) + geom_boxplot(
-  aes(fill=cyl)
-) + coord_flip()
+  aes(fill=factor(cyl))
+) + coord_flip() + theme_grey()
+
+### Getting more themes 
+install.packages('ggthemes')
+
 
 # -----------------------------END--------------------------------------------------#
