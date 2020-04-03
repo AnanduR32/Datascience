@@ -102,8 +102,6 @@ View(transmute(flights,ratio = arr_delay/dep_delay))
 
 ### Same as mutate but in output it displays just the calculated field
 
-## joins
-
 ## Group by
 
 summarise(
@@ -133,7 +131,16 @@ summarise(
 )
 
 
+## joins
 
+names = c("Anandu","Aishwarya","Kenny","Smitha");
+id_n = c(1,2,3,4)
+id_a = c(1,3,4,6)
+ages = c(22,21,23,20)
+df_names = data.frame(names,id_n)
+df_ages = data.frame(id_a,ages)
+View(df_ages)
+View(df_names)
 
 
 # -----------------------------END--------------------------------------------------#
