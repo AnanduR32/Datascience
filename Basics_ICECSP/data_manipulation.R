@@ -43,6 +43,10 @@ View(arrange(select(flights,carrier,arr_delay,dep_delay),desc(dep_delay)))
 
 ## distinct
 
+### Outputs the unique values in the dataframe
+View(distinct(flights,carrier))
+View(distinct(flights,carrier,origin))
+
 ## filter
 
 View(filter(flights,carrier=="UA"))
