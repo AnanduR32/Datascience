@@ -276,4 +276,17 @@ ggplot(
   position = "fill"
 )
 
+## Boxplot chart using mtcars dataset - In terms of  Mileage and cyliners
+
+ggplot(
+  mtcars,
+  aes(
+    x = factor(cyl), # factor converts numeric variable into groups - continous variable to discrete 
+    y = mpg
+  )
+) + geom_boxplot(
+  
+)
+
+
 # -----------------------------END--------------------------------------------------#
