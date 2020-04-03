@@ -225,6 +225,29 @@ ggplot(
         x = 'weight', y = 'mileage'
         )
 
+## Bar chart of count of class of vehicles in the mpg dataset 
 View(mpg)
+ggplot(
+  mpg,
+  aes(
+    x = class
+  )
+) + geom_bar(
+  color = 'black',
+  fill = 'orange'
+)
+
+## Stacked bar chart by stacking the drive-train type frontwheel rearwheel or all wheel drive
+ggplot(
+  mpg,
+  aes(
+    x = class
+  )
+) + geom_bar(
+  color = 'black',
+  aes(
+    fill = drv
+    )
+)
 
 # -----------------------------END--------------------------------------------------#
