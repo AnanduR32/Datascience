@@ -82,7 +82,15 @@ summarise(flights,mean(dep_delay, na.rm = T))
 
 ## sample_n
 
+### To pick some random sample of the data 
+sample_n(
+  flights, 10
+)
+
 ## sample_frac
+
+### Instead of using a number as parameter we specify a fraction of the original dataset that has to be chosen as the sample dataset
+View(sample_frac(flights, 0.1))
 
 ## mutate
 
@@ -96,7 +104,33 @@ View(transmute(flights,ratio = arr_delay/dep_delay))
 
 ## joins
 
+## Group by
 
+summarise(
+  group_by(flights,carrier),
+  mean(arr_delay, na.rm = T)
+  )
+
+### Question : Write code to find the total flights to each of the origin
+
+#### My code 
+summarise(
+  group_by(
+    flights, origin
+  ),
+  sum(
+    flight, na.rm = T
+    )
+)
+#### Sir's code 
+summarise(
+  group_by(
+    flights, origin
+  ),
+  length(
+    origin
+  )
+)
 
 
 
