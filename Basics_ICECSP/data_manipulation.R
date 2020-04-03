@@ -73,13 +73,26 @@ flights %>% filter(carrier == "UA" | carrier == "MQ") %>% select(carrier,arr_del
 
 ## summarise
 
+vector = c(1:10)
+sum(vector,na.rm=T)
+mean(vector)
+
+summarise(flights,mean(dep_delay)) #Gives value as NA because there are NA values in the field
+summarise(flights,mean(dep_delay, na.rm = T))
+
 ## sample_n
 
 ## sample_frac
 
 ## mutate
 
+### Used to add a calculated field -- Output adds the new field to the existing frame
+View(mutate(flights,ratio = arr_delay/dep_delay))
+
 ## tranmute 
+View(transmute(flights,ratio = arr_delay/dep_delay))
+
+### Same as mutate but in output it displays just the calculated field
 
 ## joins
 
