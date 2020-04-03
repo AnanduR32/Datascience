@@ -151,14 +151,25 @@ semi_join(df_names,df_ages, by = c("id_n" = "id_a")) # Common matching fields bu
 
 # ------------------------ Graphical Presentations ---------------------------------#
 install.packages("ggplot2")
+
 ## ggplot - grammar of graphics plot
 ## A plot has :
-##    1. Data
-##    2. Aesthetics
-##    3. Geometry type of chart
+### Mandatory
+##    1. Data - what you put on the axis 
+##    2. Aesthetics - the elements in chart
+##    3. Geometry type of chart 
+### Optional
 ##    4. Facet - breaking the chart into multiple subcharts 
 ##    5. Theme
 ##    6. Statistics
+
+library(ggplot2)
+
+## ggplot2movies package for the 'movies' dataset to be used for this tutorial on using ggplot2 package in R
+install.packages("ggplot2movies")
+library(ggplot2movies)
+View(movies)
+nrow(movies)
 
 
 # -----------------------------END--------------------------------------------------#
