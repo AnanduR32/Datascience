@@ -179,9 +179,51 @@ ggplot(mtcars, aes(x = mpg, color=cut)) + geom_histogram(color = 'white',binwidt
 
 ## Scatterplot 
 ### Scatterplot to find the correlation between the weights and mileage of vehicles 
-ggplot(mtcars, aes(x = wt, y = mpg, color=cut)) + geom_point(color = 'black', size = 4) + ggtitle('Wight and mileage correlation') + labs(x = 'weight', y = 'mileage')
+ggplot(
+  mtcars, aes(
+    x = wt, y = mpg, color=cut
+    )
+  ) + geom_point(
+    color = 'black', size = 4,aes(
+      color = cyl
+      )
+    ) + ggtitle(
+      'Wight and mileage correlation'
+      ) + labs(
+        x = 'weight', y = 'mileage'
+        )
 
+ggplot(
+  mtcars, aes(
+    x = wt, y = mpg, color=cut
+    )
+  ) + geom_point(
+    size = 4,aes(
+      color = cyl
+      )
+    ) + ggtitle(
+      'Wight and mileage correlation'
+      ) + labs(
+        x = 'weight', y = 'mileage'
+        )
 
+## Question: Modify the scatterplot to show different shapes based on the number of cylinders 
+
+ggplot(
+  mtcars, aes(
+    x = wt, y = mpg, color=cut
+    )
+  ) + geom_point(
+    size = 4,aes(
+      color = cyl, shape = factor(
+        cyl
+        )
+      )
+    ) + ggtitle(
+      'Wight and mileage correlation'
+      ) + labs(
+        x = 'weight', y = 'mileage'
+        )
 
 
 # -----------------------------END--------------------------------------------------#
