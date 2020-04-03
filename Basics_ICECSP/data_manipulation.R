@@ -178,6 +178,8 @@ View(mtcars)
 ggplot(mtcars, aes(x = mpg, color=cut)) + geom_histogram(color = 'white',binwidth = 5, fill = 'orange', alpha = 0.8) + ggtitle('Mileage Ranges for Cars') + labs(x = 'mileage', y = 'frequency')
 
 ## Scatterplot 
+ggplot(mtcars, aes(x = wt, y = mpg, color=cut)) + geom_point(color = 'orange', alpha = 0.8) + ggtitle('Mileage Ranges for Cars') + labs(x = 'weight', y = 'mileage')
+
 
 
 
