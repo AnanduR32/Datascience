@@ -35,13 +35,17 @@ View(asc_arr_delay)
 desc_arr_delay = arrange(flights,desc(arr_delay))
 View(desc_arr_delay)
 
-## Write code to print vairables carrier, arr_delay and dep_delay which 
+## Write code to print vairables carrier, arr_delay and dep_delay 
 ## which are sorted by dep_delay in descending order
-View(arrange(select(flights,carrier,arr_delay,dep_delay),dep_delay))
+View(arrange(select(flights,carrier,arr_delay,dep_delay),desc(dep_delay)))
+View(select(arrange(flights,desc(dep_delay)),carrier,arr_delay,dep_delay))
 
 ## distinct
 
 ## filter
+
+View(filter(flights,carrier=="UA"))
+View(filter(flights,arr_delay>1000))
 
 ## summarise
 
