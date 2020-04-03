@@ -142,5 +142,8 @@ df_ages = data.frame(id_a,ages)
 View(df_ages)
 View(df_names)
 
+inner_join(df_names,df_ages, by = c("id_n" = "id_a"))
+left_join(df_names,df_ages, by = c("id_n" = "id_a"))
+
 
 # -----------------------------END--------------------------------------------------#
