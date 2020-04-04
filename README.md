@@ -65,9 +65,9 @@ Data Science Basics in R
       It is the measure of the strength of the evidence against the null hypothesis provided by the sample data. This is a value that tells you the probability that the results of your experiment were observed by chance, i.e. It is a probability that is calculated on the pretext that the null hypothesis is true, therefore a very low value suggest a strong statistical model.
   
 ## Data Quality Dimensions 
-* ##### Completeness 
-* ##### Validity 
-* ##### Accuracy
-* ##### Consistency 
-* ##### Integrity
-* ##### Timeliness 
+* Completeness 
+* Validity 
+* Accuracy
+* Consistency 
+* Integrity
+* Timeliness 
