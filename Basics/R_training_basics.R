@@ -26,12 +26,16 @@ print('hello');
 # * Other user specified attributes/metadata
 ##
 
+x = list(2, "a", TRUE, 4+3i) # or x = list(2, "a", T, 4+3i)
+print(x)
+## Note : Elements are indexed using double brackets 
+
 # ---------------------------------- Creating vectors ------------------------------------#
 
 stu.countries = c("India","Pakistan","China","USA");
 rm(stu.countries)
 
-if vect_1<-c(1:10)
+if vect1<-c(1:10)
 
 ## While vectors can have only one type of datatypes for all its elements, 
 ## whereas lists can have different datatypes for its elements 
@@ -162,3 +166,6 @@ range = c(1:10)
 for(i in range){
   print(i)
 }
+
+
+  
