@@ -1,5 +1,10 @@
 # -------------------------------- Assignment to variables -------------------------------#
-a = 15
+
+a = 15 #will be treated as a numeric class datatype by default
+## To explicitely specify the datatype to integer an "L" suffic is assigned as,
+## a = 15L
+## the above assignment will treat a as an integer type data variable
+
 b = 13
 c = a + b;
 name <- 'Anandu'
@@ -9,12 +14,27 @@ class(comp)
 
 print('hello');
 
+## Inf is a special number representing infinity
+## NaN is another special numeber that represents missing value
+
+## 
+# R objects have attributes such as 
+# * names, dimnames (dimension names)
+# * dimensions (matrices, arrays)
+# * class 
+# * length
+# * Other user specified attributes/metadata
+##
+
 # ---------------------------------- Creating vectors ------------------------------------#
 
 stu.countries = c("India","Pakistan","China","USA");
 rm(stu.countries)
 
 if vect_1<-c(1:10)
+
+## While vectors can have only one type of datatypes for all its elements, 
+## whereas lists can have different datatypes for its elements 
 
 # ---------------- ---------- Assigning row and column names -----------------------------#
 row.names(google) = rn
