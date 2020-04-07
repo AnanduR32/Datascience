@@ -26,11 +26,6 @@ print('hello');
 # * Other user specified attributes/metadata
 ##
 
-x = list(2, "a", TRUE, 4+3i) # or x = list(2, "a", T, 4+3i)
-print(x)
-## Note : Elements are indexed using double brackets 
-
-
 # ---------------------------------- Creating vectors ------------------------------------#
 
 stu.countries = c("India","Pakistan","China","USA");
@@ -45,6 +40,12 @@ vect_1<-c(1:10)
 dim(vect_1) = c(2,5)
 ## Creates a 2x5 matrix with values of vect_1 arranged column-wise
 
+## Lists 
+x = list(2, "a", TRUE, 4+3i) # or x = list(2, "a", T, 4+3i)
+print(x)
+## Note : Elements are indexed using double brackets 
+
+
 ## Factors 
 # They represent categorical data 
 # Can be ordered or unordered
@@ -58,7 +59,15 @@ y = factor(c("yes","no","no","yes"),levels = c("yes","no"))
 ## Look at the environment quadrant and observe the data object 
 
 
-# ---------------- ---------- Assigning row and column names -----------------------------#
+# ---------------- ---------- Assigning names -----------------------------------#
+
+## All objects can have names
+
+## List elements can have names 
+y = list(a = 1, b = 2, c = 3)
+print(y)
+##
+
 row.names(google) = rn
 
 google = c(1:5)
@@ -74,6 +83,10 @@ print(stocks_mat)
 
 amazon = c(11:15)
 stocks_mat = cbind(stocks_mat,amazon)
+
+m = matrix(1:4,nrow = 2)
+dimnames(m) = list(c("a","b"),c("c","d"))
+print(m)
 
 # ----------------------- Deriving various results from matrices -------------------------#
 
@@ -184,6 +197,9 @@ range = c(1:10)
 for(i in range){
   print(i)
 }
+
+
+# -------------------------------- END --------------------------------------------#
 
 
   
