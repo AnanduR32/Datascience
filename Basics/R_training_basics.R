@@ -30,15 +30,33 @@ x = list(2, "a", TRUE, 4+3i) # or x = list(2, "a", T, 4+3i)
 print(x)
 ## Note : Elements are indexed using double brackets 
 
+
 # ---------------------------------- Creating vectors ------------------------------------#
 
 stu.countries = c("India","Pakistan","China","USA");
 rm(stu.countries)
 
-if vect1<-c(1:10)
+vect_1<-c(1:10)
 
 ## While vectors can have only one type of datatypes for all its elements, 
 ## whereas lists can have different datatypes for its elements 
+
+## adding dimensions to vectors 
+dim(vect_1) = c(2,5)
+## Creates a 2x5 matrix with values of vect_1 arranged column-wise
+
+## Factors 
+# They represent categorical data 
+# Can be ordered or unordered
+# Factors is an integer vector in which each integer has a label
+# They are self-describing
+x = factor(c("yes","no","no","yes"))
+unclass(x)
+# Order of levels set using "level()" function parameter
+# which is important to specify the baseline level 
+y = factor(c("yes","no","no","yes"),levels = c("yes","no"))
+## Look at the environment quadrant and observe the data object 
+
 
 # ---------------- ---------- Assigning row and column names -----------------------------#
 row.names(google) = rn
