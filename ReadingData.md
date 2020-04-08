@@ -108,6 +108,8 @@
     tabAll  = read.table("datatable.txt", colClasses = classes)
     ```
     
+    We can use the unix code 'wc' to calculate the total number of lines in the file
+    
 * ###### nrows 
 
     The number of rows in the dataset 
@@ -126,4 +128,13 @@
     
     By default true 
     
+### Calculating memory requirements 
 
+    "You need atleast twice the size of memory of the data to be able to load and store the entire data, due to memory overhead requirements".
+
+### Textual Formats 
+
+    dput and dump stores data in textual format which has advantages such as readability, editability, and the data is stored along with meta data.
+    
+    But there are disadvantages such as inefficient storage requiring compression
+    
