@@ -155,6 +155,7 @@ library(reshape)
 install.packages("reshape")
 
 # -------------------------- Conditional statemenets -------------------------------#
+
 x = 15;
 if(x<5){
   print("x is less than 5")
@@ -164,6 +165,7 @@ if(x<5){
   print("x greater than 10")
 }
 # --------------------------Iteratable Loops ---------------------------------------#
+
 country = "India"
 GDP = 6
 if(country=="India"& GDP>7){
@@ -175,6 +177,7 @@ if(country=="India"& GDP>7){
 }
 
 # ------------------------- Factorial of number ------------------------------------#
+
 n = 0;
 limit = 10;
 if(n>0){
