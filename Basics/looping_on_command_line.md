@@ -35,10 +35,15 @@
     View(apply(x,1,quantile,probs=c(0.25,0.75)))
     ```
     
-    2. Finding the mean of 3D array (2x2x10) - Result stored in 2D array (2x2) 
+    2. Finding the mean of 3D array 
     
+    Creating a 3D array (2x2x10)
     ```
     x = matrix(rnorm(40),c(2,2,10))
+    ```
+    
+    Resultant is 2D array (2x2) 
+    ```
     apply(x,c(1,2),mean)
     ```
         
