@@ -149,5 +149,9 @@
 * #### split : 
    
    * Separates the elements of a vector or object into groups determined by a factor variable or list of factors. 
+   * Example : Splitting a dataset into various objects based on the factor "month" to obtain data separate for each month
+      ```
+      split(airquality, airquality$month
+      ```
    
     
