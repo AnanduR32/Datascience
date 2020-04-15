@@ -4,15 +4,15 @@
     * Loop over a list and evaluate a function on each element
     * Always returns a list
     
-    * Structure : 
+    * Structure :     
          ```
          function (X, FUN, ...)  
-         ```
-         |Arg(s)|Details|
-         |----|---------|
-         |X   | Data    |
-         |FUN | Function|
-         |... | List of arguments to the function passed |
+         ```         
+      |Arg(s)|Details|
+      |----|---------|
+      |X   | Data    |
+      |FUN | Function|
+      |... | List of arguments to the function passed |
 
 * sapply : 
 
@@ -23,7 +23,18 @@
 
    * Apply a function over the margins of an array 
    * Not faster than looping constructs - for loop. Only advantage - less typing. 
-
+   
+   * Structure : 
+      ```
+      function (X, MARGIN, FUN, ...)  
+      ```
+      |Arg(s)  |Details                                     |
+      |--------|--------------------------------------------|
+      |X       | Array                                      |
+      |MARGIN  |Tells which margins are to be retained      |
+      |FUN     | Function                                   |
+      |...     | List of arguments to the function passed   |
+   
    Variants of apply for 2 dimensional arrays(matrices):
          
       rowSums     ==  apply(data, 1, sum)
@@ -64,6 +75,33 @@
 * mapply : 
 
    * Multivariate version of tapply
+   * Structure : 
+      ```
+      function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)  
+      ```
+      |Arg(s)     |Details                                     |
+      |-----------|--------------------------------------------|
+      |FUN        | Function                                   |
+      |...        | Arguments - objects to apply function over |
+      |MoreArgs   | List of other arguments to function        |
+      |SIMPLIFY   | Whether to simplify the results            |
+      |USE.NAMES  |                                            |
+      
+   * Example : 
+   
+      Creating a List of vectors containing four 1s, three 2s, two 3s and one 4 can be tedious using the regular method 
+      ```
+      List(rep(1,4),rep(2,3),rep(3,2),rep(4,1))
+      ```
+      
+      Hence we use the mapply function, which does the same job, only less typing
+      ```
+      mapply(rep, 1:4, 4:1)
+      ```
+      
+     
+   
+      
     
 * split : 
    
