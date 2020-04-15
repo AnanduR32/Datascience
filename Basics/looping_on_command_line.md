@@ -1,10 +1,10 @@
 # Looping on Command-line
-* lapply : 
+* #### lapply : 
 
     * Loop over a list and evaluate a function on each element
     * Always returns a list
     
-    * Structure :     
+    * ###### Structure :     
          ```
          function (X, FUN, ...)  
          ```         
@@ -14,17 +14,17 @@
       |FUN | Function|
       |... | List of arguments to the function passed |
 
-* sapply : 
+* #### sapply : 
 
     * Same as lapply but tries to simplify the result 
     * Returns vector if every element is an object of length 1, if every element is object of same length (length>1) then matrix returned else a list is returned.
 
-* apply : 
+* #### apply : 
 
    * Apply a function over the margins of an array 
    * Not faster than looping constructs - for loop. Only advantage - less typing. 
    
-   * Structure : 
+   * ###### Structure : 
       ```
       function (X, MARGIN, FUN, ...)  
       ```
@@ -42,8 +42,8 @@
       colSums     ==  apply(data, 2, sum)
       colMeans    ==  apply(data, 2, mean)
    
-   Example :
-        
+   ###### Example :
+      
    1. Creating a matrix with 20 rows and 10 columns
 
    ```
@@ -54,24 +54,24 @@
    ```
    View(apply(x,1,quantile,probs=c(0.25,0.75)))
    ```
-    
+
    2. Finding the mean of 3D array 
-    
+
    Creating a 3D array (2x2x10)
-   
+
    ```
    x = matrix(rnorm(40),c(2,2,10))
    ```
-    
+
    Resultant is 2D array (2x2) 
    ```
    apply(x,c(1,2),mean)
    ```
         
-* tapply : 
+* #### tapply : 
 
-   * Apply a function over subsets of a vector 
-   * Structure : 
+   * ###### Apply a function over subsets of a vector 
+   * ###### Structure : 
       ```
       function (X, INDEX, FUN = NULL, ..., SIMPLIFY = TRUE)  
       ```
@@ -83,7 +83,7 @@
       |...        | Arguments - objects pass to function       |
       |SIMPLIFY   | Whether to simplify the results            |
       
-   * Example : To find the mean of groups in a dataset
+   * ###### Example : To find the mean of groups in a dataset
    
       Creating a dataset with 3 groups - 
       * list of 10 normal distributions 
@@ -119,10 +119,10 @@
       Thus information on subset of dataset can be derived using the tapply function     
       
       
-* mapply : 
+* #### mapply : 
 
-   * Multivariate version of tapply
-   * Structure : 
+   * ###### Multivariate version of tapply
+   * ###### Structure : 
       ```
       function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)  
       ```
@@ -134,7 +134,7 @@
       |SIMPLIFY   | Whether to simplify the results            |
       |USE.NAMES  |                                            |
       
-   * Example : 
+   * ###### Example : 
    
       Creating a List of vectors containing four 1s, three 2s, two 3s and one 4 can be tedious using the regular method 
       ```
@@ -146,7 +146,7 @@
       mapply(rep, 1:4, 4:1)
       ```    
     
-* split : 
+* #### split : 
    
    * Separates the elements of a vector or object into groups determined by a factor variable or list of factors. 
    
