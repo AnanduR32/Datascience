@@ -149,9 +149,9 @@
 * #### split : 
    
    * Separates the elements of a vector or object into groups determined by a factor variable or list of factors. 
-   * Example : Splitting a dataset into various objects based on the factor "month" to obtain data separate for each month
+   * ###### Example : Splitting a dataset into various objects based on the factor "month" to obtain data separate for each month
       ```
       split(airquality, airquality$month
       ```
-   
+   * When combining multiple different factor objects say, Month(12 levels) and Gender(2 levels - arbitrarily selected), we pass the factors as a list, and the split function automatically creates an interaction between the two factor objects and that interaction has 2 * 12 -> 24 levels in it, and parses the data based on the interaction. Note : To drop empty results specify the 'DROP = T' argument of split function
     
