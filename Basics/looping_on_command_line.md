@@ -31,7 +31,7 @@
       |Arg(s)  |Details                                     |
       |--------|--------------------------------------------|
       |X       | Array                                      |
-      |MARGIN  |Tells which margins are to be retained      |
+      |MARGIN  | Tells which margins are to be retained     |
       |FUN     | Function                                   |
       |...     | List of arguments to the function passed   |
    
@@ -71,7 +71,54 @@
 * tapply : 
 
    * Apply a function over subsets of a vector 
-    
+   * Structure : 
+      ```
+      function (X, INDEX, FUN = NULL, ..., SIMPLIFY = TRUE)  
+      ```
+      |Arg(s)     |Details                                     |
+      |-----------|--------------------------------------------|
+      |X          | Array                                      |
+      |INDEX      | Factor or list of factors                  |
+      |FUN        | Function                                   |
+      |...        | Arguments - objects pass to function       |
+      |SIMPLIFY   | Whether to simplify the results            |
+      
+   * Example : To find the mean of groups in a dataset
+   
+      Creating a dataset with 3 groups - 
+      * list of 10 normal distributions 
+      ```
+      rnorm(10)
+      ```
+      * 10 uniform distributions
+      ```
+      runif(10)
+      ```
+      * 10 normal distributions with mean 1
+      ```
+      rnorm(10,1)
+      ```
+      -> List(rnorm(10),runif(10),rnorm(10,1))
+      
+      Creating factor variables with 3 levels to represents each group in dataset.
+      ```
+      f = gl(3,10)
+      ```
+      There are three levels and each level is repeated 10 times in sequence
+      
+      Applying tapply to find mean of each group of lists
+      ```
+      tapply(x, f, mean)
+      ```
+      
+      Applying tapply to find the range of each subset in the dataset
+      ```
+      tapply(x, f, range)
+      ```
+      
+      Thus information on subset of dataset can be derived using the tapply function     
+      
+      
 * mapply : 
 
    * Multivariate version of tapply
@@ -97,11 +144,7 @@
       Hence we use the mapply function, which does the same job, only less typing
       ```
       mapply(rep, 1:4, 4:1)
-      ```
-      
-     
-   
-      
+      ```    
     
 * split : 
    
