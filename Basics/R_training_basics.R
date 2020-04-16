@@ -149,6 +149,9 @@ if(x%%2==0){
   print("Yes")
 }
 
+## Modifying the dataframe - Adding new field
+mutate(dataset, Performance = hp/wt)
+
 # ----------------------------- Melt and cast --------------------------------------#
 
 library(reshape)
