@@ -1,6 +1,6 @@
 # ---------------------------------------- Diabetes ---------------------------------------------#
 library(dplyr)
-diabetes = read.csv("Diabetes/diabetes.csv")
+diabetes = read.csv("Case Studies/Gluc_level/diabetes.csv")
 
 ## Viewing the complete contents of the dataset 
 View(diabetes)
@@ -24,7 +24,7 @@ diabetes = diabetes[c(-15,-16)]
 ## Removing rows having missing values
 # Sir's Method
 row.has.na = apply(diabetes,1,function(x){any(is.na(x))})
-dataset1 = diabetes[!row.has.na,]
+dataset = diabetes[!row.has.na,]
 View(dataset)
 dim(dataset)
 
@@ -33,7 +33,7 @@ good = complete.cases(diabetes)
 dataset2 = diabetes[good,]
 dim(dataset2)
 
-## Graphical analysis 
+# ----------------------------------- Graphical analysis ---------------------------------------------#
 library(ggplot2)
 
 diabetic = diabetes[diabetes[["glyhb"]]>5.6,]
@@ -48,7 +48,7 @@ ggplot(
     color = 'white', binwidth = 1, fill = 'orange'
     )
 
-# Univariate Analyis 
+## ---------------------------------- Univariate Analyis --------------------------------------------##
 # glyhb
 plot(dataset2$glyhb)
 # age 
@@ -61,5 +61,56 @@ plot(dataset2$location)
 plot(dataset2$frame)
 # Cholestrole 
 plot(dataset2$chol)
+
+
+## ---------------------------------- Bivariate analysis --------------------------------------------##
+
+plot(dataset2$stab.glu,dataset2$glyhb)
+
+## Plot using linear model method 
+ggplot(
+  dataset2,aes(
+    x=stab.glu,y = glyhb,color=diagnosis
+  )
+) + geom_point() + geom_smooth(method='lm')
+
+## Extracting all numeric fields in the dataset 
+
+dataset_numeric = dataset2[,-c(7,9,12,18)]
+View(dataset_numeric)
+
+glimpse(dataset_numeric)
+
+## Creating multiple graphs using loop
+
+par(mfrow = c(1,2))
+for(i in 2:13){
+  boxplot(dataset_numeric[,i],main = names(dataset_numeric))
+}
+
+for(i in 2:13){
+  hist(dataset_numeric[,i],main = names(dataset_numeric[i]),xlab = names(dataset_numeric[i]))
+}
+
+
+ggplot(
+  dataset_numeric,aes(
+    x = age, y = glyhb, color=factor(result)
+  )
+) + geom_point()+geom_smooth(method = "lm")
+
+## Visualize the package in form of percentages
+# Installing vtree package
+install.packages("vtree")
+library(vtree)
+
+vtree(dataset, "gender")
+vtree(dataset, "gender location")
+vtree(dataset, "gender location", horizon=F)
+vtree(dataset, "gender location", horizon=F, height = 250, width = 850)
+vtree(dataset, "gender location", horizon=F, height = 250, width = 850)
+
+dataset$result = as.factor(unlist(dataset$result))
+dataset$result = factor(dataset$result,level = c(0,1), labels = c("positive","negative"))
 
 
