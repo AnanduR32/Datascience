@@ -21,6 +21,9 @@ outcome[, 11] = as.numeric(outcome[, 11])
 # Necessary since all columns were read as characters 
 hist(outcome[,11])
 
+## Function to identify the best hospital based on
+## Lower mortality rate in a particular state 
+
 best = function(state, outcome) {
   ## Read outcome data
   dataset = read.csv("outcome-of-care-measures.csv",colClasses = "character")
@@ -47,4 +50,11 @@ best = function(state, outcome) {
   name = dataset[1,1]
   name
 }
-best("AL","Heart Attack")
+
+rankhospital <- function(state, outcome, num = "best") {
+  ## Read outcome data
+  ## Check that state and outcome are valid
+  ## Return hospital name in that state with the given rank
+  ## 30-day death rate
+}
+
