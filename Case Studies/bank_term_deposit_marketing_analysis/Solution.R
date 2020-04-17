@@ -27,8 +27,6 @@ data_full = data_full[4:7]
 ## Simply shows all sheets in excel file
 View(data_full)
 
-
-
 ## reading "CLIENT_INFO" sheet specifically
 data_client_info = read_excel("bank_term_deposit_marketing_analysis.xlsx","CLIENT_INFO")
 
@@ -40,8 +38,6 @@ str(data_client_info)
 ## Summary of data_client_info
 summary(data_client_info)
 
-
-## To map all the sheets to variables of name same as sheet name
 ## Reading entire excel file - all its sheets and values
 data_full = path %>% excel_sheets() %>% set_names() %>% map(read_excel,path = path)
 ## Viewing entire excel file
