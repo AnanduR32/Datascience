@@ -116,17 +116,17 @@ rankall <- function(outcome, num = "best") {
   dataset = dataset[order(dataset[,3],dataset[,1]),]
   last_row = nrow(dataset)
   if(tolower(num)=="best"){
-    name = dataset[1,1]
+    out = lapply(split(dataset[c(1)],dataset$State),function(x){x[1,]})
   }else if(tolower(num)=="worst"){
-    name = dataset[last_row,1]
+    out = lapply(split(dataset[c(1)],dataset$State),function(x){num,]})
   }else{
     num = as.integer(num)
     if(num>last_row){
       name = NULL
     }else{
-      name = dataset[num,1]
+      out = lapply(split(dataset[c(1)],dataset$State),function(x){x[num,]})
     }
   }
-  name
+  out
 }
 
