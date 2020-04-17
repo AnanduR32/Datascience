@@ -15,20 +15,20 @@ library(tidyverse)
 setwd("Case Studies/bank_term_deposit_marketing_analysis")
 setwd_banking = getwd()
 
-## To see the sheets in the excel file we are to read
-excel_sheets("bank_term_deposit_marketing_analysis.xlsx")
+## Setting up path to excel sheet 
 path = "bank_term_deposit_marketing_analysis.xlsx"
+## To see the sheets in the excel file we are to read
+excel_sheets(path)
 
 ## Reading the excel sheet 
-data_full = read_excel("bank_term_deposit_marketing_analysis.xlsx")
+data_full = read_excel(path)
 
-data_full = data_full[4:7]
 ## Viewing entire excel file
 ## Simply shows all sheets in excel file
 View(data_full)
 
 ## reading "CLIENT_INFO" sheet specifically
-data_client_info = read_excel("bank_term_deposit_marketing_analysis.xlsx","CLIENT_INFO")
+data_client_info = read_excel(path,"CLIENT_INFO")
 
 ## Understanding the data
 ## View data_client_info
