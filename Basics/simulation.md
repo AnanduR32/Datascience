@@ -1,4 +1,6 @@
-# Generating Random numbers 
+# Simulation
+
+## Generating Random numbers 
 
 ### Functions for probabilty distrubutions in R
 * rnorm : Generate random normal variates with given mean and standard distribution
@@ -67,4 +69,26 @@ y = 0.5 + 2 * x + e
 Plotting the linear model 
 ```
 plot(x,y)
+```
+
+## Random Sampling
+
+Setting seed
+```
+set.seed(30)
+```
+
+Sampling 5 random integers between 1 and 10
+```
+sample(1:10,5)
+```
+
+Sampling 5 random letters/alphabets
+```
+sample(letters,5)
+```
+
+To generate random permutation between 1 and 10
+```
+sample(1:10)
 ```
