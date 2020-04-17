@@ -24,7 +24,7 @@ hist(outcome[,11])
 best = function(state, outcome) {
   ## Read outcome data
   dataset = read.csv("outcome-of-care-measures.csv",colClasses = "character")
-  try(if(sum(dataset$State==state)<1) stop("Invalid State"))
+  if(sum(dataset$State==state)<1) stop("Invalid State")
   dataset = dataset[dataset$State==state,]
   if(tolower(outcome) == "heart attack"){
     dataset = select(dataset,Hospital.Name,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)
@@ -33,7 +33,7 @@ best = function(state, outcome) {
   }else if(tolower(outcome) == "pneumonia"){
     dataset = select(dataset,Hospital.Name,Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)
   }else{
-    print("Error Invalid entry")
+    stop("Invalid Outcome")
   }
   dataset[,2]=as.numeric(dataset[,2])
   names(dataset) =  c("Name","Outcome")
