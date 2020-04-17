@@ -41,10 +41,6 @@ str(data_client_info)
 summary(data_client_info)
 
 
-library(purrr)
-library(readxl)    
-
-
 ## To map all the sheets to variables of name same as sheet name
 ## Reading entire excel file - all its sheets and values
 data_full = path %>% excel_sheets() %>% set_names() %>% map(read_excel,path = path)
