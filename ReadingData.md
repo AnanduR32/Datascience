@@ -138,4 +138,14 @@ dput and dump stores data in textual format which has advantages such as readabi
     
 But there are disadvantages such as inefficient storage requiring compression.
 
+## Reading file formats 
 
+* Excel 
+    
+    Library : xlsx
+    read : read.xlsx(fileURL,sheetIndex=1,header=T)
+
+* XML 
+    
+    Library : XML
+    read : xmlTreeParse(fileURL)
