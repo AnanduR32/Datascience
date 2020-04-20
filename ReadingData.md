@@ -137,28 +137,3 @@
 dput and dump stores data in textual format which has advantages such as readability, editability, and the data is stored along with meta data.
     
 But there are disadvantages such as inefficient storage requiring compression.
-
-## Reading file formats 
-
-* Excel 
-    
-    Library : xlsx
-    
-    read : read.xlsx(fileURL,sheetIndex=1,header=T)
-
-* XML 
-    
-    Library : XML
-    
-    read : xmlTreeParse(fileURL)
-    
-    Accessing root node element : 
-    
-        rootNode = rootXML(readDocFile)
-    
-    Acessing individual elements : 
-        
-        xmlNames(rootNode)  # To see name of root node
-        rootNode[[1]]       # To access first element in the root node
-        rootNode[[1]][[1]]  # To access the first element within the first element of root node,
-                            # Subset progressively to access the lower levels of the xml markdown
