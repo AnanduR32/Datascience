@@ -7,8 +7,6 @@ Library :
 read : 
     
     fromjson(fileURL)
-    
-    html : htmlTreeParse(fileURL)
 
 Accessing elements
 
