@@ -24,10 +24,3 @@ Used to extract elements of a list or dataframe by name or semantics, similar to
 Cannot pass a variable with name of element in list because it literally searches for the element in list with the variable name and not the value stored in that variable.
 
 Partial matching is set to TRUE by default.
-
-### Table 
-
-It is important to sometimes serparate out a column from the dataset/dataframe and view its contents separately.
-
-    table(dataset$fieldColumn,useNA="if any")           # To view one single column
-    table(dataset$field1,dataset$field2,useNA="if any") # To compare the relation between two columns 
