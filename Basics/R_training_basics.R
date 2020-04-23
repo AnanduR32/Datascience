@@ -152,11 +152,6 @@ if(x%%2==0){
 ## Modifying the dataframe - Adding new field
 mutate(dataset, Performance = hp/wt)
 
-# ----------------------------- Melt and cast --------------------------------------#
-
-library(reshape)
-install.packages("reshape")
-
 # -------------------------- Conditional statemenets -------------------------------#
 
 x = 15;
