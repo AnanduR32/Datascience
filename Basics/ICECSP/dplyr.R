@@ -1,6 +1,16 @@
 ## Loading the dplyr package
 library(dplyr)
 
+## Basic Functions 
+## 1. select
+## 2. arrange
+## 3. filter
+## 4. rename 
+## 5. mutate
+## 6. groupby
+
+## summarise and pipeline operator 
+
 ## Loading the data 
 data(mtcars)
 
