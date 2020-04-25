@@ -4,28 +4,116 @@ setwd(setwd_caseStudies)
 setwd("property_price_prediction")
 
 ## Loading necessary libraries
-
+## install.packages("naniar")
 library(data.table)
 library(dplyr)
 library(ggplot2)
+library(readr)
+library(naniar)
 
 ## Loading data
 
-data = read.csv("Property_Price_Train.csv")
+train = read.csv("Property_Price_Train.csv")
+test = read.csv("Property_Price_Test.csv")
 
 ## View data
 
-View(data)
+View(train)
 
-## Removing missing variables 
-NA_n = rep(0, ncol(data))
-for(i in 1:ncol(data)){
-  NA_n[i] = sum( is.na(data[,i] ))
+## Combining datasets
+
+## removing the id variable from both train and test 
+train$Id = NULL # removes the id column from train
+test$Id = NULL  # removes the id column from test 
+
+## Adding Sale_Price variable to test before combining
+test$Sale_Price = NA
+head(test)
+
+## Complete data
+data_complete = rbind(train,test)
+dim(data_complete)
+
+## storing number of observations in each dataset
+ntrain = nrow(train)
+ntest  = nrow(test)
+ncomplete = nrow(data_complete)
+
+## Exploring data
+str(data_complete)
+
+## Checking positions of missing value
+
+## Visualizing missing value % using naniar package
+vis_miss(data_complete)
+
+## Locating position of variables that have around 50% of its
+## values missing 
+
+## Checking variables that have missing values
+colSums(is.na(data_complete))
+
+## Selecting only those columns that have missing value 
+colWithMissingValues = sapply(data_complete, function(x){ sum(is.na(x))})
+colWithMissingValues[colWithMissingValues>0]
+
+## Data cleaning 
+
+## Lane_Type with NA value actually represent house with no lane 
+
+data_complete$Lane_Type = as.character(data_complete$Lane_Type)
+data_complete$Lane_Type[is.na(data_complete$Lane_Type)] = "No Access"
+
+## Basement_Height with NAs represent 'No basement'
+data_complete$Basement_Height = as.character(data_complete$Basement_Height)
+data_complete$Basement_Height[is.na(data_complete$Basement_Height)] = "No Basement"
+
+## Similarly for Basement_Condition
+data_complete$Basement_Condition = as.character(data_complete$Basement_Condition)
+data_complete$Basement_Condition[is.na(data_complete$Basement_Condition)] = "No Basement"
+
+## Similarly for exposure 
+data_complete$Exposure_Level = as.character(data_complete$Exposure_Level)
+data_complete$Exposure_Level[is.na(data_complete$Exposure_Level)] = "No Basement"
+
+## Similarly for BsmtFinType1 and BsmtFinType2
+data_complete$BsmtFinType1 = as.character(data_complete$BsmtFinType1)
+data_complete$BsmtFinType1[is.na(data_complete$BsmtFinType1)] = "No Basement"
+
+data_complete$BsmtFinType2 = as.character(data_complete$BsmtFinType2)
+data_complete$BsmtFinType2[is.na(data_complete$BsmtFinType2)] = "No Basement"
+
+## The variable Fireplace_quality has NAs for observations which don't actually have
+## a fireplace, therefore replacing the NAs with "No Fireplace"
+
+data_complete$Fireplace_Quality = as.character(data_complete$Fireplace_Quality)
+data_complete$Fireplace_Quality[is.na(data_complete$Fireplace_Quality)] = "No Fireplace"
+
+## Similarly for Garage variable 
+
+data_complete$Garage = as.character(data_complete$Garage)
+data_complete$Garage[is.na(data_complete$Garage)] = "No Garage"
+
+##
+
+
+## Selecting variables with more than 50% data values after cleaning
+
+NA_n = rep(0, ncol(data_complete))
+for(i in 1:ncol(data_complete)){
+  NA_n[i] = sum( is.na(data_complete[,i] ))
 }
 
-pos_allNA = which(NA_n>0)
+pos_NA50 = which(NA_n>(0.5*ncomplete))
+pos_NA50
 
-View(data.frame(cbind(NA_n,MissingRatio = NA_n/nrow(data)*100)))
+
+## Removing variables with more than 50% data missing
+
+data_complete = select(data_complete,-colnames(data_complete[,pos_NA50]))
+
+## View data_complete 
+View(data_complete)
 
 ## It is observed that columns - 7,58,73,74,75 has more than 50% data missing
 ## hence they are removed 
@@ -33,13 +121,15 @@ View(data.frame(cbind(NA_n,MissingRatio = NA_n/nrow(data)*100)))
 data_clean = select(data, -colnames(data[,c(7,58,73,74,75)]))
 View(data_clean)
 
+
 ## Filling values in missing fields 
 
 NA_f = rep(0, ncol(data_clean))
 for(i in 1:ncol(data_clean)){
   NA_f[i] = sum( is.na(data_clean[,i] ))
 }
-pos = which(NA_f>0) # index position of variables that have missing values
+pos = which(NA_f>0.5*nrow(train)) # index position of variables that 
+## have more than 50% missing values
 
 df = as.data.frame(data_clean)
 
