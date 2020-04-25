@@ -55,3 +55,20 @@ View(train)
 
 test = data_sal[!split,] # or subset(data_sal, split == F)
 View(test)
+
+## Fit the model 
+
+lreg = lm(formula = Salary~YearsExperience, data = train)
+plot(lreg)
+summary(lreg) # pvalue - probability of the variable not being of significance
+
+## Removing the y variable from test dataset
+test_clean = select(test,YearsExperience)
+View(test_clean)
+
+## predicting the salaries 
+y_pred = predict(lreg,newdata = test_clean)
+View(y_pred)
+
+test_pred = cbind(test,predicted = y_pred)
+View(test_pred)
