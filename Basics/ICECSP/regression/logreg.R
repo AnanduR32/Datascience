@@ -18,7 +18,7 @@ head(logData)
 logData$Gender = factor(logData$Gender, levels = c("Male","Female"), labels = c(1,0))
 
 ## Creating Purchased as factor
-logData$Purchased = factor(logData$Purchased, levels = c(1,0),labels = c(1,0))
+logData$Purchased = factor(logData$Purchased, levels = c(0,1),labels = c(0,1))
 
 ## Exploring the data
 str(logData)
@@ -50,11 +50,14 @@ logreg = glm(formula = Purchased~Age+EstimatedSalary, data = train, family = bin
 y_pred = predict(logreg,newdata = test, type = 'response')
 
 ## if threshold 50%
-y_pred = ifelse(y_pred>0.5, 0,1)
+y_pred = ifelse(y_pred>0.5,1,0)
 class(y_pred)
 y_pred = as.data.frame(y_pred)
 dim(y_pred)
 ## Comparing values 
-View(cbind(actual = test$Purchased, predicted = y_pred))
+out = cbind(actual = test$Purchased, predicted = y_pred)
 
 ## Analysing the accuracy 
+cross = table(out)
+accuracy = (cross[1,1]+cross[2,2])/sum(colSums(cross))*100
+accuracy
