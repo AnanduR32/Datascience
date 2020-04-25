@@ -94,8 +94,61 @@ data_complete$Fireplace_Quality[is.na(data_complete$Fireplace_Quality)] = "No Fi
 data_complete$Garage = as.character(data_complete$Garage)
 data_complete$Garage[is.na(data_complete$Garage)] = "No Garage"
 
-##
+## Similarly for Garage_Build_Year and Garage_Finish_Year
 
+data_complete$Garage_Built_Year = as.character(data_complete$Garage_Built_Year)
+data_complete$Garage_Built_Year[is.na(data_complete$Garage_Built_Year)] = "No Garage"
+
+data_complete$Garage_Finish_Year = as.character(data_complete$Garage_Finish_Year)
+data_complete$Garage_Finish_Year[is.na(data_complete$Garage_Finish_Year)] = "No Garage"
+
+## Similarly for Garage_Condition
+
+data_complete$Garage_Condition = as.character(data_complete$Garage_Condition)
+data_complete$Garage_Condition[is.na(data_complete$Garage_Condition)] = "No Garage"
+
+## Garage_Quality
+data_complete$Garage_Quality = as.character(data_complete$Garage_Quality)
+data_complete$Garage_Quality[is.na(data_complete$Garage_Quality)] = "No Garage"
+
+## Pool variables 
+## Pool_Quality
+data_complete$Pool_Quality = as.character(data_complete$Pool_Quality)
+data_complete$Pool_Quality[is.na(data_complete$Pool_Quality)] = "No Pool"
+
+## Fence variables
+## Fence_Quality
+data_complete$Fence_Quality = as.character(data_complete$Fence_Quality)
+data_complete$Fence_Quality[is.na(data_complete$Fence_Quality)] = "No Fence"
+
+## Miscellaneous_Feature  
+
+data_complete$Miscellaneous_Feature = as.character(data_complete$Miscellaneous_Feature)
+data_complete$Miscellaneous_Feature[is.na(data_complete$Miscellaneous_Feature)] = "None"
+
+## Filling NAs in Lot_Extent with median value 
+class(data_complete$Lot_Extent)
+data_complete$Lot_Extent[is.na(data_complete$Lot_Extent)] = median(data_complete$Lot_Extent,na.rm = T)
+
+## Creating table between Brick_Vaneer_Area and Brick_Vaneer_Type
+## To analyse relation between the two variables 
+cross_brick_analysis = table(data_complete$Brick_Veneer_Area,data_complete$Brick_Veneer_Type)
+cross_brick_analysis
+cross_brick_margin = addmargins(cross_brick_analysis)
+cross_brick_margin
+
+## Brick_Vaneer_Area and Brick_Vaneer_Type
+data_complete$Brick_Veneer_Type = as.character(data_complete$Brick_Veneer_Type)
+data_complete$Brick_Veneer_Type[is.na(data_complete$Brick_Veneer_Type)] = "None"
+
+data_complete$Brick_Veneer_Area[is.na(data_complete$Brick_Veneer_Type)] = 0
+
+## Creating table between Electrical_System and Building_Class
+## To analyse relation between the two variables 
+cross_elec_analysis = table(data_complete$Electrical_System, data_complete$Building_Class)
+cross_elec_analysis
+cross_elec_margin = addmargins(cross_elec_analysis)
+cross_elec_margin
 
 ## Selecting variables with more than 50% data values after cleaning
 
