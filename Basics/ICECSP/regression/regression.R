@@ -72,3 +72,26 @@ View(y_pred)
 
 test_pred = cbind(test,predicted = y_pred)
 View(test_pred)
+
+## Predicting the profit of startup 
+
+startups = fread("50_startups.csv")
+View(startups)
+
+split2 = sample.split(startups$Profit, SplitRatio = 0.7)
+
+train2 = startups[split2,]
+View(train2)
+
+test2 = startups[!split2,]
+View(test2)
+
+test2_clean = select(test2, -Profit)
+View(test2_clean)
+
+lreg2 = lm(formula = Profit~., data = train2)
+
+y_pred = predict(lreg2, newdata = test2_clean)
+
+test2_pred = cbind(test2, predicted = y_pred)
+View(test2_pred)
