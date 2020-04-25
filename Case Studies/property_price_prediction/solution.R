@@ -130,6 +130,9 @@ data_complete$Miscellaneous_Feature[is.na(data_complete$Miscellaneous_Feature)] 
 class(data_complete$Lot_Extent)
 data_complete$Lot_Extent[is.na(data_complete$Lot_Extent)] = median(data_complete$Lot_Extent,na.rm = T)
 
+## For variables with less than 1% missing values it is important to analyse the variables 
+## thoroughly to replace the missing values with proper replacement
+
 ## Creating table between Brick_Vaneer_Area and Brick_Vaneer_Type
 ## To analyse relation between the two variables 
 cross_brick_analysis = table(data_complete$Brick_Veneer_Area,data_complete$Brick_Veneer_Type)
@@ -149,6 +152,15 @@ cross_elec_analysis = table(data_complete$Electrical_System, data_complete$Build
 cross_elec_analysis
 cross_elec_margin = addmargins(cross_elec_analysis)
 cross_elec_margin
+
+## Electrical_System
+
+data_complete$Electrical_System = as.character(data_complete$Electrical_System)
+data_complete$Electrical_System[is.na(data_complete$Electrical_System)] = "SBrKr"
+
+data_complete_backup = data_complete
+
+data_complete = data_complete_backup
 
 ## Selecting variables with more than 50% data values after cleaning
 
@@ -193,25 +205,33 @@ data_clean_2 = select(data_clean, -colnames(data_clean[,pos]))
 View(data_clean_2)
 
 ## Splitting the dataset into test and train
-set.seed(30)
 
-split = sample.split(data_clean_2$Sale_Price, SplitRatio = 0.7)
+train = data_complete[1:ntrain,]
+vis_miss(train)
+test = data_complete[ntrain:ncomplete,]
+vis_miss(test)
 
-train = data_clean_2[split,]
-test = data_clean_2[!split,]
+## Removing Sale_Price from the test dataset
+test = select(test, -Sale_Price)
 
-## removing Sales_Price variable from test dataset
+## Improper datacleaning 
 
-test_clean = select(test, -Sale_Price)
-test_clean_2 = filter(test_clean, Exterior1st != "Stone", Roof_Quality != "R", Heating_Type!="OthW")
-test_clean_2 = filter(test_clean, Condition2 != "RRAe", Roof_Quality != "CT", Roof_Quality != "M")
+train = train[complete.cases(train),]
+test = test[complete.cases(test),]
+test = filter(test,Condition1!="NoRMD")
+test = filter(test,Condition2!="NoRMD")
+test = filter(test,Functional_Rate!="Mod")
+test = filter(test,Garage_Built_Year!="1895",Garage_Built_Year!= "1896",Garage_Built_Year!= "1919",Garage_Built_Year!= "1943",Garage_Built_Year!="1919")
+test = filter(test,Sale_Condition!="AbnoRMDl",Sale_Condition!="NoRMDal")
+
 ## fitting the model
 
 lreg = lm(formula = Sale_Price~., data = train)
 
 ## Predicting the values 
 
-y_pred = predict(lreg,newdata = test_clean_2)
+y_pred = predict(lreg,newdata = test)
+y_pred
 summary(y_pred)
 
 ## Creating a summarized view of prediction vs true value 
