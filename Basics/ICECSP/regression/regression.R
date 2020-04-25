@@ -86,12 +86,29 @@ View(train2)
 test2 = startups[!split2,]
 View(test2)
 
+## removing Profit variable from test dataset 
 test2_clean = select(test2, -Profit)
 View(test2_clean)
 
+## fitting the data 
 lreg2 = lm(formula = Profit~., data = train2)
 
+## predicting the profits 
 y_pred = predict(lreg2, newdata = test2_clean)
 
+## Comparing results 
 test2_pred = cbind(test2, predicted = y_pred)
 View(test2_pred)
+
+## looking at summary of model 
+summary(lreg2)
+## we see that only R&D is most significant 
+## and state is least significant
+
+## one by one remove variables and see how the 
+## significance of other variable changes till
+## you arrive at only those variables that are 
+## significant to fitting the data to the model 
+## and most accurately predicting the result
+## Creating a new model without state variable 
+
