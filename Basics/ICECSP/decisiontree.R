@@ -26,9 +26,6 @@ ggplot(
   )
 ) + geom_point()
 
-## Performing feature scaling
-dataset = scale(dataset)
-
 ## Split the dataset
 set.seed(10)
 split = sample.split(dataset$Salary,SplitRatio = 0.7)
@@ -37,11 +34,13 @@ train = dataset[split,]
 test = dataset[!split,]
 
 ## Fitting a decision tree model
-data =as.data.frame(dataset)
-dtree = rpart(Salary~.,data, control = rpart.control(minsplit = 1))
+dtree = rpart(formula = Salary~.,dataset, predict(dtree,newdata = data.frame(Level=seq(1,10,1))))
 
-dt_pred = predict(dtree,newdata = data.frame(Level=seq(1,10,1)))
+n = seq(1,10,1)
+testing = data.frame(Level=n)
+dt_pred = predict(dtree,newdata = testing)
 
+predict(dtree,newdata = testing)
 ## Visualizing the results
 ggplot(
   data,aes(
@@ -50,6 +49,6 @@ ggplot(
   )
 ) + geom_point() + geom_line(
   aes(
-    x=seq(1,10,1),y = dt_pred
+    x=n,y = dt_pred
   )
 )
