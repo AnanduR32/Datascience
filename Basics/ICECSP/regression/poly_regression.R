@@ -25,6 +25,7 @@ ggplot(
 dataset = dataset[2:3]
 
 ## Split the dataset
+set.seed(10)
 split = sample.split(dataset$Salary,SplitRatio = 0.7)
 
 train = dataset[split,]
@@ -53,7 +54,7 @@ dataset$Level2 = dataset$Level^2
 qreg = lm(formula = Salary~., data = dataset)
 y_pred_q = predict(qreg, dataset)
 summary(qreg)
-
+predict(qreg, newdata = data.frame(Level=11,Level2=11^2))
 ## Visualizing the results
 ggplot(
   dataset,aes(
@@ -71,7 +72,7 @@ dataset$Level3 = dataset$Level^3
 creg = lm(formula = Salary~., data = dataset)
 y_pred_c = predict(creg, dataset)
 summary(qreg)
-
+predict(qreg, newdata = data.frame(Level=11,Level2=11^2,Level3=11^3))
 ## Visualizing the results
 ggplot(
   dataset,aes(
