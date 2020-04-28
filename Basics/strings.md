@@ -1,4 +1,6 @@
-## Handing/Cleaning character strings 
+# Handing/Cleaning character strings 
+
+### Built-in
 
 * strsplit()
 
@@ -53,7 +55,33 @@
   
   We can easily subset a character vector using this command 
   
-* 
+### External package 
+
+Library:
+  ```
+  stringr
+  ```
+  
+* nchar()
+  
+  Returns the length of string
+  
+* substr()
+
+  Returns substring from a string specified start and end index. Implicitely provides whitespace between the characters 
+  
+  
+* paste()
+
+  Concatenates two strings  
+  
+* paste0() 
+
+  Concatenate without implicitely providing whitespace in between the characters.
+  
+* str_trim()
+
+  Trim the whitespaces in a string 
   
   
   
