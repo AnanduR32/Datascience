@@ -21,5 +21,4 @@
 * [Peter Skomoroch](https://delicious.com/pskomoroch/dataset)
 * [Jeff Hammerbacher](http://www.quora.com/Jeff-Hammerbacher/Introduction-to-Data-Science-Data-Sets)
 * [Gregory Piatsky-Shapiro](http://www.kdnuggets.com/gps.html)
-* [More...](http://blog.mortardata.com/posts/67652898761/6-dataset-lists-curated-by-data-scientists)
 
