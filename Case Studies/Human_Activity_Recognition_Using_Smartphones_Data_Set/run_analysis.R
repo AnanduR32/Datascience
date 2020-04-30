@@ -84,8 +84,3 @@ names(reqData) = updt_names
 baseData = melt(reqData,(id.vars=c("subject","activity")))
 secondDataSet = dcast(baseData, subject + activity ~ variable, mean)
 write.table(secondDataSet, "tidy_data.txt",row.names = F)
-
-
-
-
-
