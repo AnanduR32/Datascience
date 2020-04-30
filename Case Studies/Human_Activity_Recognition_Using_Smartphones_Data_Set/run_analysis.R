@@ -88,3 +88,4 @@ write.table(secondDataSet, "tidy_data.txt",row.names = F)
 
 ## Deleting unecessary folder
 unlink("./UCI HAR Dataset",recursive = T)
+
