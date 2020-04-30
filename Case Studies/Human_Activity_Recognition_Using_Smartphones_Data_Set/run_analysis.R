@@ -25,6 +25,7 @@ if (!file.exists('./UCI HAR Dataset')){
   download.file(fileurl,'./UCI HAR Dataset.zip', mode = 'wb')
   unzip("UCI HAR Dataset.zip", exdir = getwd())
 }
+unlink("./UCI HAR Dataset.zip")
 
 
 ## --------------------------------------- Loading necessary Datasets ------------------------------------------- ## 
@@ -84,3 +85,6 @@ names(reqData) = updt_names
 baseData = melt(reqData,(id.vars=c("subject","activity")))
 secondDataSet = dcast(baseData, subject + activity ~ variable, mean)
 write.table(secondDataSet, "tidy_data.txt",row.names = F)
+
+## Deleting unecessary folder
+unlink("./UCI HAR Dataset",recursive = T)
