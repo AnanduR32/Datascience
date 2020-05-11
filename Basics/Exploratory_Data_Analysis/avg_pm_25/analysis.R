@@ -45,3 +45,23 @@ barplot(table(pollution$region), col = "orange", main = "Number of counties in e
 
 ## Multiple boxplot
 boxplot(pm25~region, data = pollution, col = "purple")
+
+## Multiple histogram
+par(mfrow=c(2,1),mar = c(4,4,2,1))
+hist(pollution[pollution$region=="west",]$pm25, col = "green", main = "west")
+hist(pollution[pollution$region=="east",]$pm25, col = "green", main = "east")
+
+## Scatterplot
+with(pollution, plot(latitude, pm25))
+abline(h=12,lwd=3,lty=4)
+
+## Adding color based on a factor
+with(pollution, plot(latitude, pm25,col = region))
+abline(h=12,lwd=3,lty=4)
+
+## Multiple scatterplot
+par(mfrow=c(1,2),mar = c(5,4,2,1))
+with(subset(pollution, region == "west"), plot(latitude, pm25,col = region, main = "west"))
+with(subset(pollution, region == "east"), plot(latitude, pm25,col = region, main = "east"))
+
+
