@@ -8,6 +8,7 @@
 * col : The plotting color specified as a number, use colors() to see vector of colors available for use 
 * xlab : Character string for x axis label 
 * ylab : Character string for y axis label
+* type : what type of plot should be drawn (eg: "n" for nothing)
 
 ### Global graphics parameters 
 
