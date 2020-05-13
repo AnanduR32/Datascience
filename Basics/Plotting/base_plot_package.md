@@ -30,3 +30,4 @@ Specified using the par() function
 * title : Adds annotations to the x,y labels, title, subtitle, outer margin
 * mtext: Adds arbitrary text to the margins (inner or outer) of the plot
 * axis : Adding axis ticks/labels
+* legend : Add legends to plots
