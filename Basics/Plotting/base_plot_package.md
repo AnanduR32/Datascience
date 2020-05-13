@@ -19,3 +19,13 @@ Specified using the par() function
 * oma : The outer margin size 
 * mfrow : Number of plots per row,column plots are filled row-wise
 * mfcol : Number of plots per row,column, plots are filled column-wise
+
+### Base plotting functions 
+
+* plot : Make a scatterplot, or other type of plot depending on the class of the object being plotted
+* lines : Add lines to the plot, given a vector x values and corresponding vector of y values (or a 2-column matrix)
+* points : Adds points to a plot
+* text : Add text labels to the plot using specified x,y coordinates
+* title : Adds annotations to the x,y labels, title, subtitle, outer margin
+* mtext: Adds arbitrary text to the margins (inner or outer) of the plot
+* axis : Adding axis ticks/labels
