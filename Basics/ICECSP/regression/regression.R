@@ -15,9 +15,10 @@ View(data)
 ## Treating missing values 
 data$Age = as.numeric(data$Age)
 data$Salary = as.numeric(data$Salary)
-new_data = mutate(data,Age=ifelse(is.na(data$Age),mean(data$Age,rm.na=T),data$Age),Salary = ifelse(is.na(data$Salary),mean(data$Salary,rm.na=T),data$Salary))
 
-data$Salary <- ifelse(is.na(data$Salary),mean(data$Salary,rm.na=T),data$Salary)
+new_data = data
+new_data$Salary[is.na(new_data$Salary)] = round(mean(data$Salary, na.rm = TRUE),2)
+new_data$Age[is.na(new_data$Age)] = round(mean(data$Age, na.rm = TRUE),2)
 
 View(new_data)
 
