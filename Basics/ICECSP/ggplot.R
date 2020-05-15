@@ -15,20 +15,22 @@ ggplot(
 ## Changing shape of point and increasing size
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
-) + geom_point(shape=1,size=4)
+) + geom_point(shape=3,size=4)
 
 ## Adding a trend line to the plot
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
-  ) + geom_smooth(aes(group=1))
+  shape=3,size=4
+) + geom_smooth(
+  aes(group=1)
+)
 
 ## Editing the trend line to add method, color and formular
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 )
@@ -38,7 +40,7 @@ ggplot(
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 ) + geom_text(aes(label=Country))
@@ -52,7 +54,7 @@ list_country_to_select = c("India","Italy","Japan","United States",
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 ) + geom_text(
@@ -64,7 +66,7 @@ ggplot(
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 ) + geom_text(
@@ -75,7 +77,7 @@ ggplot(
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 ) + geom_text(
@@ -92,7 +94,7 @@ ggplot(
 ggplot(
   df,aes(x=CPI,y=HDI,color=Region)
 ) + geom_point(
-  shape=1,size=4
+  shape=3,size=4
 ) + geom_smooth(
   aes(group=1),method="lm",formula = y~log(x),se=F,color="red"
 ) + geom_text(
@@ -104,5 +106,4 @@ ggplot(
   name = "Human Development Index 2011 (1 - Best)", breaks = seq(0,1,0.1), limits = c(0.2,1)
 ) + ggtitle("Corruption and Human Development"
 )
-
                                     
