@@ -34,16 +34,18 @@ train = dataset[split,]
 test = dataset[!split,]
 
 ## Fitting a decision tree model
-dtree = rpart(formula = Salary~.,dataset, predict(dtree,newdata = data.frame(Level=seq(1,10,1))))
+dtree = rpart(formula = Salary~.,dataset, minsplit = 2, method = "poisson")
+summary(dtree)
+predict(dtree,newdata = data.frame(Level=seq(1,10,1)))
 
 n = seq(1,10,1)
 testing = data.frame(Level=n)
 dt_pred = predict(dtree,newdata = testing)
 
-predict(dtree,newdata = testing)
+predict(dtree, newdata = testing)
 ## Visualizing the results
 ggplot(
-  data,aes(
+  dataset,aes(
     x=Level,
     y=Salary
   )
@@ -51,4 +53,5 @@ ggplot(
   aes(
     x=n,y = dt_pred
   )
-)
+) + geom_smooth(method='loess', se=F)
+
