@@ -2,6 +2,7 @@
 library(readxl)
 library(dplyr)
 library(lubridate)
+library(glimpse)
 
 customers = read_excel("datasets/Customers.xlsx")
 
