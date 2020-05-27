@@ -1,6 +1,6 @@
 # ----------------------------- Melt and cast --------------------------------------#
 
-install.packages("reshape")
+## install.packages("reshape")
 library(reshape)
 
 View(mtcars)

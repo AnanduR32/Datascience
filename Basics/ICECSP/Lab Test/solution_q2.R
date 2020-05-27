@@ -28,11 +28,11 @@ tail(customer_final,10)
 
 ## Five-number-summery using summary function
 # To get count of categorical variables we convert them to factors
-customer_final$DOB = dmy(customer_final$DOB)
+customer_final$DOB = as.POSIXct(customer_final$DOB, format="%d-%m-%Y")
 customer_final$prod_subcat = as.factor(customer_final$prod_subcat)
 customer_final$prod_cat = as.factor(customer_final$prod_cat)
 customer_final$Store_type = as.factor(customer_final$Store_type)
-customer_final$tran_date = dmy(customer_final$tran_date)
+customer_final$tran_date = as.POSIXct(customer_final$tran_date, format="%d-%m-%Y")
 customer_final$Gender = as.factor(customer_final$Gender)
 # Answer for 5number summary and count of each category
 summary(customer_final)
@@ -60,7 +60,7 @@ plot(as.factor(customer_final$tran_date))
 plot(customer_final$Gender)
 
 ## Time period of all transaction 
-days_between = abs(customer_final$tran_date - today())
+days_between = abs(customer_final$tran_date - as.POSIXct(today()))
 customer_final = mutate(customer_final,time_period = days_between)
 View(customer_final)
 
