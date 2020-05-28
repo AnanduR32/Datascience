@@ -5,7 +5,7 @@ library(psych)
 library(caTools)
 
 ## Loading data 
-bike = read.csv("dataset4/bikeshare.csv.csv")
+bike = read.csv("datasets/bikeshare.csv")
 # Checking class if data.frame
 class(bike)
 

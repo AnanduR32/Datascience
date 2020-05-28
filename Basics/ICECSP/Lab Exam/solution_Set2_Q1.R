@@ -1,8 +1,8 @@
 ##
 library(dplyr)
-customer = read.csv("datasets/Customer Acquisition.csv.csv")
-repayment = read.csv("datasets/Repayment.csv.csv")
-spend = read.csv("datasets/spend.csv.csv")
+customer = read.csv("datasets/Customer Acquisition.csv")
+repayment = read.csv("datasets/Repayment.csv")
+spend = read.csv("datasets/spend.csv")
 
 complete = merge(customer,spend,by="Customer")
 complete = merge(complete,repayment,by = "Customer")

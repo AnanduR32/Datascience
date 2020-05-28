@@ -5,7 +5,7 @@ library(psych)
 library(caTools)
 
 ## Loading data 
-adult = read.csv("dataset4/adult_sal.csv.csv")
+adult = read.csv("datasets/adult_sal.csv")
 
 ## Checking class if data.frame
 class(adult)
