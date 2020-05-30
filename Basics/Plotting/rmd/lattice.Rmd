@@ -4,7 +4,6 @@ author: "Anandu R"
 output:
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 # Basics
@@ -18,9 +17,6 @@ airquality = transform(airquality, Month = factor(Month))
 xyplot(Ozone~Wind, data = airquality)
 ```  
 
-&nbsp;
-&nbsp;
-&nbsp;
 
 ## Using xyplot to create separate scatter plots of Ozone vs Wind for each month
 
