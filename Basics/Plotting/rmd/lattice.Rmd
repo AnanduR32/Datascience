@@ -28,3 +28,39 @@ airquality = transform(airquality, Month = factor(Month))
 xyplot(Ozone~Wind | Month, data = airquality, layout = c(5,1))
 ```
 
+We infer from the above plot that the relationship between Ozone and Wind changes across the months, July and August display a strong relationship - negative relationship, where Ozone level decreases with increase in Wind levels  
+
+Lattice graphics objects return a plot object **trellis** which is autoprinted by the R, so it appears the function itself is plotting the data as in Base plot system.
+
+## Lattice Panel Functions 
+
+It is possible to add custom features to the panels in lattice plot by specifying the panel argument assigning a function to it.
+
+```{r}
+
+library(datasets)
+library(lattice)
+airquality = transform(airquality, Month = factor(Month))
+xyplot(Ozone~Wind | Month, data = airquality, layout = c(5,1), panel = function(x, y, ...){
+  panel.xyplot(x, y, ...)
+  panel.abline(v = median(x), lty = 2)
+})
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
