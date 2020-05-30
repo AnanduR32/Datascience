@@ -1,0 +1,33 @@
+---
+title: "Lattice Plotting System"
+author: "Anandu R"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+# Basics
+
+## Using xyplot to create a scatter plot Ozone vs Wind 
+
+```{r}
+library(datasets)
+library(lattice)
+airquality = transform(airquality, Month = factor(Month))
+xyplot(Ozone~Wind, data = airquality)
+```  
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+## Using xyplot to create separate scatter plots of Ozone vs Wind for each month
+
+```{r}
+library(datasets)
+library(lattice)
+airquality = transform(airquality, Month = factor(Month))
+xyplot(Ozone~Wind | Month, data = airquality, layout = c(5,1))
+```
+
