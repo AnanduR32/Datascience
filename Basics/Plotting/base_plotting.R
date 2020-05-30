@@ -34,3 +34,6 @@ with(airquality,{
   plot(Temp, Ozone, main = "Ozone and Temperature")
   mtext("Ozone and Weather in New York City", outer = T)
 })
+
+## The par() function is used to specify global graphics parameters that affect all plots in an R session. 
+## Use dev.off or plot.new to reset to the defaults.
