@@ -32,6 +32,20 @@ We infer from the above plot that the relationship between Ozone and Wind change
 
 Lattice graphics objects return a plot object **trellis** which is autoprinted by the R, so it appears the function itself is plotting the data as in Base plot system.
 
+&nbsp;  
+
+&nbsp;  
+
+&nbsp;  
+
+&nbsp;  
+
+&nbsp;  
+
+&nbsp;  
+
+&nbsp;
+
 ## Lattice Panel Functions 
 
 It is possible to add custom features to the panels in lattice plot by specifying the panel argument assigning a function to it.
@@ -46,15 +60,23 @@ xyplot(Ozone~Wind | Month, data = airquality, layout = c(5,1), panel = function(
   panel.abline(v = median(x), lty = 2)
 })
 
-```
+```  
 
+## Adding regression line panel function 
 
+```{r}
 
+library(datasets)
+library(lattice)
+airquality = transform(airquality, Month = factor(Month))
+xyplot(Ozone~Wind | Month, data = airquality, layout = c(5,1), panel = function(x, y, ...){
+  panel.xyplot(x, y, ...)
+  panel.lmline(x, y, col = "Violet")
+})
 
+```  
 
-
-
-
+Lattice plots are ideal for creating conditional plots where you examine the same kind of plot under different conditions (A factor variable within the dataset)
 
 
 
