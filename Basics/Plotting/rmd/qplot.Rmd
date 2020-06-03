@@ -1,0 +1,45 @@
+---
+title: "qplot"
+author: "Anandu R"
+date: "6/2/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Visualizing the mtcars dataset using ggplot's qplot function
+
+Importing necessary libraries 
+
+```{r}
+invisible(library(ggplot2))
+invisible(library(datasets))
+```
+
+Modifying dataset  before plotting
+
+```{r}
+str(mtcars)
+```
+
+Converting cyl variable to factor
+
+```{r}
+mtcars$cyl = factor(mtcars$cyl)
+```
+
+
+Plotting the mpg (Miles per gallon) against weight, subsetting by number of cylinders
+
+```{r}
+qplot(mpg,wt,data = mtcars,color = cyl)
+```
+
+Plotting a histogram to analyse the mpg (miles per gallon)
+
+```{r}
+qplot(mpg,data= mtcars,fill = cyl)
+```
+
