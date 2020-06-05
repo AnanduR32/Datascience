@@ -37,9 +37,22 @@ Plotting the mpg (Miles per gallon) against weight, subsetting by number of cyli
 qplot(mpg,wt,data = mtcars,color = cyl)
 ```
 
+## Histograms 
+
 Plotting a histogram to analyse the mpg (miles per gallon)
 
 ```{r}
-qplot(mpg,data= mtcars,fill = cyl)
+qplot(mpg,data= mtcars,fill = cyl,bins = 20)
 ```
 
+## geom loess function
+
+Adding a geom to the plot 
+
+```{r}
+qplot(mpg,wt,data = mtcars,geom = c("point","smooth"))
+```
+
+## Facets 
+
+Creating facets, which are essentially panels in ggplot, where plots are put in panels based on a factor variable
