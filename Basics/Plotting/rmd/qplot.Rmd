@@ -56,3 +56,13 @@ qplot(mpg,wt,data = mtcars,geom = c("point","smooth"))
 ## Facets 
 
 Creating facets, which are essentially panels in ggplot, where plots are put in panels based on a factor variable
+
+```{r}
+qplot(mpg,wt,data = mtcars, facets = .~cyl)
+```
+
+
+```{r}
+qplot(mpg,data= mtcars,facets = cyl~.,bins = 20)
+
+```

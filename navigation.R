@@ -11,3 +11,6 @@ setwd("Basics")
 
 # Navigate to plotting
 setwd("Basics/Plotting/rmd")
+
+## Rendering to PDF - rmarkdown
+rmarkdown::render("ggplot.Rmd",output_file = "../pdf/ggplot.pdf")

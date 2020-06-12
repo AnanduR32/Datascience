@@ -1,0 +1,69 @@
+---
+title: "ggplot"
+author: "Anandu R"
+date: "6/9/2020"
+output: pdf_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Basic components of ggplot2 Plot 
+- A **data frame**
+- **aesthetic mappings**: How data are mapped to color, size.
+- **geoms**: Geometric objects like points, lines, shapes.
+- **facets**: For conditional plots 
+- **stats**: statistical transformations like binning, quantiles, smoothing.
+- **scales**: What scale an aesthetic map uses(example, male = red, female = blue)
+- **coordinate system**
+
+## Making basic plot 
+
+Importing necessary libraries 
+
+```{r}
+invisible(library(ggplot2))
+data = mtcars
+```
+
+Creating plot object 
+
+```{r}
+plot = ggplot(
+  data, aes(
+    x = wt,
+    y = mpg
+  )
+)
+plot
+```
+
+The graph page has been made, but no data has been plotted on the graph yet, we need to specify the data 
+
+```{r}
+plot = plot + geom_point()
+plot
+```
+
+Adding a smoother 
+
+```{r}
+plot + geom_smooth()
+```
+
+The above smoother is by default method = "loess", using a linear model - lm smoother 
+
+```{r}
+plot + geom_smooth(method = "lm", se = F)
+```
+
+Adding facets 
+
+```{r}
+plot + facet_grid(.~cyl) + geom_smooth(method = "lm",se = F)
+```
+
+## Annotations 
+
+- Labels: xlab(), ylab(), ggtitle)(
