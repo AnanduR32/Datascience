@@ -135,28 +135,42 @@ testplot + geom_line() + coord_cartesian(ylim = c(-3,3))
 In mnay cases we'd be required to plot by conditioning continous variables, there are several ways to go about this, one method is to categorise the varaible into reasonable series of ranges, we use the cut() function for this purpose 
 
 ```{r}
-cutpoints = quantile(data$hp, seq(0,1,length = 4), na.rm = T)
-data$hp_cutlevels = cut(data$hp, cutpoints)
-levels(data$hp_cutlevels)
+data_weather = nycflights13::weather
+data_weather$month = factor(data_weather$month)
+cutpoints_1 = quantile(data_weather$humid, seq(0,1,length = 4), na.rm = T)
+cutpoints_2 = quantile(data_weather$day, seq(0,1,length = 3), na.rm = T)
+data_weather$humid_levels = cut(data_weather$humid, cutpoints_1)
+data_weather$hour_levels = cut(data_weather$hour, cutpoints_2)
+levels(data_weather$humid_levels)
+levels(data_weather$hour_levels)
 ```
 
 Cleaning up the variable 
 
 ```{r}
-lev_hp = levels(data$hp_cutlevels)
-data$hp_cutlevels = factor(data$hp_cutlevels, levels = lev_hp, labels = c("low","med","high"))
-levels(data$hp_cutlevels)
+lev_humid = levels(data_weather$humid_levels)
+lev_hour = levels(data_weather$hour_levels)
+data_weather$humid_levels = factor(data_weather$humid_levels, levels = lev_humid, labels = c("low","med","high"))
+data_weather$hour_levels = factor(data_weather$hour_levels, levels = lev_hour, labels = c("day","night"))
+levels(data_weather$humid_levels)
+levels(data_weather$hour_levels)
 ```
 
 Plotting the data 
 
 ```{r}
-plot + geom_point(
+ggplot(
+  data_weather[complete.cases(data_weather[-11]),],
+  aes(
+    x = temp,
+    y = dewp
+  )
+) + geom_point(
   alpha = 0.5
 ) + facet_wrap(
-  data$hp_cutlevels~data$cyl, 
-  nrow = 3, 
-  ncol = 4
+  hour_levels~humid_levels,
+  nrow = 2, 
+  ncol = 3
 ) + geom_smooth(
   method = "lm",
   se = F,
@@ -167,5 +181,10 @@ plot + geom_point(
   y = "Mileage"
 )
 ```
-Since there is so few data, not all facets were populated 
+
+Cleaning up data 
+
+```{r}
+
+```
 
