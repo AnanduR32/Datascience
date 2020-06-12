@@ -42,28 +42,130 @@ plot
 The graph page has been made, but no data has been plotted on the graph yet, we need to specify the data 
 
 ```{r}
-plot = plot + geom_point()
-plot
+plot + geom_point()
 ```
 
 Adding a smoother 
 
 ```{r}
-plot + geom_smooth()
+plot + geom_point() + geom_smooth()
 ```
 
 The above smoother is by default method = "loess", using a linear model - lm smoother 
 
 ```{r}
-plot + geom_smooth(method = "lm", se = F)
+plot + geom_point() + geom_smooth(method = "lm", se = F)
 ```
 
 Adding facets 
 
 ```{r}
-plot + facet_grid(.~cyl) + geom_smooth(method = "lm",se = F)
+plot + geom_point() + facet_grid(.~cyl) + geom_smooth(method = "lm",se = F)
 ```
 
 ## Annotations 
 
-- Labels: xlab(), ylab(), ggtitle)(
+- Labels: xlab(), ylab(), ggtitle()
+- Two standard themes 
+  - theme_gray() - default
+  - theme_bw()
+  
+```{r}
+plot + geom_point(size = 4,color = "steelblue", alpha = 0.5)
+```
+
+```{r}
+plot + geom_point(aes(color = factor(cyl)),size = 4, alpha = 0.5)
+```
+
+Custom colors 
+
+```{r}
+colors <- c("4" = "#D9717D", "6" = "#4DB6D0", "8" = "#BECA55")
+plot + geom_point(aes(color = factor(cyl)),size = 4, alpha = 0.5) + scale_color_manual(values = colors)
+```
+
+Adding labels 
+
+```{r}
+plot + geom_point(aes(color = factor(cyl)),size = 4, alpha = 0.5) + labs(title = "Weight - Mileage Distribution", x = "weight", y = "mileage per gallon")
+```
+
+## Dealing with scaling and cartesian coordinates
+
+To create a line plot to analyse outlier within data 
+```{r}
+testdata = data.frame(x = 1:100, y = rnorm(100))
+testdata[50,2] = 100
+plot(testdata$x,testdata$y, type = "l")
+```
+
+To only look at the regular data using the base plot function 
+
+```{r}
+plot(testdata$x,testdata$y, type = "l", ylim = c(-3,3))
+```
+
+In case of ggplot adding the ylim() function to the plot first subsets the data to only include points within limit and then plot the data
+
+- The original data: 
+```{r}
+testplot = ggplot(
+  testdata,
+  aes(x = x,
+      y = y)
+)
+testplot + geom_line()
+```
+
+- adding ylim()
+
+```{r}
+testplot + geom_line() + ylim(-3,3)
+```
+
+We can clearly see the data at x = 50 is missing, to solve this we add coord_cartesian() instead of ylim() directly
+
+```{r}
+testplot + geom_line() + coord_cartesian(ylim = c(-3,3))
+```
+
+## Dealing with continous variables during plot 
+
+In mnay cases we'd be required to plot by conditioning continous variables, there are several ways to go about this, one method is to categorise the varaible into reasonable series of ranges, we use the cut() function for this purpose 
+
+```{r}
+cutpoints = quantile(data$hp, seq(0,1,length = 4), na.rm = T)
+data$hp_cutlevels = cut(data$hp, cutpoints)
+levels(data$hp_cutlevels)
+```
+
+Cleaning up the variable 
+
+```{r}
+lev_hp = levels(data$hp_cutlevels)
+data$hp_cutlevels = factor(data$hp_cutlevels, levels = lev_hp, labels = c("low","med","high"))
+levels(data$hp_cutlevels)
+```
+
+Plotting the data 
+
+```{r}
+plot + geom_point(
+  alpha = 0.5
+) + facet_wrap(
+  data$hp_cutlevels~data$cyl, 
+  nrow = 3, 
+  ncol = 4
+) + geom_smooth(
+  method = "lm",
+  se = F,
+  col = "steelblue"
+) + labs(
+  title = "Weight - Mileage Distribution",
+  x = "Weight",
+  y = "Mileage"
+)
+```
+Since there is so few data, not all facets were populated 
+
