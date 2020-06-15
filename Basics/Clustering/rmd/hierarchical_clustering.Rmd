@@ -1,0 +1,56 @@
+---
+title: "ggplot"
+author: "Anandu R"
+date: "6/15/2020"
+output: pdf_document
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Heirarchical Clustering 
+
+Illustrating clusters 
+
+```{r}
+set.seed(96)
+x = rnorm(12, mean = rep(1:3, each = 4), sd = 0.2)
+y = rnorm(12, mean = rep(c(1,2,1),each = 4), sd = 0.2)
+plot(x, y, col = "orange", pch = 19,cex = 1.5)
+text(x+0.05, y+0.05, labels = as.character(1:12))
+```
+
+### Step 1
+
+Find the pairwise distance between each points using the dist() function
+
+```{r}
+data = data.frame(x,y)
+distxy = dist(data)
+distxy
+```
+
+### Step 2
+
+Heirarchical Clustering using hclust()
+
+```{r}
+hClustering = hclust(distxy)
+plot(hClustering)
+```
+
+Using a custom function to plot the clusters 
+
+```{r}
+myplclust(hClustering, lab = rep(1:3, each = 4), lab.col = rep(2:4, each = 4))
+```
+
+## Using the heatmap function to derive correlation between points in data 
+
+Inorder to be able to organise the data with some logical way 
+```{r}
+dataAsMatrix = as.matrix(data)[sample(1:12),]
+heatmap(dataAsMatrix)
+```
+
