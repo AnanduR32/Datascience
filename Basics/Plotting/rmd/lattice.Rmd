@@ -2,6 +2,8 @@
 title: "Lattice Plotting System"
 author: "Anandu R"
 output:
+  html_document:
+    df_print: paged
   pdf_document:
     highlight: tango
 ---

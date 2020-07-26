@@ -2,7 +2,9 @@
 title: "ggplot"
 author: "Anandu R"
 date: "6/15/2020"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
   
   ```{r setup, include=FALSE}
