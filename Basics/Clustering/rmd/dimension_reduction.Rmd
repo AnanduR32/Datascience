@@ -1,5 +1,5 @@
 ---
-title: "ggplot"
+title: "Dimension Reduction"
 author: "Anandu R"
 date: "6/15/2020"
 output: html_document

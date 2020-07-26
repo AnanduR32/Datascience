@@ -1,0 +1,55 @@
+---
+title: "Face Data Analysis"
+author: "Anandu R"
+date: "6/15/2020"
+output: html_document
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Face Data Analysis
+Loading the data 
+```{r}
+load("face.rda")
+image(t(faceData)[,nrow(faceData):1])
+```
+# Running SVD
+
+```{r}
+svdFace = svd(scale(faceData))
+plot(svdFace$d^2/sum(svdFace$d^2),pch = 19,xlab = "Singular vector", ylab = "Variance Explained")
+```
+We observe that almost 40% of the variation is explained by the first singular vector, and almost all of the variation in the data is explained by the first 5 singular vectors 
+
+We now use matrix multiplication to create an approximation of the face data with fewer components, preferably by using just the first 5 singular vectors 
+
+```{r}
+approx1 = svdFace$u[,1] %*% t(svdFace$v[,1]) * svdFace$d[1]
+approx3 = svdFace$u[,1:3] %*% diag(svdFace$d[1:3]) %*% t(svdFace$v[,1:3])  
+approx5 = svdFace$u[,1:5] %*% diag(svdFace$d[1:5]) %*% t(svdFace$v[,1:5])  
+approx9 = svdFace$u[,1:9] %*% diag(svdFace$d[1:9]) %*% t(svdFace$v[,1:9])  
+```
+
+The above variables are approximation of the original face data using number of components as specified by the suffixed number 
+
+Visualising and comparing the approximation with original data
+```{r}
+par(mfrow = c(1,3))
+image(t(approx1)[, nrow(approx1):1], main = "1 vector")
+image(t(approx5)[, nrow(approx5):1], main = "5 vectors")
+image(t(faceData)[, nrow(faceData):1], main = "Original data")
+```
+
+Comparing the gain/loss in details for various number of singular vectors used
+```{r}
+par(mfrow = c(1,3))
+image(t(approx3)[, nrow(approx3):1], main = "3 vectors")
+image(t(approx5)[, nrow(approx5):1], main = "5 vectors")
+image(t(approx9)[, nrow(approx9):1], main = "9 vectors")
+```
+
+
+
+
