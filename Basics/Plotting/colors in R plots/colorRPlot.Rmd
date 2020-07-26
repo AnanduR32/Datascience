@@ -1,0 +1,121 @@
+---
+title: "Colors in R plots"
+output: html_document
+---
+
+importing the grDevices package components - colorRamp and colorRampPalette
+```{r}
+if(!require(grDevices)){
+  install.packages("grDevices")
+}
+library(grDevices)
+```
+
+colorRamp: Take a palette of colors and return a function that takes values between 0 and 1, indicating the extremes of the color palette (e.g. see the 'gray function) 
+colorRampPalette: Take a palette of colors and return a function that takes integer arguments and returns a vector of colors interpolating the palette (like heat.colors or topo.colors)
+
+Creating a palette using blue and red to understand the colorRamp function
+```{r}
+pal = colorRamp(c("blue","red"))
+```
+
+The function pal now can be used to create colors using the two blotches blue and red
+pal(1) returns the color blue
+```{r}
+pal(1)
+```
+Whereas pal(0) returns color red
+```{r}
+pal(0)
+```
+and similarly pal(0.5) returns purple, the color inbetween red and blue, or the color obtained by mixing the blotches red and blue
+```{r}
+pal(0.5)
+```
+Thus we can obtain various colors, with varying degree of the color blotches in the palette specified 
+```{r}
+pal(seq(0,1,length = 10))
+```
+
+The colorRampPalette works in similar way, but it returns a function that can be used to generate n number of colors using the color blotches specified 
+```{r}
+pal = colorRampPalette(c("blue","red"))
+```
+
+colorRampPalette(2) returns the two colors specified in the color blotch list
+```{r}
+pal(2)
+```
+
+and so on, passing any arbitray number to the function generates n colors that can be obtained by proportionately varying the intensity of the colors listed 
+```{r}
+pal(10)
+```
+pal(3) returns 3 colors, where the middle color represents purple
+```{r}
+pal(3)
+```
+
+The RColorBrewer package on CRAN contains interesting and useful color palettes 
+```{r}
+if(!require(RColorBrewer)){
+  install.packages("RColorBrewer")
+}
+library(RColorBrewer)
+```
+
+There are three types of palettes available:
+- Sequential : Used for data that are ordered, numeric or continuous data
+- Diverging : Used for data that deviate or diverge 
+- Qualitative : Used for data that are not ordered, they can be factors or discrete data 
+
+The palette information can be used in conjunction with the colorRamp() and colorRampPalette() functions 
+
+Usage: 
+
+brewer.pal() function is used to return the colors we need for our purpose
+it takes two arguments: an integer value which specifes the number of colors we want the function to return 
+and, a string to specify the palette from which we want to extract the colors 
+The names of various palettes can be obtained from the help page of brewer.pal() function
+
+```{r}
+cols = brewer.pal(3, "BuGn")
+cols
+```
+And then we use these colors to generate our custom color using the colorRamp() or colorRampPalette() functions
+```{r}
+pal = colorRamp(cols)
+pal(0.4)
+```
+```{r}
+pal = colorRampPalette(cols)
+pal(6)
+```
+
+Using the pal() to plot the volcano dataset 
+```{r}
+image(volcano, col = pal(20))
+```
+
+The smoothscatter function is used to plot a scatterplot of a lot of datapoints, the points are blended together to get an abstract image representation of the data, we can use custom palettes here to make the plots look better
+
+general scatter plot: 
+```{r}
+set.seed(10)
+x = rnorm(1000)
+y = rnorm(1000)
+plot(x,y)
+```
+smoothscatter(): 
+```{r}
+smoothScatter(x,y)
+```
+
+
+Colors can also be generated using the rgb function, by specifying the proportions of red, blue and green.
+The transparency can be altered by specifying a value for the "alpha" parameter 
+
+```{r}
+plot(x,y,col = rgb(0,0,0,0.2),pch = 19)
+```
+
