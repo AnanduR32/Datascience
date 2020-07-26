@@ -50,6 +50,12 @@ image(t(approx5)[, nrow(approx5):1], main = "5 vectors")
 image(t(approx9)[, nrow(approx9):1], main = "9 vectors")
 ```
 
+Thus we can use SVD for data compression to store lower quantity of data, and can also be used to summarise the data whenever necessary 
+For finding lower dimensional representation that explains most of the variation in the data. 
+Alternatives: 
+- Factor Analysis
+- Independent Component Analysis
+- Latent Semantics Analysis
 
 
 
