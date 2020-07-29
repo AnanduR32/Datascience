@@ -11,7 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Dimension Reduction
 
-Principal component analysis (PCA) and singular value decomposition (SVD) are commonly used dimensionality reduction approaches in exploratory data analysis (EDA) and Machine Learning. They are both classical linear dimensionality reduction methods that attempt to find linear combinations of features in the original high dimensional data matrix to construct meaningful representation of the dataset.
+Principal component analysis (PCA) and singular value decomposition (SVD) are
+commonly  used dimensionality reduction approaches in exploratory data analysis 
+(EDA) and Machine Learning. They are both classical linear dimensionality
+reduction methods that attempt to find linear combinations of features in the 
+original high dimensional data matrix to construct meaningful representation of
+the dataset.
+
+In SVD, LEFT singular vector is associated with the ROW means of the clustered 
+data whereas the first RIGHT singular vector and it's associated with the COLUMN
+means of the clustered data.
 
 # Illustrating clusters 
 
@@ -25,7 +34,8 @@ text(x+0.05, y+0.05, labels = as.character(1:12))
 
 # Missing values
 
-It is imporatant to deal with missing values when working with SVD, since error occurs if our data contains any sort of missing value. 
+It is imporatant to deal with missing values when working with SVD, since error 
+occurs if our data contains any sort of missing value. 
 
 One way to deal with errors is to use built-in R function 'impute()'
 
@@ -40,7 +50,8 @@ dataAsMatrix = as.matrix(data)[sample(1:12),]
 image(t(dataAsMatrix)[,nrow(dataAsMatrix):1],yaxt = "n")
 ```
 
-Creating new object 'dataMatrixOrdered' - data ordered according to the hierarchical clusters.
+Creating new object 'dataMatrixOrdered' - data ordered according to the
+hierarchical clusters.
 ```{r}
 library(dplyr)
 hh <- dist(dataAsMatrix) %>% hclust
@@ -49,7 +60,8 @@ image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1],yaxt = "n")
 ```
 
 
-Loading the necessary impute package, to impute the missing values to perform dimension reduction
+Loading the necessary impute package, to impute the missing values to perform
+dimension reduction
 
 ```{r}
 if(!require(impute)){
@@ -60,7 +72,9 @@ if(!require(impute)){
 ```
 
 # Imputing 
-This function uses K-nearest neighbours and imputes missing value to a row with the value of the nearest neighbour
+This function uses K-nearest neighbours and imputes missing value to a row with
+the value of the nearest neighbour
+
 ```{r}
 set.seed(19)
 library(impute)

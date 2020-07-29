@@ -11,7 +11,7 @@ library(reshape2)
 setwd_future = getwd()
 
 ## Navigating to project directory
-setwd("Case Studies/Human_Activity_Recognition_Using_Smartphones_Data_Set")
+setwd("Case Studies/Human_Activity_Recognition_Using_Smartphones_Data_Set/Cleaning")
 
 ## Saving location of project directory
 setwd_UCI_HAR = getwd()

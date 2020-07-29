@@ -1,0 +1,57 @@
+---
+title: "EDA Human Activity Analysis using Smartphone Dataset"
+author: "Anandu R"
+date: "7/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Setting proper Working directory for the project 
+```{r}
+## Saving main directory path
+setwd_future = getwd()
+
+## Navigating to project directory
+setwd(
+  "Case Studies/Human_Activity_Recognition_Using_Smartphones_Data_Set/Cleaning"
+  )
+
+## Saving location of project directory
+setwd_UCI_HAR = getwd()
+
+```
+
+# EDA Human Activity Analysis using Smartphone Dataset
+
+The dataset has information on various sensors on mobilephone, the dataset has
+been split into training(70%) and testing(30%), with activities manually 
+labelled with the associated activity and subject under consideration in the 
+training dataset.
+
+We use this data to predict the activity of the user based on readings from the 
+mobile sensors
+
+# Loading the data 
+```{r}
+fileUrl = 
+  "http://archive.ics.uci.edu/ml/machine-learning-databases/00240/UCI%20HAR%20Dataset.zip"
+
+if (!file.exists('./UCI HAR Dataset')){
+  download.file(fileUrl,'./UCI HAR Dataset.zip', mode = 'wb')
+  unzip("UCI HAR Dataset.zip", exdir = getwd())
+}
+unlink("./UCI HAR Dataset.zip")
+unlink("./__MACOSX",recursive = T)
+```
+
+
+
+# Deleting unecessary folder
+```{r}
+unlink("./UCI HAR Dataset",recursive = T)
+```
+
+
