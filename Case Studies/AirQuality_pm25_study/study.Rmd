@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 fileUrl2012 = "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_2012.zip"
 fileUrl1999 = "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_1999.zip"
-if(!file.exists('./annual_conc_by_monitor_2012.csv')&&!file.exists('./annual_conc_by_monitor_1999.csv')){
+if(!file.exists('./data_1999.csv')&&!file.exists('./data_2012.csv')){
   download.file(fileUrl1999,"./data_1999.zip")
   download.file(fileUrl2012,"./data_2012.zip")
   unzip("data_2012.zip", exdir = getwd())
@@ -39,5 +39,10 @@ par_code = grep("PM2.5",data_1999$Parameter.Name)[1]
 par_code = data_1999$Parameter.Code[par_code]
 ```
 
+## Deleting files after completion
+```{r}
+unlink("data_1999.csv")
+unlink("data_2012.csv")
+```
 
 
