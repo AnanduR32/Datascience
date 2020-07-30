@@ -9,49 +9,148 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Setting proper Working directory for the project 
-```{r}
-## Saving main directory path
-setwd_future = getwd()
-
-## Navigating to project directory
-setwd(
-  "Case Studies/Human_Activity_Recognition_Using_Smartphones_Data_Set/Cleaning"
-  )
-
-## Saving location of project directory
-setwd_UCI_HAR = getwd()
-
-```
-
 # EDA Human Activity Analysis using Smartphone Dataset
 
-The dataset has information on various sensors on mobilephone, the dataset has
+The dataset has information on various sensors on mobile phone, the data set has
 been split into training(70%) and testing(30%), with activities manually 
 labelled with the associated activity and subject under consideration in the 
-training dataset.
+training data set.
 
 We use this data to predict the activity of the user based on readings from the 
 mobile sensors
 
 # Loading the data 
+
+Downloading
 ```{r}
 fileUrl = 
-  "http://archive.ics.uci.edu/ml/machine-learning-databases/00240/UCI%20HAR%20Dataset.zip"
-
-if (!file.exists('./UCI HAR Dataset')){
-  download.file(fileUrl,'./UCI HAR Dataset.zip', mode = 'wb')
-  unzip("UCI HAR Dataset.zip", exdir = getwd())
+  "https://spark-public.s3.amazonaws.com/dataanalysis/samsungData.rda"
+if (!file.exists('./samsungData.rda')){
+  download.file(fileUrl,'./samsungData.rda')
 }
-unlink("./UCI HAR Dataset.zip")
-unlink("./__MACOSX",recursive = T)
 ```
 
+Loading
+```{r}
+load("samsungData.rda")
+```
+
+# Exploring the data 
+
+```{r}
+head(samsungData)
+```
+```{r}
+names(samsungData)[seq(1,ncol(samsungData),by = 3)]
+```
+Clean variable names
+```{r}
+data <- samsungData
+variableNames = c(names(samsungData))
+cleanVariableNames <- c(paste0("v",c(1:561)),"subject","activity")
+names(data) <- cleanVariableNames
+```
+
+# Exploratory Analysis 
+
+## Plotting average acceleration for first subject 
+```{r}
+par(mfrow=c(1,2),mar = c(5,4,1,1))
+# Change Activity variable to factor
+data = transform(data, activity = factor(activity))
+sub1 = subset(data, subject == 1)
+plot(sub1[,1],col = sub1$activity, ylab=variableNames[1])
+plot(sub1[,2],col = sub1$activity, ylab=variableNames[2])
+legend("bottomright", legend=unique(sub1$activity),col = unique(sub1$activity),pch =1)
+```
+## Clustering the data on average acceleration
+
+Average acceleration data is stored in the first 3 columns/variables v1-v3
+```{r}
+source("myplclust.R")
+distMatrix = dist(sub1[,1:3])
+hclustering = hclust(distMatrix)
+myplclust(hclustering, lab.col = c(unclass(sub1$activity)))
+```
+## Plotting max acceleration for first subject 
+```{r}
+par(mfrow=c(1,2),mar = c(5,4,1,1))
+plot(sub1[,10],col = sub1$activity, ylab=variableNames[10])
+plot(sub1[,11],col = sub1$activity, ylab=variableNames[11])
+```
+
+## Clustering the data on max acceleration
+
+Average acceleration data is stored in the first 3 columns/variables v1-v3
+```{r}
+source("myplclust.R")
+distMatrix = dist(sub1[,10:12])
+hclustering = hclust(distMatrix)
+myplclust(hclustering, lab.col = c(unclass(sub1$activity)))
+```
+
+## Performing Singular Value Decomposition 
+
+```{r}
+svd1 = svd(sub1[,-c(562,563)])
+par(mfrow=c(1,3),mar = c(5,4,1,1))
+plot(svd1$u[,1], col = sub1$activity, pch =19)
+plot(svd1$u[,2], col = sub1$activity, pch =19)
+plot(svd1$u[,3], col = sub1$activity, pch =19)
+```
+In the first left singular vector the moving activities have been separated from 
+the stationary activities,the second singular vector doesn't seem to be all that 
+different from the first but is definitely much better than the first left 
+singular vector to separate the moving category from the stationary, whereas in 
+the third singular vector we observe that the magenta color-coded activity 
+distinguishly separated from the rest of theactivity.
+
+Therefore we examine the Second third singular vector to find out the variable
+which contributes most to this peculiar behaviour.
+
+Inorder to do so we examine the corresponding right singular vector - the second 
+and third right singular vectors
+```{r}
+par(mfrow=c(1,2),mar = c(5,4,1,1))
+plot(svd1$v[,2],pch=19)
+plot(svd1$v[,3],pch=19)
+```
+
+We use the which.max function to locate the index which has maximum value for 
+the singular vectors 2 and 3 respectively.
+```{r}
+maxCon = c(which.max(svd1$v[,2]),which.max(svd1$v[,3]))
+variableNames[maxCon]
+```
+Upon inspection the variable in question are the "tBodyGyroJerkMag-entropy()" 
+that influences the second singular vector the most, and "fBodyAcc-kurtosis()-Z" 
+for the third similarly.
+
+And now, we can use these values along with the original 3 max acceleration 
+variables to cluster the data
+
+```{r}
+distMatrix = dist(sub1[,c(10:12,maxCon)])
+hclustering = hclust(distMatrix)
+myplclust(hclustering, lab.col = c(unclass(sub1$activity)))
+```
+Compared to the initial clustering, Within the moving category there 
+is better separation between the sub-categories, albiet just within the moving 
+category, we need to perform further analysis to find the variable that can 
+be used to separate the sub-category of activities within the stationary 
+category.
+
+## Employing K-Means clustering to cluster the data into the various activies.
+First try basis clustering
+```{r}
+kClust = kmeans(sub1[,-c(562,563)],centers = 6, nstart = 250)
+table(kClust$cluster,sub1$activity)
+```
 
 
 # Deleting unecessary folder
 ```{r}
-unlink("./UCI HAR Dataset",recursive = T)
+unlink("./samsungData.rda")
 ```
 
 
