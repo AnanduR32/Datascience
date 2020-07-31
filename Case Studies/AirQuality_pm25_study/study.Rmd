@@ -2,7 +2,9 @@
 title: "Air Quality PM2.5 Case Study"
 author: "Anandu R"
 date: "7/30/2020"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -35,7 +37,8 @@ tryCatch(
       if(file.exists('./data_1999.csv')){
         print("The file \"data_1999.csv\" already exists!")
       }else{
-        print("Some error occured while trying to rename the file \"annual_conc_by_monitor_1999.csv\" to \"data_1999.csv\"!")
+        print("Some error occured while trying to rename the file 
+              \"annual_conc_by_monitor_1999.csv\" to \"data_1999.csv\"!")
       }
     }
   )
@@ -48,7 +51,8 @@ tryCatch(
       if(file.exists('./data_1999.csv')){
         print("The file \"data_2012.csv\" already exists!")
       }else{
-        print("Some error occured while trying to rename the file \"annual_conc_by_monitor_2012.csv\" to \"data_2012.csv\"!")
+        print("Some error occured while trying to rename the file 
+              \"annual_conc_by_monitor_2012.csv\" to \"data_2012.csv\"!")
       }
     }
   )
