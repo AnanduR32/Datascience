@@ -52,7 +52,10 @@
   Returns logical vector indicating wherever search item is located.
   
   We can easily subset a character vector using this command 
-  
+
+* make.names()
+
+  Returns a string or  the list of string of a character vector wherein all the strings are made into valid column names by replacing the space with '.' for easier access to data.
 ### External package 
 
 Library:
