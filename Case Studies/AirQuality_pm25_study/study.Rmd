@@ -158,15 +158,73 @@ sapply(split(m_NY_1999, m_NY_1999$County.Site),nrow)
 sapply(split(m_NY_2012, m_NY_2012$County.Site),nrow)
 
 ```
-Picking the county.site combination 1.5 i.e county 1, and site 5 within that 
-county.
+We could pick the county.site combination 1.5 i.e county 1, and site 5 within 
+that county but there is so few observations in each combination of county-site, 
+therefore we shall consider every common County.Site for our analysis.
 
 ```{r}
-m_1999 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
-m_2012 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
+## Originally we were supposed to do the following
+## m_1999 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
+## m_2012 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
+
+## But due to lack of observations we proceed with selecting every common
+## monitors in New York City
+m_1999 = m_NY_1999
+m_2012 = m_NY_2012
 ```
 
+Creating a timeseries analysis for the data 
+```{r}
+pm_1999 = m_1999$X1st.Max.Value
+pm_2012 = m_2012$X1st.Max.Value
+date_1999 = as.Date(m_1999$X1st.Max.DateTime)
+date_2012 = as.Date(m_2012$X1st.Max.DateTime)
+par(mfrow = c(1,2), mar = c(5,4,1,1))
+rng = range(pm_1999,pm_2012, na.rm = T)
+plot(date_1999,pm_1999, pch = 19, cex = 1.2, ylim = rng)
+abline(h = median(pm_1999))
+plot(date_2012,pm_2012, pch = 19, cex = 1.2, ylim = rng)
+abline(h = median(pm_2012))
 
+```
+
+Creating state-wise plot to analyze and compare the PM2.5 levels of the states 
+between the year 1999 and 2012
+We calculate the average PM value by each state using the tapply() function
+```{r}
+mean_1999 = with(data_1999, tapply(X1st.Max.Value,State.Code,mean))
+mean_2012 = with(data_2012, tapply(X1st.Max.Value,State.Code,mean))
+dc_1999 = data.frame(state = names(mean_1999), mean = mean_1999)
+dc_2012 = data.frame(state = names(mean_2012), mean = mean_2012)
+```
+
+Viewing the data
+
+1999 means
+```{r}
+head(dc_1999)
+```
+2012 means
+```{r}
+head(dc_2012)
+```
+
+Merging the data of 1999 and 2012
+```{r}
+mergedData = merge(dc_1999,dc_2012, by = "state")
+names(mergedData) = c("State","Mean in 1999","Mean in 2012")
+head(mergedData)
+dim(mergedData)
+```
+
+## Visualization of merged data
+```{r}
+with(mergedData, plot(rep(1999,44),mergedData[,2], xlim = c(1998,2013),ylim = c(10,120)))
+with(mergedData, points(rep(2012,44),mergedData[,3]))
+segments(rep(1999,44),mergedData[,2],rep(2012,44),mergedData[,3])
+```
+We observe that most of the states have had their mean PM2.5 value go down over
+the years when comparing the means between 1999 and 2012. 
 
 
 
