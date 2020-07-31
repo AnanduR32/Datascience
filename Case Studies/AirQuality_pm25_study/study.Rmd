@@ -14,18 +14,44 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Loading the data
 
 ```{r}
-fileUrl2012 = "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_2012.zip"
-fileUrl1999 = "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_1999.zip"
+fileUrl2012 = 
+  "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_2012.zip"
+fileUrl1999 = 
+  "https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_1999.zip"
 if(!file.exists('./data_1999.csv')&&!file.exists('./data_2012.csv')){
-  download.file(fileUrl1999,"./data_1999.zip")
-  download.file(fileUrl2012,"./data_2012.zip")
+  invisible(download.file(fileUrl1999,"./data_1999.zip"))
+  invisible(download.file(fileUrl2012,"./data_2012.zip"))
   unzip("data_2012.zip", exdir = getwd())
   unzip("data_1999.zip", exdir = getwd())
 }
 unlink('./data_1999.zip')
 unlink('./data_2012.zip')
-file.rename("annual_conc_by_monitor_1999.csv","data_1999.csv")
-file.rename("annual_conc_by_monitor_2012.csv","data_2012.csv")
+tryCatch(
+  invisible(
+    file.rename(
+      "annual_conc_by_monitor_1999.csv","data_1999.csv"
+      )
+  ),warning = function(w){
+      if(file.exists('./data_1999.csv')){
+        print("The file \"data_1999.csv\" already exists!")
+      }else{
+        print("Some error occured while trying to rename the file \"annual_conc_by_monitor_1999.csv\" to \"data_1999.csv\"!")
+      }
+    }
+  )
+tryCatch(
+  invisible(
+    file.rename(
+      "annual_conc_by_monitor_2012.csv","data_2012.csv"
+      )
+  ),warning = function(w){
+      if(file.exists('./data_1999.csv')){
+        print("The file \"data_2012.csv\" already exists!")
+      }else{
+        print("Some error occured while trying to rename the file \"annual_conc_by_monitor_2012.csv\" to \"data_2012.csv\"!")
+      }
+    }
+  )
 data_1999 = read.csv("data_1999.csv")
 data_2012 = read.csv("data_2012.csv")
 ```
@@ -34,10 +60,115 @@ data_2012 = read.csv("data_2012.csv")
 
 Identifying the parameter code for PM2.5 data
 ```{r}
-library(dplyr)
+invisible(library(dplyr))
 par_code = grep("PM2.5",data_1999$Parameter.Name)[1]
 par_code = data_1999$Parameter.Code[par_code]
 ```
+
+Filtering dataset with only the required parameter list - PM2.5
+```{r}
+data_1999 = filter(data_1999, Parameter.Code == par_code)
+data_2012 = filter(data_2012, Parameter.Code == par_code)
+```
+
+Size of the dataset
+```{r}
+sprintf("1999 data, Rows = %d, Columns = %d",dim(data_1999)[1],dim(data_1999)[2])
+sprintf("2012 data, Rows = %d, Columns = %d",dim(data_2012)[1],dim(data_2012)[2])
+```
+Subsetting just the particulate matter measure column from each dataset
+```{r}
+pm_1999 = data_1999$X1st.Max.Value
+pm_2012 = data_2012$X1st.Max.Value
+```
+
+Structure of variable
+```{r}
+summary(pm_1999)
+summary(pm_2012)
+```
+0% of the data is missing 
+```{r}
+mean(is.na(pm_1999))
+mean(is.na(pm_2012))
+```
+
+## Visualization
+boxplot
+```{r}
+boxplot(log10(pm_1999),log10(pm_2012))
+```
+We observe that eventhough the average values have gone down, the spread of the
+data has increased to the right extreme, i.e the data has become more right 
+skewed in 2012, from being left skewed in 1999.
+
+Extracting the dates in which the measurements were taken
+```{r}
+date_1999 = as.Date(data_1999$X1st.Max.DateTime)
+date_2012 = as.Date(data_2012$X1st.Max.DateTime)
+str(date_1999)
+str(date_2012)
+```
+```{r}
+par(mfrow = c(1,2))
+hist(date_1999,"month")
+hist(date_2012,"month")
+```
+To make analysis more simpler we pick a common monitor from 1999 and 2012, and 
+compare the pm2.5 levels between the two instead of the levels of the entire 
+country. This will also allow us to control for possible changes in the
+monitoring locations between 1999 and 2012. As new monitors are added overtime 
+and this can lead to inaccuracy in the analysis by taking into consideration the 
+entire country.
+
+Now we subset the data to look at the various monitors present in New York City
+```{r}
+m_NY_1999 = unique(subset(data_1999, State.Code==36, c(County.Code, Site.Num)))
+m_NY_2012 = unique(subset(data_2012, State.Code==36, c(County.Code, Site.Num)))
+
+## Creating a new variable that pastes the values of County.Code and Site.Num 
+## inorder to find the intersecting County-Site combinations in both time periods
+## within newyork city
+m_NY_1999 = paste(m_NY_1999[,1],m_NY_1999[,2],sep = ".")
+m_NY_2012 = paste(m_NY_2012[,1],m_NY_2012[,2],sep = ".")
+
+## Finding the intersecting county-site combinations
+common_m = intersect(m_NY_1999,m_NY_2012)
+common_m
+```
+Thus we're able to find the common monitor we can use for out analysis 
+Now we need to select the monitor that has the most number of observations, 
+since more data equals better analysis and visualizations
+
+Subsetting the data from NY to only have records of observations that are from
+the common monitors 
+```{r}
+## Creating a new variable county.site, to subset 
+m_NY_1999 = data_1999
+m_NY_2012 = data_2012
+m_NY_1999$County.Site = paste(m_NY_1999$County.Code,m_NY_1999$Site.Num,sep = ".")
+m_NY_2012$County.Site = paste(m_NY_2012$County.Code,m_NY_2012$Site.Num,sep = ".")
+m_NY_1999 = subset(m_NY_1999, County.Site %in% common_m)
+m_NY_2012 = subset(m_NY_2012, County.Site %in% common_m)
+```
+
+Looking at the number of observations for each County.Site variable
+```{r}
+sapply(split(m_NY_1999, m_NY_1999$County.Site),nrow)
+sapply(split(m_NY_2012, m_NY_2012$County.Site),nrow)
+
+```
+Picking the county.site combination 1.5 i.e county 1, and site 5 within that 
+county.
+
+```{r}
+m_1999 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
+m_2012 = subset(data_1999, State.Code == 36 & County.Code == 1 & Site.Num == 5)
+```
+
+
+
+
 
 ## Deleting files after completion
 ```{r}
