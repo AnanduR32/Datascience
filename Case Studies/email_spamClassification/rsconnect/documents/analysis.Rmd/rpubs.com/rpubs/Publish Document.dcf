@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/645336/b5694845c533424c8d32f384096d024a
+bundleId: https://api.rpubs.com/api/v1/document/645336/b5694845c533424c8d32f384096d024a
+url: http://rpubs.com/aquaregis32/645336
+when: 1596378004.92466

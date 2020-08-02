@@ -1,0 +1,180 @@
+---
+title: "Email Spam Detection and Classification"
+author: "Anandu R"
+date: "8/1/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Email Spam Detection and Classification
+
+#### Loading necessary packages and data sources 
+We load the dataset using the kernlab package which has the required dataset, as 
+well as several other datasets that can be used for analysis.
+```{r}
+if(!require("kernlab")){
+  install.packages("kernlab")
+}
+library(kernlab)
+```
+Loading the data 
+```{r}
+data(spam)
+```
+
+Preliminary Analysis on data 
+```{r}
+str(spam[,1:5])
+```
+#### Subsampling the dataset 
+Looking into the "type" variable we can know whether a mail is spam or not
+```{r}
+table(spam$type)
+```
+we observe that there are 2788 nonspam mails and 1813 mails labelled as spam 
+within the dataset.
+
+```{r}
+library(caTools)
+set.seed(32)
+split = sample.split(spam$type, SplitRatio = 0.7)
+trainSpam = subset(spam, split == T)
+testSpam = subset(spam, split ==F)
+```
+
+#### Exploratory Analysis on the data
+```{r}
+names(spam)
+```
+There are variables in the dataset that are named by common english words, lets 
+take a look into what these fields store 
+
+```{r}
+head(spam)[,1:6]
+```
+As we can see they represent the frequency of occurance of these terms within 
+the mail(represented by a record in the dataset).
+
+#### Comparing the values of data classified as spam vs nonspam
+```{r}
+plot(
+  log10(trainSpam$capitalAve+1) ~trainSpam$type,
+  ylab = "Frequency of occurance",
+  xlab = "Type")
+```
+
+The spam data has higher median value for the occurance of 'capitalAve' ie. 
+average usage of capital letter in the body of the mail for spam mails.
+
+#### Analysing the relationships between various predictors
+```{r}
+plot(log10(trainSpam[,1:4]+1))
+```
+
+We do this to observe whether there is some correlation between the predictors, 
+it is important that they be linearly independent for statistical reasons.
+
+#### Performing hierarchical clustering 
+To see which all predictors play a larger role in classifying the dataset
+```{r}
+mdist = dist(t(log(trainSpam[,1:55]+1)))
+hclustering = hclust(mdist)
+plot(as.dendrogram(hclustering))
+```
+
+##### Converting the label from character string to numeric type
+```{r}
+trainSpam$numType = as.numeric(trainSpam$type)-1
+```
+
+##### Function to calculate cost function 
+```{r}
+costFunc = function(x,y){
+  sum(x != (y > 0.5))
+}
+```
+
+##### Initialising a numeric vector to store the error 
+The numeric vector is initialized with 'NULL' value, this numeric vector 
+represents the cross validation matrix for linear models.
+```{r}
+cvError = rep(NULL, 55)
+```
+##### Fitting a linear model
+Fitting a linear model for each of the variable 1 through 55 and calculating the 
+cost function error for each
+```{r}
+library(boot)
+suppressWarnings(
+ for(i in 1:55){
+    lmFormula = reformulate(names(trainSpam)[i], response = "numType")
+    glmFit = glm(lmFormula, family = "binomial", data = trainSpam)
+    cvError[i] = cv.glm(trainSpam, glmFit, costFunc, 2)$delta[2] 
+ }
+)
+```
+
+##### Getting names of top 5 predictors that have least cost function
+```{r,echo = FALSE}
+arr = rep(NULL, 55)
+OrderedcvError = sort(cvError)
+invisible(
+  for(i in 1:55){
+    suppressWarnings(
+      {
+        arr[i] = which(cvError == OrderedcvError[i])
+      }
+    )
+  }
+)
+topPredictors = names(trainSpam)[arr[1:5]]
+topPredictors
+```
+##### Getting a measure of uncertainity 
+Fitting a linear model on the top 5 predictors 
+```{r}
+predModel = suppressWarnings(
+  glm(
+    numType ~ charDollar+charExclamation+remove+money+free,
+    family = "binomial",
+    data = trainSpam
+    )
+  )
+```
+
+Getting predictions on the test set
+```{r}
+pred_y = as.character(
+  ifelse(
+    as.numeric(predict(predModel, testSpam))>0.5,
+    "spam",
+    "nonspam"
+    )
+  )
+```
+
+Comparing actual vs predicted
+```{r}
+crossTab = table(pred_y,testSpam$type)
+crossTab
+```
+
+Error rate 
+```{r}
+errorRate = sum(crossTab[2:3])/sum(crossTab[1:4])
+errorRate 
+```
+Which means our model has an error rate of 15.6%
+
+
+
+
+
+
+
+
