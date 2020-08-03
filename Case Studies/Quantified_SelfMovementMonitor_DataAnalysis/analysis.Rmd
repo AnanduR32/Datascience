@@ -1,0 +1,288 @@
+---
+title: "Quantified Self Movement Monitor Data Analysis"
+author: "Anandu R"
+date: "8/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+It is now possible to collect a large amount of data about personal movement
+using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up.
+These type of devices are part of the “quantified self” movement – a group of
+enthusiasts who take measurements about themselves regularly to improve their
+health, to find patterns in their behavior, or because they are tech geeks. But 
+these data remain under-utilized both because the raw data are hard to obtain
+and there is a lack of statistical methods and software for processing and 
+interpreting the data.
+
+#### Loading the data 
+
+Downloading the data
+```{r}
+fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+if(!file.exists("./data/activity.csv")){
+  download.file(fileUrl, destfile = "./data/data.zip")
+  unzip("./data/data.zip", exdir = "./data")
+}
+unlink("./data/data.zip", recursive = T)
+```
+
+Reading the raw data
+```{r}
+data = read.csv("./data/activity.csv")
+```
+
+Preliminary analysis on data
+```{r}
+dim(data)
+```
+```{r, echo=F}
+head(data)
+```
+There seems to be a bit of missing values in the data.  
+
+Taking a look at how much of the data is missing
+```{r, results=F}
+temp = mean(is.na(data))
+```
+which is just `r temp` of the data, we might as well get rid of the specific records 
+which have missing values. 
+```{r, echo=F,results=F}
+good_data = complete.cases(data)
+temp = mean(good_data)
+```
+calculating the % of records that have valid activity measurement, we find that 
+`r temp` of data is good, so we get rid of rest of the records that have 
+missing values
+```{r, echo=F}
+table(good_data)
+```
+```{r}
+data_clean = data[good_data,]
+## Corrected datatype of date field
+data_clean = transform(data_clean, date= as.Date(date))
+```
+
+
+Taking a look at the valid activity tracked, for all 'steps'>0  
+```{r, echo=F}
+head(data_clean[data_clean$steps!=0,])
+```
+
+### Histogram of the total number of steps taken each day
+```{r}
+library(dplyr)
+data_grpd = data_clean %>% 
+  group_by(date) %>%
+  summarise(steps_per_day = sum(steps))
+data_grpd
+```
+
+```{r}
+library(ggplot2)
+ggplot(
+  data_grpd,
+  aes(
+    x = steps_per_day,
+  ),
+) + 
+  geom_histogram(bins = 12, fill = "skyblue", col = "white") +
+  stat_bin(bins = 12,geom="text", aes(label=..count..), col ="white", vjust = 1.3) +
+  theme_bw() + guides(fill = F) + 
+  labs(
+    title = "Histogram of the total number of steps taken each day",
+    x = "Steps taken each day",
+    y = "Frequency")
+```
+On average people take 10000 steps daily.
+
+### Mean and median number of steps taken each day
+```{r}
+data_mm = suppressMessages(
+  {
+    data_grpd %>% 
+      group_by(month = format(date, format= "%m")) %>%
+      summarise(
+        mean_steps = mean(steps_per_day),
+        median_steps = median(steps_per_day)
+      )
+    }
+  )
+data_mm = transform(data_mm, month = month.abb[as.numeric(month)])
+data_mm
+```
+
+### Time series plot of the average number of steps taken
+```{r}
+ggplot(
+  data_grpd,
+  aes(
+    x = date,
+    y = steps_per_day,
+  )
+) + 
+  geom_line(col = 'skyblue', lwd = 1.25) + 
+  theme_bw() + guides(fill = F) +
+  labs(
+    title = "Time series plot of the average number of steps taken",
+    x = "Dates",
+    y = "Step count"
+  )
+
+```
+### Step count average in day across the time period 
+Making a summarised data with step count average in day across the time period 
+```{r}
+data_consdt = data_clean %>% 
+  group_by(interval) %>%
+  summarise(steps_by_interval = mean(steps))
+data_consdt
+```
+
+```{r}
+idx_max_meanSteps = which.max(data_consdt$steps_by_interval)
+max_meanSteps_interval = data_consdt$interval[idx_max_meanSteps]
+ggplot(
+  data_consdt,
+  aes(
+    x = interval,
+    y = steps_by_interval,
+  )
+) + 
+  geom_line(col = 'skyblue', lwd = 1.25) + 
+  theme_bw() + guides(fill = F) +
+  labs(
+    title = "Time series plot of the average number of steps taken",
+    x = "Dates",
+    y = "Step count"
+  ) + 
+  geom_vline(
+    xintercept = max_meanSteps_interval,
+    col = "orange",
+    lwd = 1.25
+  ) + 
+  geom_text(
+    aes(
+      label = ifelse(
+        interval == max_meanSteps_interval,
+        paste("Interval",as.character(interval)),
+        ''
+        )
+      ),
+    hjust=-0.1,
+    vjust=0
+  ) + 
+  geom_text(
+    aes(
+      label = ifelse(
+        interval == max_meanSteps_interval,
+        paste(as.character(round(steps_by_interval)),"steps"),
+        ''
+        )
+      ),
+    hjust=-0.1,
+    vjust=2
+  )
+```
+
+### The 5-minute interval that, on average, contains the maximum number of steps
+The previous plot depicts the the interval at which the most number of steps are
+tracked on an average ie. at `r max_meanSteps_interval`, the user takes 
+`r round(data_consdt$steps_by_interval[idx_max_meanSteps])` steps.
+
+### Code to describe and show a strategy for imputing missing data
+To impute missing values we'll use the mean step count data we've calculated 
+previously and insert the mean value in the records with missing value with the 
+corresponding mean value
+```{r}
+data_imputed = data
+idx = which(is.na(data_imputed$steps))
+for(i in idx){
+  data_imputed$steps[i] = 
+    round(
+        data_consdt$steps_by_interval[which(
+          data_imputed$interval[i] == data_consdt$interval
+          )
+        ]
+    )
+}
+```
+
+Imputed data
+```{r}
+head(data_imputed)
+```
+
+There are 0 missing values in the imputed dataset 'data_imputed'
+```{r}
+sum(is.na(data_imputed))
+```
+
+### Histogram of the total number of steps taken each day after missing values are imputed
+Summarising the data
+```{r}
+data_grpd_imp = data_imputed %>% 
+  group_by(date) %>%
+  summarise(steps_per_day = sum(steps))
+data_grpd_imp
+```
+
+Visualization
+```{r}
+ggplot(
+  data_grpd_imp,
+  aes(
+    x = steps_per_day,
+  ),
+) + 
+  geom_histogram(bins = 12, fill = "skyblue", col = "white") +
+  stat_bin(bins = 12,geom="text", aes(label=..count..), col ="white", vjust = 1.3) +
+  theme_bw() + guides(fill = F) + 
+  labs(
+    title = "Histogram of the total number of steps taken each day in the imputed data",
+    x = "Steps taken each day",
+    y = "Frequency")
+```
+### Comparing the average number of steps taken per interval across weekdays and weekends
+
+Panel plot comparing the average number of steps taken per 5-minute interval 
+across weekdays and weekends
+
+Adding a column which indicates whether the date represents weekend or not
+```{r}
+data_imputed$weekend = factor(ifelse(wday(data_imputed$date) %in% c(2:6),0,1))
+```
+
+Considating the data by grouping by weekend first then interval
+```{r}
+data_consdt_imp = data_imputed %>% 
+  group_by(weekend,interval) %>%
+  summarise(steps_by_interval = mean(steps))
+data_consdt_imp
+```
+
+Visualizing the weekday vs weekend step-count through the day
+```{r}
+levels(data_consdt_imp$weekend) = c("Weekday","Weekend")
+ggplot(
+  data_consdt_imp,
+  aes(
+    x = interval,
+    y = steps_by_interval,
+  )
+) + 
+  geom_line(col = 'skyblue', lwd = 1.25) + 
+  theme_bw() + guides(fill = F) +
+  labs(
+    title = "Time series plot of the average number of steps taken",
+    x = "Dates",
+    y = "Step count"
+  ) + 
+  facet_wrap(.~weekend, ncol = 1)
+  
+```
+
+
