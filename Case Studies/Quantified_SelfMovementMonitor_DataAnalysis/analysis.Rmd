@@ -2,7 +2,9 @@
 title: "Quantified Self Movement Monitor Data Analysis"
 author: "Anandu R"
 date: "8/3/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -253,6 +255,7 @@ across weekdays and weekends
 
 Adding a column which indicates whether the date represents weekend or not
 ```{r}
+library(lubridate)
 data_imputed$weekend = factor(ifelse(wday(data_imputed$date) %in% c(2:6),0,1))
 ```
 
@@ -277,8 +280,8 @@ ggplot(
   geom_line(col = 'skyblue', lwd = 1.25) + 
   theme_bw() + guides(fill = F) +
   labs(
-    title = "Time series plot of the average number of steps taken",
-    x = "Dates",
+    title = "Comparison between weekday and weekend daily step count mean",
+    x = "Time interval of day",
     y = "Step count"
   ) + 
   facet_wrap(.~weekend, ncol = 1)
