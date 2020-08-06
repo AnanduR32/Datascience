@@ -1,0 +1,72 @@
+---
+title: "Storm Effects on Communities, Analysis"
+author: "Anandu R"
+date: "8/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Storms and other severe weather events can cause both public health and economic
+problems for communities and municipalities. Many severe events can result in
+fatalities, injuries, and property damage, and preventing such outcomes to the 
+extent possible is a key concern.
+
+This project involves exploring the U.S. National Oceanic and Atmospheric
+Administration's (NOAA) storm database. This database tracks characteristics of 
+major storms and weather events in the United States, including when and where 
+they occur, as well as estimates of any fatalities, injuries, and property
+damage.
+
+## Data
+There is also some documentation of the database available. Details on how some 
+of the variables are constructed/defined is available on this website by
+National Weather Service : [Storm Data Documentation]("https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf")
+
+#### Getting the data 
+```{r}
+fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+if(!file.exists("./data/data.csv.bz2")){
+  download.file(fileUrl,"./data/data.csv.bz2")
+}
+```
+
+#### Reading the data
+```{r}
+data_raw <- read.csv("./data/data.csv.bz2", sep =",", header = T)
+```
+
+#### Preliminary analysis of data
+
+```{r}
+head(data_raw)
+```
+
+### Data Cleaning 
+#### Checking distrobution of Missing data and NAs in the dataset 
+```{r}
+datatypes = as.character(sapply(data_raw, class))
+numeric_loc = which(datatypes == "character")
+arr_missing = array(dim = length(numeric_loc))
+j=0
+for(i in numeric_loc){
+  arr_missing[j] = mean(data_raw[,i]=="")*100
+  j = j+1
+}
+arr_missing = numeric_loc[which(arr_missing < 2)]
+arr_NAs = which(as.numeric(colMeans(is.na(data_raw))) > 0)
+arr_missing
+arr_NAs
+```
+
+#### Fixing the datatypes
+```{r}
+data_raw$BGN_DATE = as.POSIXct(data_raw$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
+data_raw$BGN_TIME = format(strptime(data_raw$BGN_TIME,"%H%M"),'%H:%M')
+data_raw$BGN_DATETIME = as.POSIXct(paste(data_raw$BGN_DATE, data_raw$BGN_TIME), format="%Y-%m-%d %H:%M")
+```
+
+
+## Exploratory Analysis 
