@@ -3,8 +3,8 @@ title: "Storm Effects on Communities, Analysis"
 author: "Anandu R"
 date: "8/6/2020"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +28,7 @@ of the variables are constructed/defined is available on this website by
 National Weather Service : [Storm Data Documentation]("https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf")
 
 ### Getting the data 
-```{r}
+```{r, results='hide'}
 fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 if(!file.exists("./data/data.csv.bz2")){
   download.file(fileUrl,"./data/data.csv.bz2")
@@ -36,7 +36,8 @@ if(!file.exists("./data/data.csv.bz2")){
 ```
 
 ### Reading the data
-```{r,cache=T}
+```{r, results=F}
+suppressMessages(library(dplyr))
 data_raw <- read.csv("./data/data.csv.bz2", sep =",", header = T)
 ```
 
@@ -53,29 +54,7 @@ names(data_raw)
 
 
 ### Data Cleaning 
-#### Checking distrobution of Missing data and NAs in the dataset 
-```{r}
-datatypes = as.character(sapply(data_raw, class))
-character_loc = which(datatypes == "character")
-arr_missing = array(dim = length(character_loc))
-j=1
-for(i in character_loc){
-  arr_missing[j] = mean(data_raw[,i]=="")
-  j = j+1
-}
-arr_missing_r = character_loc[which(arr_missing*100 < 2 & arr_missing > 0)]
-arr_missing_c = character_loc[which(arr_missing*100 > 50)]
-arr_NAs_r = which(as.numeric(colMeans(is.na(data_raw))) > 0 & as.numeric(colMeans(is.na(data_raw)))*100 < 2)
-arr_NAs_c = which(as.numeric(colMeans(is.na(data_raw)))*100 > 50)
-arr_missing
-```
-#### Removing columns that have more that 50% data misssing
-Columns 26, and 28 represent the "PROPDMGEXP", "CROPDMGEXP" fields which are
-required for the analysis therefore we will keep them.
-```{r}
-arr_missing_c = arr_missing_c[-c(4,5)]
-data_clean = data_raw[,-c(arr_missing_c,arr_NAs_c)]
-```
+#### Removing unnecessary variables
 
 Since the END_DATE and END_TIME fields are same as the BGN_DATA and BGN_TIME, we 
 also remove those columns from the data.
@@ -83,27 +62,55 @@ also remove those columns from the data.
 Furthermore, since the COUNTY_END field has only the value 0 and would serve no
 purpose to the analysis, it too is removed
 
+The "REFNUM" and "REMARKS" fields don't serve any purpose to our analysis
 ```{r}
-data_clean = data_clean[,-c(11:13)]
+data_clean = select(data_raw, 
+                    STATE,
+                    COUNTY,
+                    BGN_DATE,
+                    BGN_TIME,
+                    EVTYPE, 
+                    FATALITIES,
+                    INJURIES,
+                    PROPDMG, 
+                    PROPDMGEXP,
+                    CROPDMG,
+                    CROPDMGEXP)
 ```
 
 
-#### Removing records with missing or NA data
+#### Checking distribution of Missing data and NAs in the dataset 
 ```{r}
-with_NAs = complete.cases(data_raw[,arr_NAs_r])
-data_clean = subset(data_clean, with_NAs)
-data_clean = data_clean[!(data_clean[,arr_missing_r]==""),]
+datatypes = as.character(sapply(data_clean, class))
+character_loc = which(datatypes == "character")
+arr_missing = array(dim = length(character_loc))
+j=1
+for(i in character_loc){
+  arr_missing[j] = mean(data_clean[,i]=="")
+  j = j+1
+}
+arr_missing_r = character_loc[which(arr_missing*100 < 2 & arr_missing > 0)]
+arr_missing_c = character_loc[which(arr_missing*100 > 50)]
+arr_NAs_r = which(as.numeric(colMeans(is.na(data_clean))) > 0 &
+                    as.numeric(colMeans(is.na(data_clean)))*100 < 2)
+arr_NAs_c = which(as.numeric(colMeans(is.na(data_clean)))*100 > 50)
 ```
+
+Columns 9, and 11 represent the "PROPDMGEXP", "CROPDMGEXP" fields which are
+required for the analysis therefore we will keep them.
+
+Therefore all in all, there arent any records to be removed or are their any 
+columns that can be removed.
 
 Checking distribution of missing value and NAs
 ```{r, cache=T}
 as.numeric(colMeans(is.na(data_clean)))
 as.numeric(colMeans(data_clean==""))
 ```
-There are still some fields with no value aka missing values in certain columns,
-but their percentages are in range 10-50% so the next suitable step would be to 
-impute the values in the dataset, but since it is the weather data, imputing 
-values would only create noise in the data(?)
+NOTE: During analysis there may still be some fields with no value aka missing
+values in certain columns, but their percentages are in range 10-50% so the next
+suitable step would be to  impute the values in the dataset, but since it is the
+weather data, imputing values would only create noise in the data(?)
 
 Looking at cleaned data 
 ```{r}
@@ -114,9 +121,26 @@ head(data_clean)
 
 #### Creating a datatime field
 ```{r, cache= T}
-data_clean$BGN_DATE = as.POSIXct(data_clean$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
-data_clean$BGN_TIME = format(strptime(data_clean$BGN_TIME,"%H%M"),'%H:%M')
-data_clean$BGN_DATETIME = as.POSIXct(paste(data_clean$BGN_DATE, data_clean$BGN_TIME), format="%Y-%m-%d %H:%M")
+data_clean$BGN_DATE = 
+  as.POSIXct(data_clean$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
+
+data_clean$BGN_TIME = 
+  format(strptime(data_clean$BGN_TIME,"%H%M"),'%H:%M')
+
+data_clean$BGN_DATETIME = 
+  as.POSIXct(paste(data_clean$BGN_DATE,
+                   data_clean$BGN_TIME
+                   ), format="%Y-%m-%d %H:%M")
+data_clean = 
+  select(data_clean,
+         STATE, COUNTY,
+         BGN_DATETIME, 
+         EVTYPE, FATALITIES,
+         INJURIES,
+         PROPDMG, 
+         PROPDMGEXP,
+         CROPDMG, 
+         CROPDMGEXP)
 ```
 
 #### Imputing proper values in the "PROPDMGEXP", "CROPDMGEXP" fields
@@ -128,29 +152,31 @@ Current values in "PROPDMGEXP"
 ```{r}
 unique(data_clean$PROPDMGEXP)
 ```
-Correct representations:
-- "\"\"" = 10^0,
-- "-" = 10^0, 
-- "?" = 10^0,
-- "+" = 10^0,
-- "0" = 10^0,
-- "1" = 10^1,
-- "2" = 10^2,
-- "3" = 10^3,
-- "4" = 10^4,
-- "5" = 10^5,
-- "6" = 10^6,
-- "7" = 10^7,
-- "8" = 10^8,
-- "9" = 10^9,
-- "H" = 10^2,
-- "K" = 10^3,
-- "M" = 10^6,
-- "B" = 10^9
+Correct representations:  
+- "\"\"" = 10^0,  
+- "-" = 10^0,   
+- "?" = 10^0,  
+- "+" = 10^0,  
+- "0" = 10^0,  
+- "1" = 10^1,  
+- "2" = 10^2,  
+- "3" = 10^3,  
+- "4" = 10^4,  
+- "5" = 10^5,  
+- "6" = 10^6,  
+- "7" = 10^7,  
+- "8" = 10^8,  
+- "9" = 10^9,  
+- "H" = 10^2,  
+- "K" = 10^3,  
+- "M" = 10^6,  
+- "B" = 10^9  
 
 Imputing the correct values 
 ```{r}
-data_clean = transform(data_clean, PROPDMGEXP = toupper(PROPDMGEXP), CROPDMGEXP = toupper(CROPDMGEXP))
+data_clean = transform(data_clean,
+                       PROPDMGEXP = toupper(PROPDMGEXP),
+                       CROPDMGEXP = toupper(CROPDMGEXP))
 DmgExP =  c("\"\"" = 10^0,
             "-" = 10^0, 
             "+" = 10^0,
@@ -185,22 +211,399 @@ data_clean = transform(
 ### Subsetting the data, removing EVTYPEs that have 0 impact of any sort
 
 ```{r}
-data_clean = subset(data_clean, EVTYPE != "?" &  (INJURIES > 0 | FATALITIES > 0 | PROPDMG > 0 | CROPDMG > 0))
+data_clean = subset(data_clean, 
+                    EVTYPE != "?" &
+                      (INJURIES > 0 | 
+                         FATALITIES > 0 |
+                         PROPDMG > 0 | 
+                         CROPDMG > 0)
+                    )
+```
+
+Looking at cleaned data 
+```{r}
+head(data_clean)
+```
+
+### Analysing the event types and fixing field names
+```{r}
+unique(data_clean$EVTYPE)[1:10]
+```
+
+### Labeling event types correctly 
+```{r}
+## WIND 1
+data_clean[data_clean$EVTYPE=="NON TSTM WIND","EVTYPE"] = "WIND"
+data_clean[data_clean$EVTYPE=="NON-TSTM WIND","EVTYPE"] = "WIND"
+
+## THUNDERSTORM
+data_clean[grepl("thunderstorm",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("thunderestorm",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("thundeerstorm",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("thunerstorm",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("THUNDERTORM WINDS",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("TUNDERSTORM WIND",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("THUDERSTORM WINDS", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("THUNDERSTROM WIND", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+data_clean[grepl("tstm", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "THUNDERSTORM"
+
+## WATERSPOUT + TORNADO 
+data_clean[grepl("WATERSPOUT[\" \",/,-,+]TORNADO",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "WATERSPOUT+TORNADO"
+data_clean[grepl("WATERSPOUT-TORNADO", 
+                 data_clean$EVTYPE),"EVTYPE"] = "WATERSPOUT+TORNADO"
+data_clean[grepl("WATERSPOUT/ TORNADO", 
+                 data_clean$EVTYPE),"EVTYPE"] = "WATERSPOUT+TORNADO"
+data_clean[grepl("WATERSPOUT", 
+                 data_clean$EVTYPE),"EVTYPE"] = "WATERSPOUT+TORNADO"
+
+## TORNADO 
+data_clean[grepl("^TORNADO", 
+                 data_clean$EVTYPE),"EVTYPE"] = "TORNADO"
+data_clean[grepl("TORNDAO",
+                 data_clean$EVTYPE),"EVTYPE"] = "TORNADO"
+data_clean[grepl("FUNNEL CLOUD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "TORNADO"
+data_clean[grepl("COLD AIR TORNADO",
+                 data_clean$EVTYPE),"EVTYPE"] = "TORNADO"
+
+## LANDSLIDE 
+data_clean[grepl("landslide", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "LANDSLIDE"
+
+## FLASH FLOOD
+data_clean[grepl("FLASH FLOOD", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLASH FLOOD"
+data_clean[grepl("flash*FLOOD", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FLASH FLOOD"
+data_clean[grepl("FLOOD[/,\" \"]flash",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FLASH FLOOD"
+
+## COASTAL FLOOD
+data_clean[grepl("COASTAL FLOOD",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "COASTAL FLOOD+EROSION"
+data_clean[grepl("COASTAL  FLOODING/EROSION",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "COASTAL FLOOD+EROSION"
+data_clean[grepl("Erosion/Cstl Flood",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "COASTAL FLOOD+EROSION"
+data_clean[grepl("Erosion",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "COASTAL FLOOD+EROSION"
+
+## FLOODS 
+data_clean[grepl("FLOODING",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("FLOODS", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("RAPIDLY RISING WATER",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+
+## OTHER FLOODS
+data_clean[grepl("URBAN",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "URBAN FLOOD"
+data_clean[grepl("RIVER", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RIVER FLOOD"
+data_clean[grepl("FLOOD/RAIN/WINDS",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("HEAVY RAIN AND FLOOD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("HEAVY SNOW/HIGH WINDS & FLOOD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("FLOOD & HEAVY RAIN",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("Ice jam flood \\(minor",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FLOOD"
+data_clean[grepl("LAKE FLOOD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RURAL FLOOD"
+data_clean[grepl("LAKESHORE FLOOD", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RURAL FLOOD"
+data_clean[grepl("MAJOR FLOOD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "URBAN FLOOD"
+data_clean[grepl("RIVER FLOOD",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RURAL FLOOD"
+data_clean[grepl("SMALL STREAM FLOOD", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RURAL FLOOD"
+
+## TIDE 
+data_clean[grepl("TIDE", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "TIDE"
+
+## AVALANCHE
+data_clean[grepl("Avalanche",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "AVALANCHE"
+data_clean[grepl("Avalance", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "AVALANCHE"
+
+## ICE SNOW BLIZZARD 
+data_clean[grepl("FROST",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("FREEZE", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("COLD", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("snow", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("chill", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("low temp",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("winter",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "BLIZZARD"
+data_clean[grepl("blizzard",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "BLIZZARD"
+data_clean[grepl("ice storm", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "BLIZZARD"
+data_clean[grepl("ice",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("wintr",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("freez",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("sleet", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+data_clean[grepl("^glaze",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "FROST+SNOW"
+
+## HEAT 
+data_clean[grepl("HEAT",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "HEAT+DROUGHT"
+data_clean[grepl("WARM", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "HEAT+DROUGHT"
+data_clean[grepl("DROUGHT", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "HEAT+DROUGHT"
+
+## DUST 
+data_clean[grepl("DUST", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "DUST"
+
+## WILDFIRE 
+data_clean[grepl("FIRE", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "WILDFIRE"
+
+## HURRICANE 
+data_clean[grepl("hurricane", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "HURRICANE"
+
+## HAIL
+data_clean[grepl("HAIL", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "HAIL"
+
+## SURF 
+data_clean[grepl("surf", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "SURF"
+
+## WIND 2
+data_clean[grepl("wind",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "WIND"
+data_clean[grepl("burst", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "WIND"
+
+## MUDSLIDES
+data_clean[grepl("mud", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "MUD+LAND SLIDES"
+data_clean[grepl("land", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "MUD+LAND SLIDES"
+data_clean[grepl("rock", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "MUD+LAND SLIDES"
+
+## RAINFALL 
+data_clean[grepl("rain", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RAINFALL"
+data_clean[grepl("precip",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RAINFALL"
+data_clean[grepl("show",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RAINFALL"
+
+## LIGHTNING 
+data_clean[grepl("light", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "LIGHTNING"
+data_clean[grepl("ligntning", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "LIGHTNING"
+
+## TROPICAL STORM
+data_clean[grepl("tropical",
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "TROPICAL CYCLONE"
+
+## SURGE
+data_clean[grepl("surge", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "STORM SURGE"
+
+## SLEET
+data_clean[grepl("sleet",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "SLEET"
+
+## RIP CURRENT
+data_clean[grepl("rip", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "RIP CURRENT"
+
+## GUST
+data_clean[grepl("gust", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "WIND"
+
+## HYPOTHERMIA
+data_clean[grepl("hypo", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "HYPOTHERMIA"
+
+## HYPERTHERMIA
+data_clean[grepl("hyper", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "HYPERTHERMIA"
+
+## SWELLS + SEAS + MIX + HIGH WATER + WAVES 
+## WET
+data_clean[grepl("wet", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "WETNESS"
+
+## TIDES
+temp = unique(data_clean$EVTYPE)[c(20,27,39,40,42,43,44,54,57,58)]
+data_clean[data_clean$EVTYPE %in% temp,"EVTYPE"] = "TIDE/ROUGH SEAS"
+
+## SEICHE
+data_clean[grepl("seiche", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "TIDE/ROUGH SEAS"
+
+## COASTAL STORM 
+data_clean[grepl("coastal storm",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "COASTAL STORM"
+data_clean[grepl("coastalstorm", 
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "COASTAL STORM"
+
+## MARINE MISHAP/ACCIDENT
+data_clean[grepl("marine", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "MARINE ACCIDENT"
+
+## OTHER
+data_clean[grepl("^other", 
+                 data_clean$EVTYPE,
+                 ignore.case = T),"EVTYPE"] = "OTHER"
+
+## APACHE COUNTY to WIND since mentioned in REMARKS 
+data_clean[grepl("APACHE COUNTY",
+                 data_clean$EVTYPE, 
+                 ignore.case = T),"EVTYPE"] = "WIND"
+
 ```
 
 
-Aggregating the results
 ```{r}
+unique(data_clean$EVTYPE)
+```
+
+### Creating new fields CROPDMGPRICE and PROPDMGPRICE
+```{r}
+data_clean = transform(data_clean, 
+                       CROPDMGPRICE = CROPDMG*CROPDMGEXP,
+                       PROPDMGPRICE = PROPDMG*PROPDMGEXP)
+```
+
+
+### Aggregating the data based on event type
+```{r, results=T}
 library(dplyr)
-data_ = data_clean %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    FATALITIES = sum(FATALITIES, na.rm = T),
-    INJURIES = sum(INJURIES,na.rm = T),
-    CROPDMG = sum(CROPDMG, na.rm = T),
-    PROPDMG = sum(PROPDMG, na.rm = T)
-  )
-data_
+suppressMessages(
+  {
+  data_aggr = data_clean %>%
+    group_by(EVTYPE) %>%
+    summarise(
+      FATALITIES = sum(FATALITIES, na.rm = T),
+      INJURIES = sum(INJURIES,na.rm = T),
+      CROPDMGPRICE = sum(CROPDMGPRICE, na.rm = T),
+      PROPDMGPRICE = sum(PROPDMGPRICE, na.rm = T)
+    )
+  }
+)
+head(data_aggr[order(-data_aggr[,"FATALITIES"],
+                     -data_aggr[,"INJURIES"],
+                     -data_aggr[,"CROPDMGPRICE"],
+                     -data_aggr[,"PROPDMGPRICE"]),])
 ```
 
 
@@ -210,7 +613,7 @@ data_
 names(data_clean)
 ```
 
-### Analyis to find events that are most harmful with respect to population health
+### Analyis to find events most harmful with respect to population health
 
 Looking at data in relavant columns "FATALITIES" and "INJURIES"
 ```{r}

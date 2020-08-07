@@ -4,3 +4,9 @@
 .Ruserdata
 .httr-oauth
 .RDataTmp
+Case Studies/stormEffectOnCommunities_analysis/data/data.csv.bz2
+Case Studies/AirQuality_pm25_study/annual_conc_by_monitor_1999.csv
+Case Studies/AirQuality_pm25_study/annual_conc_by_monitor_2012.csv
+Case Studies/AirQuality_pm25_study/data_1999.zip
+Case Studies/AirQuality_pm25_study/data_2012.zip
+Case Studies/stormEffectOnCommunities_analysis/analysis_cache/*
