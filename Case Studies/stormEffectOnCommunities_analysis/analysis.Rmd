@@ -44,6 +44,12 @@ data_raw <- read.csv("./data/data.csv.bz2", sep =",", header = T)
 head(data_raw)
 ```
 
+Reading column names 
+```{r}
+names(data_raw)
+```
+
+
 ### Data Cleaning 
 #### Checking distrobution of Missing data and NAs in the dataset 
 ```{r}
@@ -110,3 +116,33 @@ data_clean$BGN_DATETIME = as.POSIXct(paste(data_clean$BGN_DATE, data_clean$BGN_T
 
 
 ## Exploratory Analysis 
+
+```{r}
+names(data_clean)
+```
+
+### Analyis to find events that are most harmful with respect to population health
+
+Looking at data in relavant columns "FATALITIES" and "INJURIES"
+```{r}
+data_clean[,c("EVTYPE","FATALITIES","INJURIES")]
+```
+
+Aggregating the results
+```{r}
+library(dplyr)
+health_aggr = data_clean %>%
+  group_by(EVTYPE) %>%
+  summarise(
+    FATALITIES = sum(FATALITIES, na.rm = T),
+    INJURIES = sum(INJURIES,na.rm = T)
+  )
+```
+
+
+
+## Removing data file after analysis
+```{r}
+unlink("./data",recursive = T)
+```
+
