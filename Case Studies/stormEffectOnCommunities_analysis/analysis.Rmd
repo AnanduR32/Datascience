@@ -20,12 +20,12 @@ major storms and weather events in the United States, including when and where
 they occur, as well as estimates of any fatalities, injuries, and property
 damage.
 
-## Data
+## Data Processing 
 There is also some documentation of the database available. Details on how some 
 of the variables are constructed/defined is available on this website by
 National Weather Service : [Storm Data Documentation]("https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf")
 
-#### Getting the data 
+### Getting the data 
 ```{r}
 fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 if(!file.exists("./data/data.csv.bz2")){
@@ -33,8 +33,8 @@ if(!file.exists("./data/data.csv.bz2")){
 }
 ```
 
-#### Reading the data
-```{r}
+### Reading the data
+```{r,cache=T}
 data_raw <- read.csv("./data/data.csv.bz2", sep =",", header = T)
 ```
 
@@ -68,9 +68,11 @@ arr_NAs_c = which(as.numeric(colMeans(is.na(data_raw)))*100 > 50)
 arr_missing
 arr_NAs
 ```
-
 #### Removing columns that have more that 50% data misssing
+Columns 26, and 28 represent the "PROPDMGEXP", "CROPDMGEXP" fields which are
+required for the analysis therefore we will keep them.
 ```{r}
+arr_missing_c = arr_missing_c[-c(4,5)]
 data_clean = data_raw[,-c(arr_missing_c,arr_NAs_c)]
 ```
 
@@ -93,7 +95,7 @@ data_clean = data_clean[!(data_clean[,arr_missing_r]==""),]
 ```
 
 Checking distribution of missing value and NAs
-```{r}
+```{r, cache=T}
 as.numeric(colMeans(is.na(data_clean)))
 as.numeric(colMeans(data_clean==""))
 ```
@@ -107,11 +109,97 @@ Looking at cleaned data
 head(data_clean)
 ```
 
-#### Fixing the datatypes
-```{r}
+### Fixing the datatypes and datafields
+
+#### Creating a datatime field
+```{r, cache= T}
 data_clean$BGN_DATE = as.POSIXct(data_clean$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
 data_clean$BGN_TIME = format(strptime(data_clean$BGN_TIME,"%H%M"),'%H:%M')
 data_clean$BGN_DATETIME = as.POSIXct(paste(data_clean$BGN_DATE, data_clean$BGN_TIME), format="%Y-%m-%d %H:%M")
+```
+
+#### Imputing proper values in the "PROPDMGEXP", "CROPDMGEXP" fields
+Current values in "CROPDMGEXP"
+```{r}
+unique(data_clean$CROPDMGEXP)
+```
+Current values in "PROPDMGEXP"
+```{r}
+unique(data_clean$PROPDMGEXP)
+```
+Correct representations:
+- "\"\"" = 10^0,
+- "-" = 10^0, 
+- "?" = 10^0,
+- "+" = 10^0,
+- "0" = 10^0,
+- "1" = 10^1,
+- "2" = 10^2,
+- "3" = 10^3,
+- "4" = 10^4,
+- "5" = 10^5,
+- "6" = 10^6,
+- "7" = 10^7,
+- "8" = 10^8,
+- "9" = 10^9,
+- "H" = 10^2,
+- "K" = 10^3,
+- "M" = 10^6,
+- "B" = 10^9
+
+Imputing the correct values 
+```{r}
+data_clean = transform(data_clean, PROPDMGEXP = toupper(PROPDMGEXP), CROPDMGEXP = toupper(CROPDMGEXP))
+DmgExP =  c("\"\"" = 10^0,
+            "-" = 10^0, 
+            "+" = 10^0,
+            "?" = 10^0,
+            "0" = 10^0,
+            "1" = 10^1,
+            "2" = 10^2,
+            "3" = 10^3,
+            "4" = 10^4,
+            "5" = 10^5,
+            "6" = 10^6,
+            "7" = 10^7,
+            "8" = 10^8,
+            "9" = 10^9,
+            "H" = 10^2,
+            "K" = 10^3,
+            "M" = 10^6,
+            "B" = 10^9)
+data_clean = transform(
+  data_clean, 
+  PROPDMGEXP = as.numeric(DmgExP[as.character(data_clean[,"PROPDMGEXP"])]),
+  CROPDMGEXP = as.numeric(DmgExP[as.character(data_clean[,"CROPDMGEXP"])])
+)
+data_clean = transform(
+  data_clean1,
+  PROPDMGEXP = ifelse(is.na(PROPDMGEXP),10^0,PROPDMGEXP),
+  CROPDMGEXP = ifelse(is.na(CROPDMGEXP),10^0,CROPDMGEXP)
+)
+```
+
+
+### Subsetting the data, removing EVTYPEs that have 0 impact of any sort
+
+```{r}
+data_clean = subset(data_clean, EVTYPE != "?" &  (INJURIES > 0 | FATALITIES > 0 | PROPDMG > 0 | CROPDMG > 0))
+```
+
+
+Aggregating the results
+```{r}
+library(dplyr)
+data_ = data_clean %>%
+  group_by(EVTYPE) %>%
+  summarise(
+    FATALITIES = sum(FATALITIES, na.rm = T),
+    INJURIES = sum(INJURIES,na.rm = T),
+    CROPDMG = sum(CROPDMG, na.rm = T),
+    PROPDMG = sum(PROPDMG, na.rm = T)
+  )
+health_aggr
 ```
 
 
@@ -128,21 +216,13 @@ Looking at data in relavant columns "FATALITIES" and "INJURIES"
 data_clean[,c("EVTYPE","FATALITIES","INJURIES")]
 ```
 
-Aggregating the results
-```{r}
-library(dplyr)
-health_aggr = data_clean %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    FATALITIES = sum(FATALITIES, na.rm = T),
-    INJURIES = sum(INJURIES,na.rm = T)
-  )
-```
+
 
 
 
 ## Removing data file after analysis
 ```{r}
-unlink("./data",recursive = T)
+unlink("./data/data.csv.bz2",recursive = T)
+unlink("./analysis_cache", recursive = T)
 ```
 
