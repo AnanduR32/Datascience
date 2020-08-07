@@ -55,7 +55,7 @@ names(data_raw)
 ```{r}
 datatypes = as.character(sapply(data_raw, class))
 character_loc = which(datatypes == "character")
-arr_missing = array(dim = length(numeric_loc))
+arr_missing = array(dim = length(character_loc))
 j=1
 for(i in character_loc){
   arr_missing[j] = mean(data_raw[,i]=="")
@@ -66,7 +66,6 @@ arr_missing_c = character_loc[which(arr_missing*100 > 50)]
 arr_NAs_r = which(as.numeric(colMeans(is.na(data_raw))) > 0 & as.numeric(colMeans(is.na(data_raw)))*100 < 2)
 arr_NAs_c = which(as.numeric(colMeans(is.na(data_raw)))*100 > 50)
 arr_missing
-arr_NAs
 ```
 #### Removing columns that have more that 50% data misssing
 Columns 26, and 28 represent the "PROPDMGEXP", "CROPDMGEXP" fields which are
@@ -174,7 +173,7 @@ data_clean = transform(
   CROPDMGEXP = as.numeric(DmgExP[as.character(data_clean[,"CROPDMGEXP"])])
 )
 data_clean = transform(
-  data_clean1,
+  data_clean,
   PROPDMGEXP = ifelse(is.na(PROPDMGEXP),10^0,PROPDMGEXP),
   CROPDMGEXP = ifelse(is.na(CROPDMGEXP),10^0,CROPDMGEXP)
 )
@@ -199,7 +198,7 @@ data_ = data_clean %>%
     CROPDMG = sum(CROPDMG, na.rm = T),
     PROPDMG = sum(PROPDMG, na.rm = T)
   )
-health_aggr
+data_
 ```
 
 
@@ -213,7 +212,7 @@ names(data_clean)
 
 Looking at data in relavant columns "FATALITIES" and "INJURIES"
 ```{r}
-data_clean[,c("EVTYPE","FATALITIES","INJURIES")]
+head(data_clean[,c("EVTYPE","FATALITIES","INJURIES")])
 ```
 
 

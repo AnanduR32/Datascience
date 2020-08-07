@@ -371,20 +371,19 @@ summary {
 
 <p>Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.</p>
 <p>This project involves exploring the U.S. National Oceanic and Atmospheric Administration’s (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.</p>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="data-processing" class="section level2">
+<h2>Data Processing</h2>
 <p>There is also some documentation of the database available. Details on how some of the variables are constructed/defined is available on this website by National Weather Service : <a href="%22https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf%22">Storm Data Documentation</a></p>
-<div id="getting-the-data" class="section level4">
-<h4>Getting the data</h4>
+<div id="getting-the-data" class="section level3">
+<h3>Getting the data</h3>
 <pre class="r"><code>fileUrl = &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&quot;
 if(!file.exists(&quot;./data/data.csv.bz2&quot;)){
   download.file(fileUrl,&quot;./data/data.csv.bz2&quot;)
 }</code></pre>
 </div>
-<div id="reading-the-data" class="section level4">
-<h4>Reading the data</h4>
+<div id="reading-the-data" class="section level3">
+<h3>Reading the data</h3>
 <pre class="r"><code>data_raw &lt;- read.csv(&quot;./data/data.csv.bz2&quot;, sep =&quot;,&quot;, header = T)</code></pre>
-</div>
 <div id="preliminary-analysis-of-data" class="section level4">
 <h4>Preliminary analysis of data</h4>
 <pre class="r"><code>head(data_raw)</code></pre>
@@ -423,36 +422,208 @@ if(!file.exists(&quot;./data/data.csv.bz2&quot;)){
 ## 4          0          0              4
 ## 5          0          0              5
 ## 6          0          0              6</code></pre>
+<p>Reading column names</p>
+<pre class="r"><code>names(data_raw)</code></pre>
+<pre><code>##  [1] &quot;STATE__&quot;    &quot;BGN_DATE&quot;   &quot;BGN_TIME&quot;   &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;    
+##  [6] &quot;COUNTYNAME&quot; &quot;STATE&quot;      &quot;EVTYPE&quot;     &quot;BGN_RANGE&quot;  &quot;BGN_AZI&quot;   
+## [11] &quot;BGN_LOCATI&quot; &quot;END_DATE&quot;   &quot;END_TIME&quot;   &quot;COUNTY_END&quot; &quot;COUNTYENDN&quot;
+## [16] &quot;END_RANGE&quot;  &quot;END_AZI&quot;    &quot;END_LOCATI&quot; &quot;LENGTH&quot;     &quot;WIDTH&quot;     
+## [21] &quot;F&quot;          &quot;MAG&quot;        &quot;FATALITIES&quot; &quot;INJURIES&quot;   &quot;PROPDMG&quot;   
+## [26] &quot;PROPDMGEXP&quot; &quot;CROPDMG&quot;    &quot;CROPDMGEXP&quot; &quot;WFO&quot;        &quot;STATEOFFIC&quot;
+## [31] &quot;ZONENAMES&quot;  &quot;LATITUDE&quot;   &quot;LONGITUDE&quot;  &quot;LATITUDE_E&quot; &quot;LONGITUDE_&quot;
+## [36] &quot;REMARKS&quot;    &quot;REFNUM&quot;</code></pre>
+</div>
 </div>
 <div id="data-cleaning" class="section level3">
 <h3>Data Cleaning</h3>
 <div id="checking-distrobution-of-missing-data-and-nas-in-the-dataset" class="section level4">
 <h4>Checking distrobution of Missing data and NAs in the dataset</h4>
 <pre class="r"><code>datatypes = as.character(sapply(data_raw, class))
-numeric_loc = which(datatypes == &quot;character&quot;)
-arr_missing = array(dim = length(numeric_loc))
-j=0
-for(i in numeric_loc){
-  arr_missing[j] = mean(data_raw[,i]==&quot;&quot;)*100
+character_loc = which(datatypes == &quot;character&quot;)
+arr_missing = array(dim = length(character_loc))
+j=1
+for(i in character_loc){
+  arr_missing[j] = mean(data_raw[,i]==&quot;&quot;)
   j = j+1
 }
-arr_missing = numeric_loc[which(arr_missing &lt; 2)]
-arr_NAs = which(as.numeric(colMeans(is.na(data_raw))) &gt; 0)
+arr_missing_r = character_loc[which(arr_missing*100 &lt; 2 &amp; arr_missing &gt; 0)]
+arr_missing_c = character_loc[which(arr_missing*100 &gt; 50)]
+arr_NAs_r = which(as.numeric(colMeans(is.na(data_raw))) &gt; 0 &amp; as.numeric(colMeans(is.na(data_raw)))*100 &lt; 2)
+arr_NAs_c = which(as.numeric(colMeans(is.na(data_raw)))*100 &gt; 50)
 arr_missing</code></pre>
-<pre><code>## [1] 2 3 4 6 7</code></pre>
-<pre class="r"><code>arr_NAs</code></pre>
-<pre><code>## [1] 15 21 32 34</code></pre>
+<pre><code>##  [1] 0.000000000 0.000000000 0.000000000 0.001761061 0.000000000 0.000000000
+##  [7] 0.606598493 0.318900539 0.269768158 0.264855142 0.803324183 0.553282345
+## [13] 0.516386511 0.685376323 0.157452590 0.275706336 0.658351962 0.318556972</code></pre>
 </div>
-<div id="fixing-the-datatypes" class="section level4">
-<h4>Fixing the datatypes</h4>
-<pre class="r"><code>data_raw$BGN_DATE = as.POSIXct(data_raw$BGN_DATE, format = &quot;%m/%d/%Y %H:%M:%S&quot;)
-data_raw$BGN_TIME = format(strptime(data_raw$BGN_TIME,&quot;%H%M&quot;),&#39;%H:%M&#39;)
-data_raw$BGN_DATETIME = as.POSIXct(paste(data_raw$BGN_DATE, data_raw$BGN_TIME), format=&quot;%Y-%m-%d %H:%M&quot;)</code></pre>
+<div id="removing-columns-that-have-more-that-50-data-misssing" class="section level4">
+<h4>Removing columns that have more that 50% data misssing</h4>
+<p>Columns 26, and 28 represent the “PROPDMGEXP”, “CROPDMGEXP” fields which are required for the analysis therefore we will keep them.</p>
+<pre class="r"><code>arr_missing_c = arr_missing_c[-c(4,5)]
+data_clean = data_raw[,-c(arr_missing_c,arr_NAs_c)]</code></pre>
+<p>Since the END_DATE and END_TIME fields are same as the BGN_DATA and BGN_TIME, we also remove those columns from the data.</p>
+<p>Furthermore, since the COUNTY_END field has only the value 0 and would serve no purpose to the analysis, it too is removed</p>
+<pre class="r"><code>data_clean = data_clean[,-c(11:13)]</code></pre>
 </div>
+<div id="removing-records-with-missing-or-na-data" class="section level4">
+<h4>Removing records with missing or NA data</h4>
+<pre class="r"><code>with_NAs = complete.cases(data_raw[,arr_NAs_r])
+data_clean = subset(data_clean, with_NAs)
+data_clean = data_clean[!(data_clean[,arr_missing_r]==&quot;&quot;),]</code></pre>
+<p>Checking distribution of missing value and NAs</p>
+<pre class="r"><code>as.numeric(colMeans(is.na(data_clean)))</code></pre>
+<pre><code>##  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</code></pre>
+<pre class="r"><code>as.numeric(colMeans(data_clean==&quot;&quot;))</code></pre>
+<pre><code>##  [1] 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+##  [8] 0.0000000 0.0000000 0.3177455 0.0000000 0.0000000 0.0000000 0.0000000
+## [15] 0.0000000 0.0000000 0.0000000 0.5155691 0.0000000 0.6848570 0.1560898
+## [22] 0.2744762 0.0000000 0.0000000 0.0000000 0.0000000 0.3174058 0.0000000</code></pre>
+<p>There are still some fields with no value aka missing values in certain columns, but their percentages are in range 10-50% so the next suitable step would be to impute the values in the dataset, but since it is the weather data, imputing values would only create noise in the data(?)</p>
+<p>Looking at cleaned data</p>
+<pre class="r"><code>head(data_clean)</code></pre>
+<pre><code>##   STATE__           BGN_DATE BGN_TIME TIME_ZONE COUNTY COUNTYNAME STATE  EVTYPE
+## 1       1  4/18/1950 0:00:00     0130       CST     97     MOBILE    AL TORNADO
+## 2       1  4/18/1950 0:00:00     0145       CST      3    BALDWIN    AL TORNADO
+## 3       1  2/20/1951 0:00:00     1600       CST     57    FAYETTE    AL TORNADO
+## 4       1   6/8/1951 0:00:00     0900       CST     89    MADISON    AL TORNADO
+## 5       1 11/15/1951 0:00:00     1500       CST     43    CULLMAN    AL TORNADO
+## 6       1 11/15/1951 0:00:00     2000       CST     77 LAUDERDALE    AL TORNADO
+##   BGN_RANGE BGN_LOCATI END_RANGE LENGTH WIDTH MAG FATALITIES INJURIES PROPDMG
+## 1         0                    0   14.0   100   0          0       15    25.0
+## 2         0                    0    2.0   150   0          0        0     2.5
+## 3         0                    0    0.1   123   0          0        2    25.0
+## 4         0                    0    0.0   100   0          0        2     2.5
+## 5         0                    0    0.0   150   0          0        2     2.5
+## 6         0                    0    1.5   177   0          0        6     2.5
+##   PROPDMGEXP CROPDMG CROPDMGEXP WFO STATEOFFIC LATITUDE LONGITUDE LATITUDE_E
+## 1          K       0                               3040      8812       3051
+## 2          K       0                               3042      8755          0
+## 3          K       0                               3340      8742          0
+## 4          K       0                               3458      8626          0
+## 5          K       0                               3412      8642          0
+## 6          K       0                               3450      8748          0
+##   LONGITUDE_ REMARKS REFNUM
+## 1       8806              1
+## 2          0              2
+## 3          0              3
+## 4          0              4
+## 5          0              5
+## 6          0              6</code></pre>
+</div>
+</div>
+<div id="fixing-the-datatypes-and-datafields" class="section level3">
+<h3>Fixing the datatypes and datafields</h3>
+<div id="creating-a-datatime-field" class="section level4">
+<h4>Creating a datatime field</h4>
+<pre class="r"><code>data_clean$BGN_DATE = as.POSIXct(data_clean$BGN_DATE, format = &quot;%m/%d/%Y %H:%M:%S&quot;)
+data_clean$BGN_TIME = format(strptime(data_clean$BGN_TIME,&quot;%H%M&quot;),&#39;%H:%M&#39;)
+data_clean$BGN_DATETIME = as.POSIXct(paste(data_clean$BGN_DATE, data_clean$BGN_TIME), format=&quot;%Y-%m-%d %H:%M&quot;)</code></pre>
+</div>
+<div id="imputing-proper-values-in-the-propdmgexp-cropdmgexp-fields" class="section level4">
+<h4>Imputing proper values in the “PROPDMGEXP”, “CROPDMGEXP” fields</h4>
+<p>Current values in “CROPDMGEXP”</p>
+<pre class="r"><code>unique(data_clean$CROPDMGEXP)</code></pre>
+<pre><code>## [1] &quot;&quot;  &quot;M&quot; &quot;K&quot; &quot;m&quot; &quot;B&quot; &quot;?&quot; &quot;0&quot; &quot;k&quot; &quot;2&quot;</code></pre>
+<p>Current values in “PROPDMGEXP”</p>
+<pre class="r"><code>unique(data_clean$PROPDMGEXP)</code></pre>
+<pre><code>##  [1] &quot;K&quot; &quot;M&quot; &quot;&quot;  &quot;B&quot; &quot;m&quot; &quot;+&quot; &quot;0&quot; &quot;5&quot; &quot;6&quot; &quot;?&quot; &quot;4&quot; &quot;2&quot; &quot;3&quot; &quot;h&quot; &quot;7&quot; &quot;H&quot; &quot;-&quot; &quot;1&quot; &quot;8&quot;</code></pre>
+<p>Correct representations: - “&quot;&quot;” = 10^0, - “-” = 10^0, - “?” = 10^0, - “+” = 10^0, - “0” = 10^0, - “1” = 10^1, - “2” = 10^2, - “3” = 10^3, - “4” = 10^4, - “5” = 10^5, - “6” = 10^6, - “7” = 10^7, - “8” = 10^8, - “9” = 10^9, - “H” = 10^2, - “K” = 10^3, - “M” = 10^6, - “B” = 10^9</p>
+<p>Imputing the correct values</p>
+<pre class="r"><code>data_clean = transform(data_clean, PROPDMGEXP = toupper(PROPDMGEXP), CROPDMGEXP = toupper(CROPDMGEXP))
+DmgExP =  c(&quot;\&quot;\&quot;&quot; = 10^0,
+            &quot;-&quot; = 10^0, 
+            &quot;+&quot; = 10^0,
+            &quot;?&quot; = 10^0,
+            &quot;0&quot; = 10^0,
+            &quot;1&quot; = 10^1,
+            &quot;2&quot; = 10^2,
+            &quot;3&quot; = 10^3,
+            &quot;4&quot; = 10^4,
+            &quot;5&quot; = 10^5,
+            &quot;6&quot; = 10^6,
+            &quot;7&quot; = 10^7,
+            &quot;8&quot; = 10^8,
+            &quot;9&quot; = 10^9,
+            &quot;H&quot; = 10^2,
+            &quot;K&quot; = 10^3,
+            &quot;M&quot; = 10^6,
+            &quot;B&quot; = 10^9)
+data_clean = transform(
+  data_clean, 
+  PROPDMGEXP = as.numeric(DmgExP[as.character(data_clean[,&quot;PROPDMGEXP&quot;])]),
+  CROPDMGEXP = as.numeric(DmgExP[as.character(data_clean[,&quot;CROPDMGEXP&quot;])])
+)
+data_clean = transform(
+  data_clean,
+  PROPDMGEXP = ifelse(is.na(PROPDMGEXP),10^0,PROPDMGEXP),
+  CROPDMGEXP = ifelse(is.na(CROPDMGEXP),10^0,CROPDMGEXP)
+)</code></pre>
+</div>
+</div>
+<div id="subsetting-the-data-removing-evtypes-that-have-0-impact-of-any-sort" class="section level3">
+<h3>Subsetting the data, removing EVTYPEs that have 0 impact of any sort</h3>
+<pre class="r"><code>data_clean = subset(data_clean, EVTYPE != &quot;?&quot; &amp;  (INJURIES &gt; 0 | FATALITIES &gt; 0 | PROPDMG &gt; 0 | CROPDMG &gt; 0))</code></pre>
+<p>Aggregating the results</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>data_ = data_clean %&gt;%
+  group_by(EVTYPE) %&gt;%
+  summarise(
+    FATALITIES = sum(FATALITIES, na.rm = T),
+    INJURIES = sum(INJURIES,na.rm = T),
+    CROPDMG = sum(CROPDMG, na.rm = T),
+    PROPDMG = sum(PROPDMG, na.rm = T)
+  )</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>data_</code></pre>
+<pre><code>## # A tibble: 487 x 5
+##    EVTYPE                   FATALITIES INJURIES CROPDMG PROPDMG
+##    &lt;chr&gt;                         &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 &quot;   HIGH SURF ADVISORY&quot;           0        0     0      200 
+##  2 &quot; FLASH FLOOD&quot;                    0        0     0       50 
+##  3 &quot; TSTM WIND&quot;                      0        0     0      108 
+##  4 &quot; TSTM WIND (G45)&quot;                0        0     0        8 
+##  5 &quot;AGRICULTURAL FREEZE&quot;             0        0    28.8      0 
+##  6 &quot;APACHE COUNTY&quot;                   0        0     0        5 
+##  7 &quot;ASTRONOMICAL HIGH TIDE&quot;          0        0     0      934.
+##  8 &quot;ASTRONOMICAL LOW TIDE&quot;           0        0     0      320 
+##  9 &quot;AVALANCE&quot;                        1        0     0        0 
+## 10 &quot;AVALANCHE&quot;                     224      170     0     1624.
+## # ... with 477 more rows</code></pre>
 </div>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory Analysis</h2>
+<pre class="r"><code>names(data_clean)</code></pre>
+<pre><code>##  [1] &quot;STATE__&quot;      &quot;BGN_DATE&quot;     &quot;BGN_TIME&quot;     &quot;TIME_ZONE&quot;    &quot;COUNTY&quot;      
+##  [6] &quot;COUNTYNAME&quot;   &quot;STATE&quot;        &quot;EVTYPE&quot;       &quot;BGN_RANGE&quot;    &quot;BGN_LOCATI&quot;  
+## [11] &quot;END_RANGE&quot;    &quot;LENGTH&quot;       &quot;WIDTH&quot;        &quot;MAG&quot;          &quot;FATALITIES&quot;  
+## [16] &quot;INJURIES&quot;     &quot;PROPDMG&quot;      &quot;PROPDMGEXP&quot;   &quot;CROPDMG&quot;      &quot;CROPDMGEXP&quot;  
+## [21] &quot;WFO&quot;          &quot;STATEOFFIC&quot;   &quot;LATITUDE&quot;     &quot;LONGITUDE&quot;    &quot;LATITUDE_E&quot;  
+## [26] &quot;LONGITUDE_&quot;   &quot;REMARKS&quot;      &quot;REFNUM&quot;       &quot;BGN_DATETIME&quot;</code></pre>
+<div id="analyis-to-find-events-that-are-most-harmful-with-respect-to-population-health" class="section level3">
+<h3>Analyis to find events that are most harmful with respect to population health</h3>
+<p>Looking at data in relavant columns “FATALITIES” and “INJURIES”</p>
+<pre class="r"><code>head(data_clean[,c(&quot;EVTYPE&quot;,&quot;FATALITIES&quot;,&quot;INJURIES&quot;)])</code></pre>
+<pre><code>##    EVTYPE FATALITIES INJURIES
+## 1 TORNADO          0       15
+## 2 TORNADO          0        0
+## 3 TORNADO          0        2
+## 4 TORNADO          0        2
+## 5 TORNADO          0        2
+## 6 TORNADO          0        6</code></pre>
+</div>
+</div>
+<div id="removing-data-file-after-analysis" class="section level2">
+<h2>Removing data file after analysis</h2>
+<pre class="r"><code>unlink(&quot;./data/data.csv.bz2&quot;,recursive = T)
+unlink(&quot;./analysis_cache&quot;, recursive = T)</code></pre>
 </div>
 
 
