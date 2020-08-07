@@ -101,13 +101,11 @@ Looking at cleaned data
 head(data_clean)
 ```
 
-
-
 #### Fixing the datatypes
 ```{r}
-data_raw$BGN_DATE = as.POSIXct(data_raw$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
-data_raw$BGN_TIME = format(strptime(data_raw$BGN_TIME,"%H%M"),'%H:%M')
-data_raw$BGN_DATETIME = as.POSIXct(paste(data_raw$BGN_DATE, data_raw$BGN_TIME), format="%Y-%m-%d %H:%M")
+data_clean$BGN_DATE = as.POSIXct(data_clean$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
+data_clean$BGN_TIME = format(strptime(data_clean$BGN_TIME,"%H%M"),'%H:%M')
+data_clean$BGN_DATETIME = as.POSIXct(paste(data_clean$BGN_DATE, data_clean$BGN_TIME), format="%Y-%m-%d %H:%M")
 ```
 
 
