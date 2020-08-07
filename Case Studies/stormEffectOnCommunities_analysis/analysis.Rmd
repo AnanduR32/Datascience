@@ -2,7 +2,9 @@
 title: "Storm Effects on Communities, Analysis"
 author: "Anandu R"
 date: "8/6/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -222,6 +224,6 @@ head(data_clean[,c("EVTYPE","FATALITIES","INJURIES")])
 ## Removing data file after analysis
 ```{r}
 unlink("./data/data.csv.bz2",recursive = T)
-unlink("./analysis_cache", recursive = T)
+#unlink("./analysis_cache", recursive = T)
 ```
 
