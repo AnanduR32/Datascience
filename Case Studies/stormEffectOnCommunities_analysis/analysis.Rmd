@@ -48,18 +48,60 @@ head(data_raw)
 #### Checking distrobution of Missing data and NAs in the dataset 
 ```{r}
 datatypes = as.character(sapply(data_raw, class))
-numeric_loc = which(datatypes == "character")
+character_loc = which(datatypes == "character")
 arr_missing = array(dim = length(numeric_loc))
-j=0
-for(i in numeric_loc){
-  arr_missing[j] = mean(data_raw[,i]=="")*100
+j=1
+for(i in character_loc){
+  arr_missing[j] = mean(data_raw[,i]=="")
   j = j+1
 }
-arr_missing = numeric_loc[which(arr_missing < 2)]
-arr_NAs = which(as.numeric(colMeans(is.na(data_raw))) > 0)
+arr_missing_r = character_loc[which(arr_missing*100 < 2 & arr_missing > 0)]
+arr_missing_c = character_loc[which(arr_missing*100 > 50)]
+arr_NAs_r = which(as.numeric(colMeans(is.na(data_raw))) > 0 & as.numeric(colMeans(is.na(data_raw)))*100 < 2)
+arr_NAs_c = which(as.numeric(colMeans(is.na(data_raw)))*100 > 50)
 arr_missing
 arr_NAs
 ```
+
+#### Removing columns that have more that 50% data misssing
+```{r}
+data_clean = data_raw[,-c(arr_missing_c,arr_NAs_c)]
+```
+
+Since the END_DATE and END_TIME fields are same as the BGN_DATA and BGN_TIME, we 
+also remove those columns from the data.
+
+Furthermore, since the COUNTY_END field has only the value 0 and would serve no
+purpose to the analysis, it too is removed
+
+```{r}
+data_clean = data_clean[,-c(11:13)]
+```
+
+
+#### Removing records with missing or NA data
+```{r}
+with_NAs = complete.cases(data_raw[,arr_NAs_r])
+data_clean = subset(data_clean, with_NAs)
+data_clean = data_clean[!(data_clean[,arr_missing_r]==""),]
+```
+
+Checking distribution of missing value and NAs
+```{r}
+as.numeric(colMeans(is.na(data_clean)))
+as.numeric(colMeans(data_clean==""))
+```
+There are still some fields with no value aka missing values in certain columns,
+but their percentages are in range 10-50% so the next suitable step would be to 
+impute the values in the dataset, but since it is the weather data, imputing 
+values would only create noise in the data(?)
+
+Looking at cleaned data 
+```{r}
+head(data_clean)
+```
+
+
 
 #### Fixing the datatypes
 ```{r}
