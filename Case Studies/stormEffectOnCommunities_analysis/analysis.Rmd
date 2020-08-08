@@ -25,7 +25,7 @@ damage.
 # 1. Data Processing 
 There is also some documentation of the database available. Details on how some 
 of the variables are constructed/defined is available on this website by
-National Weather Service : [Storm Data Documentation]("https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf")
+National Weather Service : [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
 ## 1.1 Getting the data 
 ```{r message=FALSE, warning=FALSE, results='hide'}
@@ -33,6 +33,14 @@ fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.
 if(!file.exists("./data/data.csv.bz2")){
   download.file(fileUrl,"./data/data.csv.bz2")
 }
+## importing libraries
+suppressMessages(
+  {
+    library(dplyr)
+    library(ggplot2)
+    library(reshape2)
+  }
+)
 ```  
 ## 1.2 Reading the data
 ```{r message=FALSE, warning=FALSE, results=F}
@@ -209,11 +217,13 @@ head(data_clean)
 
 ### 1.4.4 Standardising data in the '"EVTYPE" field
 
-```{r}
-unique(data_clean$EVTYPE)[1:10]
-```
+The various fields in EVTYPES have been misspelled or two names that represents 
+the same event have been used therefore all of the event types have been 
+standardized
 
-#### 1.4.4.1 Labeling event types correctly 
+Since the code for this is very long it has been hidden from view, if you wish 
+to take a look at the cook please look into the Analysis.Rmd file in the [repo](https://github.com/AnanduR32/Data_Science_R/tree/master/Case%20Studies/stormEffectOnCommunities_analysis)
+
 ```{r echo=F, message=FALSE, warning=FALSE}
 ## WIND 1
 data_clean[data_clean$EVTYPE=="NON TSTM WIND","EVTYPE"] = "WIND"
@@ -573,10 +583,10 @@ data_clean = transform(data_clean,
 
 ### 2.2 Aggregating the data based on event type
 ```{r, results=T}
-library(dplyr)
+## Creating a 'wide' aggregation of data
 suppressMessages(
   {
-  data_aggr = data_clean %>%
+  data_aggr_w = data_clean %>%
     group_by(EVTYPE) %>%
     summarise(
       FATALITIES = sum(FATALITIES, na.rm = T),
@@ -586,13 +596,47 @@ suppressMessages(
     )
   }
 )
-head(data_aggr[order(-data_aggr[,"FATALITIES"],
-                     -data_aggr[,"INJURIES"],
-                     -data_aggr[,"CROPDMGPRICE"],
-                     -data_aggr[,"PROPDMGPRICE"]),])
+head(data_aggr_w[order(-data_aggr_w[,"FATALITIES"],
+                   -data_aggr_w[,"INJURIES"],
+                   -data_aggr_w[,"CROPDMGPRICE"],
+                   -data_aggr_w[,"PROPDMGPRICE"]),])
+
+data_aggr_w = transform(data_aggr_w,
+                        TOTPUBDMG = FATALITIES + INJURIES,
+                        TOTECODMG = CROPDMGPRICE + PROPDMGPRICE)
+
+## Splitting the public damage and economy damage data
+data_aggr_wp = data_aggr_w[order(-data_aggr_w$TOTPUBDMG),c(1,2,3,6)]
+data_aggr_we = data_aggr_w[order(-data_aggr_w$TOTECODMG),c(1,4,5,7)]
+
+## Selecting only the top 10 most devastating events for each category
+data_aggr_wp = data_aggr_wp[1:10,]
+data_aggr_we = data_aggr_we[1:10,]
+
+## Creating a 'narrow' aggregation of data
+suppressMessages(
+  {
+  data_aggr_np = melt(
+    data_aggr_wp, 
+    id.vars = c("EVTYPE"),
+    measure.vars = c("FATALITIES","INJURIES","TOTPUBDMG"),
+    variable.name = "ATTRIBUTE",
+    value.name = "MEASURE")
+  data_aggr_ne = melt(
+    data_aggr_we, 
+    id.vars = c("EVTYPE"),
+    measure.vars = c("CROPDMGPRICE","PROPDMGPRICE","TOTECODMG"),
+    variable.name = "ATTRIBUTE",
+    value.name = "MEASURE")
+  }
+)
+
+
+
 ```
+
 ```{r}
-nrow(data_aggr)
+nrow(data_aggr_w)
 ```  
 There are 46 rows of data available on various events, which we'll use to create 
 various plots to show which types of events across the United States are most 
@@ -604,8 +648,8 @@ consequences.
 Looking at data in relevant columns "FATALITIES" and "INJURIES" sorted by 
 descending order of the field values  
 ```{r}
-head(data_aggr[order(-data_aggr[,"FATALITIES"], -data_aggr[,"INJURIES"]),
-               c("EVTYPE","FATALITIES","INJURIES")])
+head(data_aggr_w[order(-data_aggr_w[,"FATALITIES"],
+                       -data_aggr_w[,"INJURIES"]),c(1,2,3)])
 ```
 
 ### 2.4 Analyis to find events most harmful with respect to economic damage
@@ -613,8 +657,8 @@ head(data_aggr[order(-data_aggr[,"FATALITIES"], -data_aggr[,"INJURIES"]),
 Looking at data in relevant columns "CROPDMGPRICE" and "PROPDMGPRICE" sorted by 
 descending order of the field values
 ```{r}
-head(data_aggr[order(-data_aggr[,"CROPDMGPRICE"], -data_aggr[,"PROPDMGPRICE"]),
-               c("EVTYPE","CROPDMGPRICE","PROPDMGPRICE")])
+head(data_aggr_w[order(-data_aggr_w[,"CROPDMGPRICE"], 
+                       -data_aggr_w[,"PROPDMGPRICE"]),c(1,4,5)])
 ```
 
 ## 3. RESULTS 
@@ -622,16 +666,33 @@ head(data_aggr[order(-data_aggr[,"CROPDMGPRICE"], -data_aggr[,"PROPDMGPRICE"]),
 #### 3.1.1 Population health  
 ```{r}
 ggplot(
-  data_aggr,
+  data_aggr_np,
   aes(
-    
-  )
-)
+    x = reorder(EVTYPE, -MEASURE),
+    y = MEASURE
+  ),
+) + geom_bar(stat="identity", aes(fill=ATTRIBUTE), position="dodge") +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) + guides() +
+  xlab("Event Type") +
+  ylab("Frequency Count") 
+  
 ```
 
 
 #### 3.1.2 Economic damage  
-
+```{r}
+ggplot(
+  data_aggr_ne,
+  aes(
+    x = reorder(EVTYPE, -MEASURE),
+    y = MEASURE
+  ),
+) + geom_bar(stat="identity", aes(fill=ATTRIBUTE), position="dodge") +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) + guides() +
+  xlab("Event Type") +
+  ylab("Frequency Count") 
+  
+```
 
 
 ## Removing data file after analysis
