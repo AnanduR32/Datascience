@@ -22,40 +22,38 @@ major storms and weather events in the United States, including when and where
 they occur, as well as estimates of any fatalities, injuries, and property
 damage.
 
-## Data Processing 
+# 1. Data Processing 
 There is also some documentation of the database available. Details on how some 
 of the variables are constructed/defined is available on this website by
 National Weather Service : [Storm Data Documentation]("https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf")
 
-### Getting the data 
-```{r, results='hide'}
+## 1.1 Getting the data 
+```{r message=FALSE, warning=FALSE, results='hide'}
 fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 if(!file.exists("./data/data.csv.bz2")){
   download.file(fileUrl,"./data/data.csv.bz2")
 }
-```
-
-### Reading the data
-```{r, results=F}
+```  
+## 1.2 Reading the data
+```{r message=FALSE, warning=FALSE, results=F}
 suppressMessages(library(dplyr))
 data_raw <- read.csv("./data/data.csv.bz2", sep =",", header = T)
 ```
 
-#### Preliminary analysis of data
+## 1.3 Preliminary analysis of data
 
 ```{r}
 head(data_raw)
 ```
 
-Reading column names 
+### 1.3.1 Reading column names 
 ```{r}
 names(data_raw)
 ```
 
 
-### Data Cleaning 
-#### Removing unnecessary variables
-
+## 1.4 Data Cleaning   
+### 1.4.1 Removing unnecessary variables/Subsetting the data  
 Since the END_DATE and END_TIME fields are same as the BGN_DATA and BGN_TIME, we 
 also remove those columns from the data.
 
@@ -79,21 +77,11 @@ data_clean = select(data_raw,
 ```
 
 
-#### Checking distribution of Missing data and NAs in the dataset 
+### 1.4.2 Missing data treatment
+#### 1.4.2.1 Checking distribution of Missing data and NAs in the dataset 
 ```{r}
-datatypes = as.character(sapply(data_clean, class))
-character_loc = which(datatypes == "character")
-arr_missing = array(dim = length(character_loc))
-j=1
-for(i in character_loc){
-  arr_missing[j] = mean(data_clean[,i]=="")
-  j = j+1
-}
-arr_missing_r = character_loc[which(arr_missing*100 < 2 & arr_missing > 0)]
-arr_missing_c = character_loc[which(arr_missing*100 > 50)]
-arr_NAs_r = which(as.numeric(colMeans(is.na(data_clean))) > 0 &
-                    as.numeric(colMeans(is.na(data_clean)))*100 < 2)
-arr_NAs_c = which(as.numeric(colMeans(is.na(data_clean)))*100 > 50)
+as.numeric(colMeans(is.na(data_clean)))
+as.numeric(colMeans(data_clean==""))
 ```
 
 Columns 9, and 11 represent the "PROPDMGEXP", "CROPDMGEXP" fields which are
@@ -102,11 +90,6 @@ required for the analysis therefore we will keep them.
 Therefore all in all, there arent any records to be removed or are their any 
 columns that can be removed.
 
-Checking distribution of missing value and NAs
-```{r, cache=T}
-as.numeric(colMeans(is.na(data_clean)))
-as.numeric(colMeans(data_clean==""))
-```
 NOTE: During analysis there may still be some fields with no value aka missing
 values in certain columns, but their percentages are in range 10-50% so the next
 suitable step would be to  impute the values in the dataset, but since it is the
@@ -117,9 +100,8 @@ Looking at cleaned data
 head(data_clean)
 ```
 
-### Fixing the datatypes and datafields
-
-#### Creating a datatime field
+### 1.4.3 Fixing the datatypes and datafields  
+#### 1.4.3.1 Creating a datatime field
 ```{r, cache= T}
 data_clean$BGN_DATE = 
   as.POSIXct(data_clean$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
@@ -143,7 +125,7 @@ data_clean =
          CROPDMGEXP)
 ```
 
-#### Imputing proper values in the "PROPDMGEXP", "CROPDMGEXP" fields
+#### 1.4.3.2 Imputing proper values in the "PROPDMGEXP", "CROPDMGEXP" fields
 Current values in "CROPDMGEXP"
 ```{r}
 unique(data_clean$CROPDMGEXP)
@@ -208,7 +190,7 @@ data_clean = transform(
 ```
 
 
-### Subsetting the data, removing EVTYPEs that have 0 impact of any sort
+### 1.4.3.3 Subsetting the data, removing EVTYPEs that have 0 impact of any sort
 
 ```{r}
 data_clean = subset(data_clean, 
@@ -225,13 +207,14 @@ Looking at cleaned data
 head(data_clean)
 ```
 
-### Analysing the event types and fixing field names
+### 1.4.4 Standardising data in the '"EVTYPE" field
+
 ```{r}
 unique(data_clean$EVTYPE)[1:10]
 ```
 
-### Labeling event types correctly 
-```{r}
+#### 1.4.4.1 Labeling event types correctly 
+```{r echo=F, message=FALSE, warning=FALSE}
 ## WIND 1
 data_clean[data_clean$EVTYPE=="NON TSTM WIND","EVTYPE"] = "WIND"
 data_clean[data_clean$EVTYPE=="NON-TSTM WIND","EVTYPE"] = "WIND"
@@ -577,7 +560,10 @@ data_clean[grepl("APACHE COUNTY",
 unique(data_clean$EVTYPE)
 ```
 
-### Creating new fields CROPDMGPRICE and PROPDMGPRICE
+
+## 2. Exploratory Analysis 
+
+### 2.1 Creating new fields CROPDMGPRICE and PROPDMGPRICE  
 ```{r}
 data_clean = transform(data_clean, 
                        CROPDMGPRICE = CROPDMG*CROPDMGEXP,
@@ -585,7 +571,7 @@ data_clean = transform(data_clean,
 ```
 
 
-### Aggregating the data based on event type
+### 2.2 Aggregating the data based on event type
 ```{r, results=T}
 library(dplyr)
 suppressMessages(
@@ -605,22 +591,46 @@ head(data_aggr[order(-data_aggr[,"FATALITIES"],
                      -data_aggr[,"CROPDMGPRICE"],
                      -data_aggr[,"PROPDMGPRICE"]),])
 ```
-
-
-## Exploratory Analysis 
-
 ```{r}
-names(data_clean)
+nrow(data_aggr)
+```  
+There are 46 rows of data available on various events, which we'll use to create 
+various plots to show which types of events across the United States are most 
+harmful with respect to population health and have the greatest economic
+consequences.
+
+### 2.3 Analyis to find events most harmful with respect to population health
+
+Looking at data in relevant columns "FATALITIES" and "INJURIES" sorted by 
+descending order of the field values  
+```{r}
+head(data_aggr[order(-data_aggr[,"FATALITIES"], -data_aggr[,"INJURIES"]),
+               c("EVTYPE","FATALITIES","INJURIES")])
 ```
 
-### Analyis to find events most harmful with respect to population health
+### 2.4 Analyis to find events most harmful with respect to economic damage
 
-Looking at data in relavant columns "FATALITIES" and "INJURIES"
+Looking at data in relevant columns "CROPDMGPRICE" and "PROPDMGPRICE" sorted by 
+descending order of the field values
 ```{r}
-head(data_clean[,c("EVTYPE","FATALITIES","INJURIES")])
+head(data_aggr[order(-data_aggr[,"CROPDMGPRICE"], -data_aggr[,"PROPDMGPRICE"]),
+               c("EVTYPE","CROPDMGPRICE","PROPDMGPRICE")])
+```
+
+## 3. RESULTS 
+### 3.1 Visualization   
+#### 3.1.1 Population health  
+```{r}
+ggplot(
+  data_aggr,
+  aes(
+    
+  )
+)
 ```
 
 
+#### 3.1.2 Economic damage  
 
 
 
