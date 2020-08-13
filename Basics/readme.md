@@ -62,8 +62,16 @@ As John Chambers, the creator of R once said:
 * Content is king
   
   Without good content there isn't much that can be done to make an interesting 
-  enough graphic. 
+  enough graphic.   
   
+## Asking Questions 
+* Steps to reproduce the problem
+* What is expected output 
+* What is seen instead
+* What version of product is error encountered 
+* What operating system
+* Additional information 
+
 ## Removing NA values 
 
 We have a dataset with missing values
@@ -665,9 +673,30 @@ The primary tools for debugging in R are:
 
 ## Important Links 
 
-https://uc-r.github.io/missing_values
+* https://uc-r.github.io/missing_values
+* https://www.r-bloggers.com/
+* https://www.rdocumentation.org/
 
-https://www.r-bloggers.com/
+### Open Government Sites 
+* [United Nations](http://data.un.org/)
+* [U.S.](http://data.gov/)
+    - List of cities/States with open data
+* [United Kingdom](http://data.gov.uk/)
+* [France](http://data.gouv.fr/)
+* [Ghana](http://data.gov.gh/)
+* [Germany](http://www.govdata.de/)
+* [Hong Kong](https://data.gov.hk/en-data/dataset/)
+* [Japan](https://www.data.go.jp/?lang=english)
+* [More...](http://www.data.gov/opendatasites)
+    
+### Thirdparty Sites 
+* [Gapminder](http://www.gapminder.org)
+* [Survey data from U.S.](http://www.asdfree.com)
+* [Infochimps Marketplace](http://www.infochimps.com/marketplace)
+* [Kaggle](http://www.kaggle.com)
 
-https://www.rdocumentation.org/
-
+### Collections by data scientists 
+* [Hilary Mason](http://bitly.com/bundles/hmason/1)
+* [Peter Skomoroch](https://delicious.com/pskomoroch/dataset)
+* [Jeff Hammerbacher](http://www.quora.com/Jeff-Hammerbacher/Introduction-to-Data-Science-Data-Sets)
+* [Gregory Piatsky-Shapiro](http://www.kdnuggets.com/gps.html)
