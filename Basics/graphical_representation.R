@@ -27,7 +27,7 @@ ggplot(movies, aes(x = rating, color=cut)) + geom_histogram(color = 'white',bins
 View(mtcars)
 ggplot(mtcars, aes(x = mpg, color=cut)) + geom_histogram(color = 'white',binwidth = 5, fill = 'orange', alpha = 0.8) + ggtitle('Mileage Ranges for Cars') + labs(x = 'mileage', y = 'frequency')
 
-## Scatterplot 
+## Scatterplot
 ### Scatterplot to find the correlation between the weights and mileage of vehicles 
 ggplot(
   mtcars, aes(
@@ -58,7 +58,6 @@ ggplot(
         )
 
 ## Question: Modify the scatterplot to show different shapes based on the number of cylinders 
-
 ggplot(
   mtcars, aes(
     x = wt, y = mpg, color=cut
