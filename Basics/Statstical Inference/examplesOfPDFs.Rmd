@@ -1,0 +1,64 @@
+---
+title: "examples of PDFs"
+author: "Anandu R"
+date: "8/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Example 1
+
+Consider the function to denote the probability of help calls addressed by a 
+helpline be 
+```
+  f(x) = {2x for 0<x<1; 0 otherwise}
+``` 
+```{r, echo=FALSE}
+x = c(-0.5,0,1,1,1.5)
+y = c(0,0,2,0,0)
+plot(x, y, type = "l", frame = F)
+```   
+
+To find probability that 75% or fewer of calls get addressed   
+
+```{r, echo=FALSE}
+plot(x, y, type = "l", frame = F)
+lines(c(0,0.75,0.75),c(0,0,1.5), col = "skyblue")
+```  
+
+Find area of given portion 
+```
+  (1/2)*(0.75)*(1.5)
+  = 0.5625
+```
+
+The same can be achieved by using the beta function for probability - pbeta()  
+```{r, results=F}
+pbeta(0.75,2,1)
+```  
+The quantile for the above population distribution  
+Median from the distribution shows the datapoint below which 50% of the data is 
+present and above it is the other 50%
+
+```
+  0.5 = F(X) = P(X<=x) = 50% of the area
+  Integrating the function F(X)=2x, we get x^2
+  => x = sqrt(2) = 0.707
+  => The required datapoint
+```  
+
+The same can be found out using the qbeta() function which gives the quantile of
+the beta distribution
+```{r, results=F}
+qbeta(0.5,2,1)
+```
+
+The inference is that during 50% of the day ~70% of the calls are addressed. 
+
+  
+
+
+
