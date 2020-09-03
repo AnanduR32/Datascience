@@ -1,0 +1,33 @@
+---
+title: "Real World Example of Statistical Inference"
+author: "Anandu R"
+date: "9/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Using the Son's Height attribute from the father.son data
+
+### Loading the data 
+```{r, results=F}
+## Loading the data
+if(!require('UsingR')){
+  install.packages
+  library(UsingR); data(father.son)
+}
+x = father.son$sheight
+n = length(x)
+```
+
+### Plot of heights
+```{r}
+ggplot() + geom_histogram(aes(x), col = "white", fill = "skyblue") + theme_bw()
+```
+
+```{r}
+round(c(var(x),var(x)/n,sd(x),sd(x)/sqrt(n)),2)
+```
+

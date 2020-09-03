@@ -154,4 +154,141 @@ The process of making conclusions about populations from noisy data that was
 drawn from it. 
 - **mean** is the center of the distribution.
 - **variance** talks about how spread out the data is 
+```
+Var(X) = E[(X-mu)^2] = E[X^2] - E[X]^2
+```  
+Square root of variance is called standard deviation, which is done to express
+the spread of the data in the same units as that of the sample distribution.    
+Note: Population variance associated with the distribution given by the flip of 
+a *biased* coin is **p(1-p)**  
 
+Population mean being centre of mass of the population, sample mean centre of 
+mass of the observed data. Population variance is the expected square distance 
+of randome variable from the popuation around the population mean.Sample 
+variance is the average square of distance of the observed observations minus 
+the sample mean.
+
+Sample variance is function of data, is also a random variable.
+
+## Variability
+If we were to sample variances of sample distributions, we get a distribution of
+sample variances, this distribution's centre of mass will exactly be one 
+variance from the original population we originally sampled from.  
+The distribution of the sample variance gets more concentrated about the 
+population variance, which it is trying to estimate and is centred around the 
+population variance, signifies that the sample variance is a good unbiased 
+estimator of the population variance.
+
+When we divide by (n-1) when calculating the sample variance, then it turns out 
+that the average of the sample variances for all possible samples is equal the
+population variance, it is unbiased and can be considered a proper estimator of 
+the population variance. If instead we were to divide by n then the average for 
+all possible samples would NOT equal the population variance, since it is biased 
+the variance of the sample and not that of the population.
+
+The variance of a sample mean is sigma^2/n
+- It's logical estimate is s^2/n
+- The logical estimate of the standard error is S/sqrt(n)  
+where, n is the number of samples drawn,
+       sigma^2 is the variance of the population distribution
+       s^2 is the variance of the sample distribution, and 
+       N is the number of datapoints in the population distribution.
+  S is simply an estimate of how variable the population is 
+
+Summary: 
+  - Sample variance estimates the population variance 
+  - The distribution of the sample variance is centered at what it is estimating
+    which is desirable since it denotes that the estimator is unbiased. 
+  - Sample variance gets more concentrated around the population variance with 
+    larger sample sizes, which denotes that getting more data can create a
+    better estimator 
+  - Variance of the sample mean is that population variance divided by n, the 
+    square root of it - sigma, divided by square root of n gives the standard 
+    error, which represents how variable the averages are drawn from the 
+    population.
+
+## Distributions
+* ### Bernoulli distribution
+  If p denotes the probability for a 'success' event, then  
+  The mean is given by **p**, and variance by **p(1-p)**
+  The binomial formula for bernoulli distribution is given by 
+  ```
+  nPr.(p)^r.(1-p)^(n-r)
+  ```   
+  The R code equivalent to this is
+  ```
+  choose(n,r)*p^n
+  ```  
+  R has function to perform this function - pbinom()
+  ```
+  pbinom($(r-1), size = $n, prob = $p, lower.tail = FALSE)
+
+* ### Normal distribution
+  Also known as a gaussian distribution, a distribution with mean mu and 
+  variance sigma^2 is said to be gaussian iff it follows the function,
+  ```
+  exp((-(x-mu)^2)/(2*sigma^2))*(2*pi*sigma^2)^(-1/2)
+  ```
+  represented as,
+  ```
+  X~N(mu,sigma^2)
+  ```
+  for standard normal distribution, mu = 0 and sigma = 1  
+  Normal density, z = (X - mu)/sigma ~  N(0,1)
+  To get units of original data, X = mu + sigma*Z ~ N(mu,sigma^2)
+  
+  Properties:
+  - Approximately 68%, 95%, 99% of the normal density lies within 1, 2 and 3 
+    standard deviations from the mean, respectively
+  - -1.28, -1.645, -1.96, and -2.33 are the 10th, 5th, 2.5th and 1th percentiles 
+    of the standard normal distribution respectively 
+  - By symmetry, 1.28, 1.645, 1.96, and 2.33 are the 90th, 95th, 97.5th and 99th
+    percentiles of the standard normal distribution respectively
+  
+  **Calculations**:  
+  - To find the nth percentile of a normal distribution
+    Quick R function avail. - qnorm()
+    ```
+    qnorm(n, mean = mu, sd = sd) # where n in 0:1
+    ```
+    Mathematical method:   
+    Consider having to find the 95th percentile/quantile of a distribution, having 
+    previous knowledge on standard deviations from the mean, we know that 
+    1.645*sigma gives the 95th percentile of a standard normal distribution. Which 
+    gives us the answer:
+    ```
+    mu + sigma*1.645
+    ```
+  - To calculate the probability that a random variable ~N(mu, sigma^2) is 
+    larger than x.  
+    Quick method:
+    ```
+    1 - qnorm(n, mean = mu, sd = sd)
+    ```
+    or,  
+    ```
+    qnorm(n, mean = mu, sd = sd, lower.tail = F)
+    ```
+    
+    Methematically,
+    Calculate how many standard deviations from the mean, the value of X is, ie.
+    the value of z.
+    
+* ### Poisson Distribution
+  ```
+  P(X = x; lambda) = (lambda^x.exp(-lambda))/x!
+  ```
+  mean and variance of this distribution are both lambda.
+  
+  Uses: 
+    - Used to model counts 
+    - Modelling event-time or survival data
+    - Modelling contingency tables
+    - Approximating binomials when n is large and p is small 
+  
+
+
+
+
+
+  
