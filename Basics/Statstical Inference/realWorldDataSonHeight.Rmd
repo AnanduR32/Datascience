@@ -25,9 +25,100 @@ n = length(x)
 ### Plot of heights
 ```{r}
 ggplot() + geom_histogram(aes(x), col = "white", fill = "skyblue") + theme_bw()
-```
+```  
+The height is represented in feet instead of inches, divide the height by 12 to
+convert to feet unit
 
 ```{r}
 round(c(var(x),var(x)/n,sd(x),sd(x)/sqrt(n)),2)
 ```
+## Explaining confidence intervals
+```{r}
+(mean(x)+c(-1,1)*qnorm(0.975)*sd(x)/sqrt(length(x)))/12
+```  
+This tells us that if we were to iid draw the sons from this population the CI 
+for drawing an average height to the sons would in the interval 5.71 to 5.74
+
+**Sample Proportions**: In an event that each Xi is 0 or 1(binary outcome), with 
+common success probability p, then variance(sigma^2) = p(1-p)   
+Then the interval takes the form   
+Wald confidence interval for p - For 95% intervals is:  
+```
+  ^p (+/-) 1/sqrt(n)
+```
+which is a quick CI estimate for p 
+
+## Confidence interval example
+Your campaign advisor told you that in a random sample of 100 likely voters, 56 
+intend to vote for you.
+- Can you relax? Do you have this race in the bag?
+- without access to a computer or calculator, how precise is the estimate?
+
+Using Wald confidence, 1/(sqrt(100)) gives 0.1 confidence interval of 
+[0.46,0.66] 
+- Not enoug for you to relax, we can't rule out possibilities below 0.5 with 95%
+confidence, better go do more campaigning. 
+
+The above calculation of CI can be done using the binom.test() function in R
+```{r}
+binom.test(56,100)$conf.int
+```  
+Yielding a similar result as before. Mathematically which is 
+```{r}
+0.56 + c(-1,1)*qnorm(0.975)*sqrt(0.56*0.44/100)
+```  
+
+## Biased coin flip estimation using Wald's Confidence
+varying p value to find the p val where estimator within confidence interval of 
+the parameter mu,
+
+```{r}
+flips_per_sim = 25
+pvals = seq(0.1,0.9,by = 0.05)
+n_sim = 1000000
+coverage = sapply(pvals, function(p){
+  phats = rbinom(n_sim, prob = p, size = flips_per_sim)/flips_per_sim
+  ll = phats - qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
+  ul = phats + qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
+  mean(ll<p & ul>p)
+})
+plot(pvals, coverage, type = "l", lwd = 3)
+abline(h = 0.95)
+abline(v = 0.5, lty = 2)
+```   
+this shows that when n, the number of flips, is small (20) the CLT doesn't hold 
+for many values of p, so the Wald interval doesn't work very well.  
+When we increase n, the number of coin flips in each of our 1000 trials, from 20 
+to 100 to see if the plot improves. Again, results may vary, but all the 
+probabilities are much closer to the 95% line, so the CLT works better with a 
+bigger value of n
+
+```{r}
+flips_per_sim = 100
+pvals = seq(0.1,0.9,by = 0.05)
+n_sim = 1000000
+coverage = sapply(pvals, function(p){
+  phats = rbinom(n_sim, prob = p, size = flips_per_sim)/flips_per_sim
+  ll = phats - qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
+  ul = phats + qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
+  mean(ll<p & ul>p)
+})
+plot(pvals, coverage, type = "l", lwd = 3)
+abline(h = 0.95)
+abline(v = 0.5, lty = 2)
+```   
+
+A quick fix to the problem of having a small n is to use the Agresti/Coull 
+interval. This simply means we add 2 successes and 2 failures to the counts when 
+calculating the proportion p'. It is to be noted that although this works, the 
+technique might make the confidence interval too wide.  
+Why does this work? Adding 2 successes and 2 failures pulls p' closer to .5
+which, as we saw, is the value which maximizes the confidence interval.
+
+
+
+
+
+
+
 

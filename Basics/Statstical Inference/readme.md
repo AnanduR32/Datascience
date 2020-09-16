@@ -171,6 +171,15 @@ the sample mean.
 Sample variance is function of data, is also a random variable.
 
 ## Variability
+Assume the average height of the people in a classroom and a playground to be
+the same, In case we aren't aware these two samples represent two different 
+populations we'd assume them to be of the same, but a class comprises of 
+students of same age group whereas a playground consists of parents who are very
+tall and children who are far shorter comparatively. Therefore we can say that
+the variability of height in a classroom is very low compared to that of a 
+playground, and this parameter can be used to distinguish the various 
+populations.
+
 If we were to sample variances of sample distributions, we get a distribution of
 sample variances, this distribution's centre of mass will exactly be one 
 variance from the original population we originally sampled from.  
@@ -195,6 +204,11 @@ where, n is the number of samples drawn,
        N is the number of datapoints in the population distribution.
   S is simply an estimate of how variable the population is 
 
+Variance,
+```
+  Var(X) = E( (X-mu)^2 ) = E( (X-E(X))^2 ) = E(X^2)-E(X)^2
+```
+
 Summary: 
   - Sample variance estimates the population variance 
   - The distribution of the sample variance is centered at what it is estimating
@@ -206,6 +220,15 @@ Summary:
     square root of it - sigma, divided by square root of n gives the standard 
     error, which represents how variable the averages are drawn from the 
     population.
+  - The sample standard deviation, s, tells us how variable the population is, 
+    and s/sqrt(n), the standard error, tells us how much averages of random 
+    samples of size n from the population vary. Let's see this with some 
+    simulations.
+
+Note: Chebyshev's inequality helps interpret variances. It states that the
+probability that a random variable X is atleast k standard deviations from its
+mean is less than 1/(k^2), but this isn't applicable in case of normal 
+distributions.
 
 ## Distributions
 * ### Bernoulli distribution
@@ -222,6 +245,7 @@ Summary:
   R has function to perform this function - pbinom()
   ```
   pbinom($(r-1), size = $n, prob = $p, lower.tail = FALSE)
+  ```  
 
 * ### Normal distribution
   Also known as a gaussian distribution, a distribution with mean mu and 
@@ -245,6 +269,14 @@ Summary:
   - By symmetry, 1.28, 1.645, 1.96, and 2.33 are the 90th, 95th, 97.5th and 99th
     percentiles of the standard normal distribution respectively
   
+  Note: If X is a normal random variable with mean mu and variance sigma^2, 
+  i.e., X ~ N(mu,sigma^2), then the random variable Z defined as
+  Z = (X -mu)/sigma is normally distributed with mean 0 and variance 1, i.e., 
+  Z ~ N(0, 1). (Z is standard normal.)  
+  The converse is also true. If Z is standard normal, i.e., Z ~ N(0,1), then the
+  random variable X defined as X = mu + sigma*Z is normally distributed with 
+  mean mu and variance sigma^2, i.e., X ~ N(mu, sigma^2)
+    
   **Calculations**:  
   - To find the nth percentile of a normal distribution
     Quick R function avail. - qnorm()
@@ -270,11 +302,17 @@ Summary:
     qnorm(n, mean = mu, sd = sd, lower.tail = F)
     ```
     
+    Note: R functions pnorm and qnorm are inverses  
+    
     Methematically,
     Calculate how many standard deviations from the mean, the value of X is, ie.
     the value of z.
     
 * ### Poisson Distribution
+  It is defined as "a discrete probability distribution that expresses the 
+  probability of a given number of events occurring in a fixed interval of time 
+  and/or space if these events occur with a known average rate and independently
+  of the time since the last event."
   ```
   P(X = x; lambda) = (lambda^x.exp(-lambda))/x!
   ```
@@ -286,9 +324,45 @@ Summary:
     - Modelling contingency tables
     - Approximating binomials when n is large and p is small 
   
-
-
-
-
-
+  Note: Contingency Table: A table showing the distribution of one variable in
+  rows and another in columns, used to study the correlation between the two 
+  variables.
   
+  Instance of usage: 
+  The number of people that show up at a bus stop is a poisson with mean of 2.5 
+  per hour. If watching the bus for 4 hours, what is the probability that 3 or 
+  fewer people show up for the whole time? 
+  
+  Calculation:
+  ```
+  ppois(3, lambda = 2.5*4)
+  ```  
+  
+## Asymptotics  
+Asymptotics are an important topics in statistics. Asymptotics refers to the 
+behavior of estimators as the sample size goes to infinity. Our very notion of
+probability depends on the idea of asymptotics.   
+We can use asymptotics to help is figure out things about distributions without 
+knowing much about them to begin with. 
+
+  An estimator is consitent if it converges to what you want to estimate
+
+**Law of large numbers(LLN)**: It states that the mean of iid samples is 
+consistent for the population mean.
+  
+**Central Limit Theorem(CLT)**: It states that the distribution of averages is
+oftennormal, even if the distribution that the data is being sampled from is 
+very non-normal.
+
+**Confidence Intervals(CI)**: If we were to repeatedly get samples of size n 
+from a population and constuct the confidence interval in each case, about 95% 
+of the interval would contain mu, the population mean(parameter we're trying to 
+estimate).  
+X is approximately normal with mu, the parameter we're to estimate, and standard
+deviation sigma/sqrt(n), then probability X is bigger than mu+2sigma/sqrt(n) and 
+smaller than mu-2sigma/sqrt(n) is 5% => X(+/-)2sigma/sqrt(n) is called a 95% 
+interval for mu. 
+
+## T confidence Intervals
+
+
