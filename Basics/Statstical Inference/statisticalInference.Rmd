@@ -1,7 +1,7 @@
 ---
-title: "Real World Example of Statistical Inference"
+title: "Practicality of Statistical Inference"
 author: "Anandu R"
-date: "9/3/2020"
+date: "8/25/2020"
 output: html_document
 ---
 
@@ -9,15 +9,70 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Using the Son's Height attribute from the father.son data
+## examples of PDFs
+### Example 1
+
+Consider the function to denote the probability of help calls addressed by a 
+helpline be 
+```
+  f(x) = {2x for 0<x<1; 0 otherwise}
+``` 
+```{r, echo=FALSE}
+x = c(-0.5,0,1,1,1.5)
+y = c(0,0,2,0,0)
+plot(x, y, type = "l", frame = F)
+```   
+
+To find probability that 75% or fewer of calls get addressed   
+
+```{r, echo=FALSE}
+plot(x, y, type = "l", frame = F)
+lines(c(0,0.75,0.75),c(0,0,1.5), col = "skyblue")
+```  
+
+Find area of given portion 
+```
+  (1/2)*(0.75)*(1.5)
+  = 0.5625
+```
+
+The same can be achieved by using the beta function for probability - pbeta()  
+```{r, results=F}
+pbeta(0.75,2,1)
+```  
+The quantile for the above population distribution  
+Median from the distribution shows the datapoint below which 50% of the data is 
+present and above it is the other 50%
+
+```
+  0.5 = F(X) = P(X<=x) = 50% of the area
+  Integrating the function F(X)=2x, we get x^2
+  => x = sqrt(2) = 0.707
+  => The required datapoint
+```  
+
+The same can be found out using the qbeta() function which gives the quantile of
+the beta distribution
+```{r, results=F}
+qbeta(0.5,2,1)
+```
+
+The inference is that during 50% of the day ~70% of the calls are addressed. 
+
+
+## Real World Example of Statistical Inference
+
+Using the Son's Height attribute from the father.son data  
 
 ### Loading the data 
-```{r, results=F}
+```{r, results=F, warning=F}
 ## Loading the data
-if(!require('UsingR')){
-  install.packages
-  library(UsingR); data(father.son)
-}
+suppressMessages(
+  if(!require('UsingR')){
+    install.packages
+    library(UsingR); data(father.son)
+  } 
+)
 x = father.son$sheight
 n = length(x)
 ```
@@ -63,19 +118,21 @@ The above calculation of CI can be done using the binom.test() function in R
 ```{r}
 binom.test(56,100)$conf.int
 ```  
+
 Yielding a similar result as before. Mathematically which is 
 ```{r}
 0.56 + c(-1,1)*qnorm(0.975)*sqrt(0.56*0.44/100)
 ```  
+
 
 ## Biased coin flip estimation using Wald's Confidence
 varying p value to find the p val where estimator within confidence interval of 
 the parameter mu,
 
 ```{r}
-flips_per_sim = 25
+flips_per_sim = 20
 pvals = seq(0.1,0.9,by = 0.05)
-n_sim = 1000000
+n_sim = 100000
 coverage = sapply(pvals, function(p){
   phats = rbinom(n_sim, prob = p, size = flips_per_sim)/flips_per_sim
   ll = phats - qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
@@ -94,9 +151,9 @@ probabilities are much closer to the 95% line, so the CLT works better with a
 bigger value of n
 
 ```{r}
-flips_per_sim = 100
+flips_per_sim = 1000
 pvals = seq(0.1,0.9,by = 0.05)
-n_sim = 1000000
+n_sim = 100000
 coverage = sapply(pvals, function(p){
   phats = rbinom(n_sim, prob = p, size = flips_per_sim)/flips_per_sim
   ll = phats - qnorm(0.975)*sqrt(phats*(1-phats)/flips_per_sim)
@@ -116,9 +173,57 @@ Why does this work? Adding 2 successes and 2 failures pulls p' closer to .5
 which, as we saw, is the value which maximizes the confidence interval.
 
 
+### Understanding T confidence by performing a paired T-Test
+
+The sleep data, is used to analyse the change in sleeping periods of patients 
+under the influence of two separate drugs hence explaining the groups field 
+of factor datatype containing two levels 1 and 2.  
+Here the pairing is between the two groups that have the same patient with ID 1 
+represented by ID 11 in the group 2.   
+This allows us to study the variations of effects of the drugs on the same
+patients. 
+```{r}
+data("sleep")
+head(sleep)
+```
+
+Plotting the difference in the sleep period   
+```{r}
+ggplot(
+  sleep,
+  aes(
+    x = group,
+    y = extra,
+    group = ID
+  )
+) + geom_point(aes(col = ID), pch = 19, cex = 2.5) + geom_path(aes(col = ID))
+```
+  
+Calculating the mean, variance and standard deviation between the results of the 
+two groups.  
+```{r}
+g1 <- sleep$extra[1 : 10]; g2 <- sleep$extra[11 : 20]
+difference <- g2 - g1
+mn <- mean(difference); s <- sd(difference); n <- 10
+```
+
+Calculating the T confidence   
+```{r}
+mn + c(-1, 1) * qt(.975, n-1) * s / sqrt(n)
+t.test(difference)
+t.test(g2, g1, paired = TRUE)
+t.test(extra ~ I(relevel(group, 2)), paired = TRUE, data = sleep)
+```
 
 
 
+
+
+
+
+
+
+  
 
 
 

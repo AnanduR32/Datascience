@@ -364,5 +364,67 @@ smaller than mu-2sigma/sqrt(n) is 5% => X(+/-)2sigma/sqrt(n) is called a 95%
 interval for mu. 
 
 ## T confidence Intervals
+Same as confidence intervals created using the central limit theory, but in this 
+case instead of using the CLT we use a parameter called the "T-Quantile" to 
+create the interval. The T-distribution have heavier tails compared to the 
+normal distribution, so these intervals will be wider.  
+Generally we use T-interval when there is ambiguity in which distribution is to
+be used, because as we collect more data the T-interval will just become more 
+and more like the Z-Interval. 
+  
+Unlike the normal, which is indexed by 2 parameters mean and the variance, the 
+T-interval is indexed by one parameter - the degrees of freedom, as the degree
+of freedom increase, it gets more like a standard normal.   
+The T constructed confidence interval will always be wider than the normal 
+interval, due to presence of extra parameter we're estimating - the standard
+deviation.  
+T interval is not used for skewed distributions and distributions having 
+discrete data.
+
+The **paired sample t-test**, sometimes called the **dependent sample t-test**, 
+is a  statistical procedure used to determine whether the mean difference
+between two sets of observations is zero. In a paired sample t-test, each 
+subject or entity  is measured twice, resulting in pairs of observations.
+eg: There are two groups of outcomes of effect of two drugs on the same set of 
+patients, this forms pairs between the tests from each group for the same 
+patient.
+
+The **independent t-test**, also called the **two sample t-test**, 
+**independent-samples t-test** or **student's t-test**, is an inferential 
+statistical test that determines whether there is a statistically significant 
+difference between the means in two unrelated groups.  
+In case of an independent T-test, the standard confidence interval is given by  
+
+<img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X} \pm t_{n_{x}\%2Bn_{y}%2D 2, 1%2D \frac{\alpha}{2}}S_{p}(\frac{1}{n_{x}%2B} \frac{1}{n_{y}})^\frac{1}{2}$">
+where,  
+<table>
+  <tr>
+    <td><img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X}$"></td>
+    <td>: Average of one group minus that of the other  </td>
+  <tr>
+  <tr>
+    <td><img src="https://render.githubusercontent.com/render/math?math=$t_{n_{x}\%2Bn_{y}%2D 2, 1%2D \frac{\alpha}{2}}$">:</td>
+    <td>The relevant T quantile with degrees of freedom <img src="https://render.githubusercontent.com/render/math?math=$n_{x}\%2Bn_{y}%2D2$"></td>
+  </tr>
+  <tr>
+    <td><img src="https://render.githubusercontent.com/render/math?math=$S_{p}(\frac{1}{n_{x}%2B} \frac{1}{n_{y}})^\frac{1}{2}$"></td>
+    <td>The standard error of the difference</td>
+  </tr>
+  <tr>
+    <td><img src="https://render.githubusercontent.com/render/math?math=$S_{p}$"></td>
+    <td>The pooled standard deviation</td>
+  </tr>
+</table>
+
+The pooled variance estimator is, 
+  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}$">
+  It is defined as, 
+  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}%3D\frac{\{(n_{x}%2D1)S^{2}_{x}%2B(n_{y}%2D1)S^{2}_{y}\}}{(n_{x}%2Bn_{y}%2D2)}$">
+  This accounts for difference in variance of the two groups and weighing the 
+  confidence accordingly. 
+
+Note: For this interval to hold true, the variance across the groups must be 
+constant. Difference variance per group is assumed by default.
+
 
 
