@@ -213,17 +213,26 @@ mn + c(-1, 1) * qt(.975, n-1) * s / sqrt(n)
 t.test(difference)
 t.test(g2, g1, paired = TRUE)
 t.test(extra ~ I(relevel(group, 2)), paired = TRUE, data = sleep)
-```
+```  
+Which tells us that there is difference in the heights.
+## Understanding T intervals
+Consider a test comparing the SBP(standard blood pressure) for 8 oral contraceptive users versus 21 
+controls.   
+**X**oc = 132.86 mmHg with **s**oc = 15.34
+**X**c = 127.44 mmHg with **s**c = 18.23
+We are required to find out using this sample the T-confidence interval for the 
+average difference in the two independent groups. If the interval >= 0, then we 
+can confidently state that the drug causes increase in blood pressure population.
+
+```{r}
+sp = sqrt((7*15.34^2+20*18.23^2)/(8+21-2))
+132.86 - 127.44 + c(-1,1)*qt(0.975,27)*sp*sqrt(1/8+1/21)
+```  
+Since the above interval contains 0, there is possibility that there is 0 
+difference between the population of the two groups. 
 
 
 
-
-
-
-
-
-
-  
 
 
 

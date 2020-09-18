@@ -381,6 +381,7 @@ deviation.
 T interval is not used for skewed distributions and distributions having 
 discrete data.
 
+### Paired t-test
 The **paired sample t-test**, sometimes called the **dependent sample t-test**, 
 is a  statistical procedure used to determine whether the mean difference
 between two sets of observations is zero. In a paired sample t-test, each 
@@ -389,25 +390,26 @@ eg: There are two groups of outcomes of effect of two drugs on the same set of
 patients, this forms pairs between the tests from each group for the same 
 patient.
 
+### student's t-test(equal variance)
 The **independent t-test**, also called the **two sample t-test**, 
 **independent-samples t-test** or **student's t-test**, is an inferential 
 statistical test that determines whether there is a statistically significant 
 difference between the means in two unrelated groups.  
 In case of an independent T-test, the standard confidence interval is given by  
 
-<img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X} \pm t_{n_{x}\%2Bn_{y}%2D 2, 1%2D \frac{\alpha}{2}}S_{p}(\frac{1}{n_{x}%2B} \frac{1}{n_{y}})^\frac{1}{2}$">
+<img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X} \pm t_{n_{x}\%2Bn_{y}%2D 2, 1%2D \frac{\alpha}{2}}S_{p}(\frac{1}{n_{x}}%2B\frac{1}{n_{y}})^\frac{1}{2}$">
 where,  
 <table>
   <tr>
     <td><img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X}$"></td>
-    <td>: Average of one group minus that of the other  </td>
+    <td>Average of one group minus that of the other  </td>
   <tr>
   <tr>
     <td><img src="https://render.githubusercontent.com/render/math?math=$t_{n_{x}\%2Bn_{y}%2D 2, 1%2D \frac{\alpha}{2}}$">:</td>
     <td>The relevant T quantile with degrees of freedom <img src="https://render.githubusercontent.com/render/math?math=$n_{x}\%2Bn_{y}%2D2$"></td>
   </tr>
   <tr>
-    <td><img src="https://render.githubusercontent.com/render/math?math=$S_{p}(\frac{1}{n_{x}%2B} \frac{1}{n_{y}})^\frac{1}{2}$"></td>
+    <td><img src="https://render.githubusercontent.com/render/math?math=$S_{p}(\frac{1}{n_{x}}%2B\frac{1}{n_{y}})^\frac{1}{2}$"></td>
     <td>The standard error of the difference</td>
   </tr>
   <tr>
@@ -417,14 +419,160 @@ where,
 </table>
 
 The pooled variance estimator is, 
-  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}$">
-  It is defined as, 
-  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}%3D\frac{\{(n_{x}%2D1)S^{2}_{x}%2B(n_{y}%2D1)S^{2}_{y}\}}{(n_{x}%2Bn_{y}%2D2)}$">
-  This accounts for difference in variance of the two groups and weighing the 
+  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}$">  
+  It is defined as,
+  <img src="https://render.githubusercontent.com/render/math?math=$S^{2}_{p}%3D\frac{(n_{x}%2D1)S^{2}_{x}%2B(n_{y}%2D1)S^{2}_{y}}{(n_{x}%2Bn_{y}%2D2)}$">  
+  This term accounts for difference in variance of the two groups and weighing the 
   confidence accordingly. 
 
 Note: For this interval to hold true, the variance across the groups must be 
 constant. Difference variance per group is assumed by default.
 
+### Welch t-test(unequal variances)
 
+<img src="https://render.githubusercontent.com/render/math?math=$\bar{Y} - \bar{X} \pm t_{df}\times(\frac{s^{2}_{x}}{n_{x}}%2B\frac{s^{2}_{y}}{n_{y}})^\frac{1}{2}$">  
+where,  
+<img src="https://render.githubusercontent.com/render/math?math=$df = \frac{(\frac{s^{2}_{x}}{n_{x}}%2B\frac{s^{2}_{y}}{n_{y}})^{2}}{\frac{(\frac{s^{2}_{x}}{n_{x}})^{2}}{(n_{x}%2D1)}%2B\frac{(\frac{s^{2}_{y}}{n_{y}})^{2}}{(n_{y}%2D1)}}$">
 
+## Hypothesis Testing
+It is concerened with making decisions with data.    
+Hypothesis tests take all of the sample data and convert it to a single value, 
+which is known as a test statistic   
+A null hypothesis is a type of hypothesis used in statistics that proposes that 
+there is no difference between certain characteristics of a population <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$">  
+The null hypothesis is assumed true and statistical evidence is required to 
+reject it in favor of a research or alternative hypothesis, <img src="https://render.githubusercontent.com/render/math?math=$H_{a}$">
+There are 4 possible outcomes for a statistical decision process:
+<table>
+  <tr>
+    <td>
+      TRUTH  
+    </td>
+    <td>
+      DECISION
+    </td>
+    <td>
+      RESULT
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$"> 
+    </td>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$"> 
+    </td>
+    <td>
+      Correctly accepted null
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$"> 
+    </td>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{a}$">
+    </td>
+    <td>
+      Type I Error 
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{a}$">
+    </td>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{a}$">
+    </td>
+    <td>
+      Correctly reject null 
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{a}$">
+    </td>
+    <td>
+      <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$">
+    </td>
+    <td>
+      Type II Error 
+    </td>
+  </tr>
+</table>  
+The Type I error and the type II errors are inversely related.
+eg: In the court of law, the null hypothesis would generally be that the 
+defendant is innocent unless proven guilty, whereas the arguments used to prove
+the null hypothesis wrong.  
+If we were to not require much evidence(the confidence interval large) then we'd 
+have more of the type I errors through increase in % of innocent people 
+convicted however we will also be increasing the % of guilty people convicted by 
+dissapproving/rejecting the null hypothesis.  
+Similarly if we were to raise the standard to convict a suspected criminal, it 
+would increase the type II error, in which case even most guilty people will be 
+let free.
+
+Consider <img src="https://render.githubusercontent.com/render/math?math=$\alpha$"> to be type I error rate which in other words can 
+be defined as the probability of Type I error occuring, i.e, the probability of
+rejecting a null hypothesis when in fact it is true.  
+Universally accepted standard value, <img src="https://render.githubusercontent.com/render/math?math=$\alpha=0.05$">  
+
+A general strategy to reject the null hypothesis would be to see if <img src="https://render.githubusercontent.com/render/math?math=$\bar{x}$"> is
+greater than some constant <img src="https://render.githubusercontent.com/render/math?math=$C$">
+
+Consider sample distribution of mean <img src="https://render.githubusercontent.com/render/math?math=$\bar{X} = 30$">, and standard error, **s = 1**  
+If we take <img src="https://render.githubusercontent.com/render/math?math=$\alpha = 0.05$">, then we want to choose <img src="https://render.githubusercontent.com/render/math?math=$C$"> so that 
+<img src="https://render.githubusercontent.com/render/math?math=$P(\bar{X}>C:H_{o})$"> is 5%  
+For understanding - The upper tail of the pnorm for the <img src="https://render.githubusercontent.com/render/math?math=$95^{th}$"> percentile.
+The <img src="https://render.githubusercontent.com/render/math?math=$95^{th}$"> percentile of a normal distribution is 1.645 standard
+deviations from the mean  
+If <img src="https://render.githubusercontent.com/render/math?math=$C = 30 %2B 1 \times 1.645 = 31.645$">
+  - Then the probability that a <img src="https://render.githubusercontent.com/render/math?math=$N(30,1)$"> is larger than 5%
+  - So the rule "Reject <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$"> when <img src="https://render.githubusercontent.com/render/math?math=$\bar{X} \geqq 31.645$">" has the property that the probability of rejection is 5% when <img src="https://render.githubusercontent.com/render/math?math=$H_{o}$"> is true (for the <img src="https://render.githubusercontent.com/render/math?math=$\mu,\sigma, n)$">   
+
+Because we generally convert the constant ***C*** back to the original scale for
+different distributions, we generally calculate the z-score - which tells us how 
+many standard deviations the value is away from the hypothesised mean, if this 
+value is greater than the quantile for the required confidence, then we reject 
+the hypothesis.  
+We illustrate this using the estimated mean and standard error from above, 
+wherein we have a data to be of value 32,  
+Then the number of standard deviations this value is away from the mean is 
+calculated by,  
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{32-30}{\frac{10}{\sqrt{100}}} = 2$">  
+which gives us 2, and this is greater than 1.645 therefore we reject the 
+hypothesis.  
+We can generalize this rejection critereon to be such that we reject a 
+hypothesis whenever <img src="https://render.githubusercontent.com/render/math?math=$\frac{\sqrt{n}(\bar{X}-\mu_{o})}{s}>\mathrm{Z}_{1%2D\alpha}$">
+
+### Two sided tests
+Suppose instead of just rejecting the hypothesis if only the given estimate is 
+too large we now reject the null hypothesis if the mean is too large or too 
+small as well, where the null hypothesis being the mean is sample 30 is within 
+95% of confidence interval of the population mean, given the standard error.
+Given the argument hypothesis to be that the given sample mean is not a proper
+estimate of the population mean. <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{H}_{a}:\ne30$">  
+Then we want the probability of rejecting under the null to be 5%, split equally
+as 2.5% in the upper tail and 2.5% in the lower tail.
+Thus we reject if our test statistic is larger than qt(0.975,15) or smaller than 
+qt(0.025,15)
+ - This is the same as saying: reject if the absolute value of our statistic is 
+ larger than qt(0.975,15) = 2.1314
+ - So we fail to reject the two sided test as well.
+ - (if you fail to reject the one sided test, then we would fail to reject the
+ two sided test as well - having moved further into the tails of the bell-curve)
+ 
+## P Value 
+The p value is the evidence against a null hypothesis. The smaller the p-value, 
+the stronger the evidence that you should reject the null hypothesis. 
+
+**Idea**: Suppose nothing is going on - how unusual is it to see the estimate
+we got?  
+**Approach**: 
+1.Define the hypothetical distribution of a data summary (statistic) when 
+"nothin is going on"(null hypothesis)
+2.Calculate the summary/statistic with the data we have (test statistic)
+3.Compare what we calculated to our hypothetical distribution and see if the 
+value is "extreme"(p-value)  
+The P-value is the probability under the null hypothesis of obtaining evidence 
+as extreme or moreextreme than would be observed by chance alone.
