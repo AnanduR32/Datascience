@@ -87,6 +87,7 @@ n = length(x)
 ```{r}
 ggplot() + geom_histogram(aes(x), col = "white", fill = "skyblue") + theme_bw()
 ```  
+
 The height is represented in feet instead of inches, divide the height by 12 to
 convert to feet unit
 
@@ -149,6 +150,7 @@ plot(pvals, coverage, type = "l", lwd = 3)
 abline(h = 0.95)
 abline(v = 0.5, lty = 2)
 ```   
+
 this shows that when n, the number of flips, is small (20) the CLT doesn't hold 
 for many values of p, so the Wald interval doesn't work very well.  
 When we increase n, the number of coin flips in each of our 1000 trials, from 20 
@@ -324,6 +326,7 @@ plot(d, main = "Density of median heights of sons", xlab = "Heights")
 polygon(d, col="red", border="orange")
 abline(v = median(resampledMedians), lwd = 2)
 ```    
+
 The estimated standard deviation can be found 
 ```{r}
 sd(resampledMedians)
@@ -363,7 +366,8 @@ ggplot(
     y = count
   )
 ) + geom_boxplot(aes(fill = spray))
-```  
+```   
+
 We wish to show that the bug-spray has effect on count on bugs killed, we
 consider the null hypothesis that the group label is unrelated to the  outcome. 
 So if we were to permute the labels and find permutations of labels that have 
@@ -395,7 +399,8 @@ ggplot(
 ) + coord_cartesian(xlim = c(-11,14)) +
   geom_histogram(bins = 20,fill="orange") + 
   geom_vline(aes(xintercept=observedStat),col = "red")
-```  
+```   
+
 We observe from the plot that the observed statistic is  far ahead of the 
 normal distribution of the permutations.
 
