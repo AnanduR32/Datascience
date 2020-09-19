@@ -68,10 +68,16 @@ Using the Son's Height attribute from the father.son data
 ```{r, results=F, warning=F}
 ## Loading the data
 suppressMessages(
-  if(!require('UsingR')){
-    install.packages
-    library(UsingR); data(father.son)
-  } 
+  {
+    if(!require('UsingR')){
+      install.packages('UsingR')
+      library(UsingR); data(father.son)
+    }
+    if(!require('dplyr')){
+      install.packages("dplyr")
+      library(dplyr)
+    }
+  }
 )
 x = father.son$sheight
 n = length(x)
@@ -230,6 +236,173 @@ sp = sqrt((7*15.34^2+20*18.23^2)/(8+21-2))
 ```  
 Since the above interval contains 0, there is possibility that there is 0 
 difference between the population of the two groups. 
+
+## Power explained
+Supposed we were to calculate the probability of the sample mean to be 32, given 
+that the population mean is 30 with standard deviation(sigma) 4 and number of samples 
+drawn to be 16, we'd use the pnorm() function with mean = 30 and 
+sd = sigma/sqrt(16)   
+Then, 
+```{r}
+mu0 = 30
+mua = 32
+sigma = 4
+n = 16
+alpha = 0.05
+z = qnorm(1-alpha)
+pnorm(mu0+z*sigma/sqrt(n), mean = mu0, sd = sigma/sqrt(n), lower.tail = F)
+```  
+This tells us that we fail to reject the null hypothesis because the t-statistic 
+is equal to alpha.
+
+Now to calculate power, we simply replace the mean m0 with ma,
+```{r}
+pnorm(mu0+z*sigma/sqrt(n), mean = mua, sd = sigma/sqrt(n), lower.tail = F)
+```  
+This gives us power, the percent probability with which we can assure that the 
+null hypothesis is not true, generally you should have an 80% or greater chance 
+of finding a statistically significant difference when there is one.
+
+
+## Illustrating the error correction in multiple comparison test cases
+```{r}
+set.seed(1010093)
+## Creating NULL vector for p-values, we simulate 1000 hypothesis tests
+pValues = rep(NULL,1000)
+for(i in 1:1000){
+  ## Generating two independent normals x and y
+  x = rnorm(20)
+  y = rnorm(20)
+  ## Fitting a linear model relating the two variables 
+  pValues[i] = summary(lm(y~x))$coeff[2,4]
+}
+sum(pValues<0.05)
+```  
+We get the expected ~50 significant p-values, while performing 1000 tests with
+confidence 0.05, which gives us 1000*0.05=50 i.e the chance of there being false 
+positives.  
+
+**Adjusting the p-values**
+- Using bonferroni correction 
+```{r}
+## Controls FWER
+sum(p.adjust(pValues, method = "bonferroni") < 0.05)
+```
+- Using Benjamini Hochberg correction
+```{r}
+## Controls FDR
+sum(p.adjust(pValues, method = "BH") < 0.05)
+```
+In case there is strong dependence between tests there may be problems when 
+using the "bonferroni" or the "BH" methods, we should consider using "BY" under
+such circumstances.  
+  
+## Boostrapping Illustrated with father.son dataset
+```{r}
+suppressMessages(
+  {
+    library(UsingR)
+    data(father.son)
+  }
+) 
+x = father.son$sheight
+n = length(x)
+## We are performing 10000 bootstrap resamples
+B = 10000
+# We extract n times B samples with replacement, split the entire sample vector 
+# into multiple vectors of length n, then store each B sample vectors as rows
+# of a matrix, here named 'resamples'
+resamples = matrix(sample(x, n*B, replace = T),B,n) 
+## we then calculate the row medians and store in new vector resampledMedians
+resampledMedians = apply(resamples, 1, median)
+```
+
+Visualising the vector of medians
+```{r}
+d = density(resampledMedians)
+plot(d, main = "Density of median heights of sons", xlab = "Heights")
+polygon(d, col="red", border="orange")
+abline(v = median(resampledMedians), lwd = 2)
+```    
+The estimated standard deviation can be found 
+```{r}
+sd(resampledMedians)
+```
+Confidence interval
+```{r}
+quantile(resampledMedians,c(0.025,0.975))
+```
+
+## Illustration of permutation test
+Consider the InsectSprays dataset, which contains details of counts of insects 
+killed by different bug-sprays.
+```{r}
+data("InsectSprays")
+head(InsectSprays)
+```  
+
+We subset the dataset to only get count of bugs killed by bug-spray 'B' and 'C' 
+and define our variables 'x' and 'group'.
+```{r}
+subset = subset(InsectSprays, spray %in% c("B","C"))
+x = subset$count
+group = as.character(subset$spray)
+
+```
+
+
+
+If we take mean of count of insects killed by 
+each group of bug-sprays we know that each group of bug-spray has different 
+means by the boxplot below
+```{r}
+ggplot(
+  InsectSprays,
+  aes(
+    x = spray,
+    y = count
+  )
+) + geom_boxplot(aes(fill = spray))
+```  
+We wish to show that the bug-spray has effect on count on bugs killed, we
+consider the null hypothesis that the group label is unrelated to the  outcome. 
+So if we were to permute the labels and find permutations of labels that have 
+higher mean difference than what we get compared to current group label then we 
+can disapprove the null hypothesis.  
+```{r}
+## Function to compare the mean of each group given set of group labels
+testStat = function(x,g){
+  mean(x[g=='B'])-mean(x[g=='C'])
+}
+## Observing the difference in mean for the observed data
+observedStat = testStat(x, group)
+## finding various permutations on the group labels and finding the mean 
+## differences for each
+permutations = sapply(1:10000, function(i) testStat(x,sample(group))) # This 
+# vector would cantain the mean difference in 10000 permutations groups B and C 
+# labels
+print(paste('Observed mean difference:',as.character(observedStat)))
+print(paste0('Percentage of permutation that have higher mean difference: ',as.character(mean(permutations>observedStat)),'%'))
+
+```  
+Hence we are able to reject the null that the group labels have no effect on the 
+outcome.
+
+```{r}
+ggplot(
+  data.frame(permutations),
+  aes(x = permutations),
+) + coord_cartesian(xlim = c(-11,14)) +
+  geom_histogram(bins = 20,fill="orange") + 
+  geom_vline(aes(xintercept=observedStat),col = "red")
+```  
+We observe from the plot that the observed statistic is  far ahead of the 
+normal distribution of the permutations.
+
+
+
+
+
 
 
 
