@@ -1,0 +1,217 @@
+---
+title: "ToothGrow Analysis"
+author: "Anandu R"
+date: "9/20/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.width=5, fig.height=3, fig.align = "center")
+library(ggplot2)
+library(dplyr)
+```
+
+
+## ToothGrowth data analysis
+Loading the data
+```{r}
+data("ToothGrowth")
+```
+
+Summarizing the data
+```{r}
+ToothGrowth$dose = factor(ToothGrowth$dose)
+str(ToothGrowth)
+```
+
+
+## Exploratory analysis using boxplots
+### Mean change in tooth length vs supplement delivery mode
+```{r, echo = F}
+ggplot(
+  ToothGrowth,
+  aes(
+    x = supp,
+    y = len,
+    fill = supp
+  )
+) + geom_boxplot() + 
+  ggtitle("Tooth length vs Supplement") + 
+  theme_bw()
+```   
+
+There is considerable difference in the mean difference in tooth growth observed
+in the patients for the different delivery methods of supplement provided
+
+### Difference in the tooth length for various dosages
+```{r, echo = F}
+ggplot(
+  ToothGrowth,
+  aes(
+    x = dose,
+    y = len,
+    fill = dose
+  )
+) + geom_boxplot() +
+  ggtitle("Tooth length vs Dosage") +
+  theme_bw()
+```    
+
+As dosage is increased the average tooth length increases at each step increase 
+in dosage.
+
+### Mean change in tooth length analyzed across each supplement and dosage provided
+```{r, echo = F}
+ggplot(
+  ToothGrowth,
+  aes(
+    x = dose,
+    y = len,
+    group = dose,
+    fill = supp
+  )
+) + geom_boxplot() +
+  facet_wrap(supp~.) + 
+  ggtitle("Supplement~Dosage effect on Toothlength") +
+  theme_bw()
+```  
+
+We observe that there is marked difference mean distribution of tooth length for
+patients that consumed 0.5 or 1 dosage of supplement OJ and VC, but the 
+difference is almost non-existent for the 2mg dosage.  
+
+## Hypothesis testing 
+### Testing by supplement delivery mode
+Consider the supplement OJ being better performing than supplement VS
+```{r}
+## Subsetting the data
+x = ToothGrowth$len
+group = ToothGrowth$supp
+## Perfomring t-test
+t.test(x~group, paired = F)
+```  
+The p value is greater than <img src="https://render.githubusercontent.com/render/math?math=$\alpha=0.05$"> hence we reject the null hypothesis
+
+Calculating the power with which we can reject the null hypothesis
+```{r}
+n = length(x)
+mu0 = mean(x[group=="OJ"])
+mua = mean(x[group=="VC"])
+sigma = sd(x[group=="VC"])
+delta = (mua - mu0)/sigma
+power.t.test(n = n, sd = sigma, delta = delta, type = "one.sample", alt = "one.sided")$power
+```  
+Our power is pretty low but regardless, the null hypothesis has been rejected
+but we can also bring out due to the low power that there isn't much significant
+difference between the supplement delivery modes.
+
+```{r, echo = F}
+df = data.frame(lab=group,means=x)
+ggplot(
+  df,
+  aes(
+    x=means,
+    fill = lab
+  )
+) + geom_density(alpha = 0.5) + 
+  theme_bw() + 
+  ggtitle("Distribution of lengths for delivery modes")
+```  
+As we can see from the visualization that the two distributions are highly 
+overlapping.
+
+### Testing by dosage
+Another thing we noticed from the supplement~dosage visualization was that there 
+is considerable difference in output for the various dosage levels 0.5, 1 and 2.  
+Consider the null hypothesis being dosage level has no effect on the tooth 
+length.
+
+Let us now check to see if we get a significant p-value for each pairing of the 
+dosage.
+```{r}
+x = subset(ToothGrowth ,dose %in% c(0.5,1))$len
+group = subset(ToothGrowth, dose %in% c(0.5,1))$dose
+t.test(x~group, paired = F)
+```  
+```{r, echo = F}
+df = data.frame(lab=group,means=x)
+ggplot(
+  df,
+  aes(
+    x=means,
+    fill = lab
+  )
+) + geom_density(alpha = 0.5) + 
+  theme_bw() +
+  ggtitle("Distribution of lengths in groups 0.5 and 1")
+```  
+
+
+```{r}
+x = subset(ToothGrowth ,dose %in% c(1,2))$len
+group = subset(ToothGrowth, dose %in% c(1,2))$dose
+t.test(x~group, paired = F)
+```  
+```{r, echo = F}
+df = data.frame(lab=group,means=x)
+ggplot(
+  df,
+  aes(
+    x=means,
+    fill = lab
+  )
+) + geom_density(alpha = 0.5) + 
+  theme_bw() +
+  ggtitle("Distribution of lengths in groups 1 and 2")
+```  
+
+
+```{r}
+x = subset(ToothGrowth ,dose %in% c(0.5,2))$len
+group = subset(ToothGrowth, dose %in% c(0.5,2))$dose
+t.test(x~group, paired = F)
+```  
+```{r, echo = F}
+df = data.frame(lab=group,means=x)
+ggplot(
+  df,
+  aes(
+    x=means,
+    fill = lab
+  )
+) + geom_density(alpha = 0.5) + 
+  theme_bw() + 
+  ggtitle("Distribution of lengths in groups 0.5 and 2")
+```  
+
+
+In each case the p-value is very low hence we can conclude that the hypothesis 
+can be easily rejected. 
+
+## Conclusions
+There appears to be statistical significance on tooth growth by varying the 
+dosage levels, as dosage increases the mean tooth length increases.  
+And, There seems to be negligible role played by the delivery methods - VC, OJ 
+although it is to be noted that at dosage levels 0.5 and 1 OJ has higher 
+overall outcome in toothgrowth, whereas negligible for dosage of level 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

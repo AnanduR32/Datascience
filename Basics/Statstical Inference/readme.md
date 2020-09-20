@@ -605,10 +605,15 @@ The other kind of error we could make is to fail to reject when the alternative
 is true (Type II error). It is the probability of rejecting the null hypothesis 
 when it is indeed false. 
 We don't have as much control over this probability, since we've spent all of
-our flexibility guaranteeing that the Type I error rate is small. Power is used 
-to evaluate the product during it's design phase.
+our flexibility guaranteeing that the Type I error rate is small. Power is the
+probability of rejecting the null hypothesis when it is falsePower is used to 
+evaluate the product during it's design phase.  
 Power comes more into play when we fail to reject the null hypothesis.  
 The type II error rate is called <img src="https://render.githubusercontent.com/render/math?math=$\beta$"> and then, Power = 1 - <img src="https://render.githubusercontent.com/render/math?math=$\beta$">  
+
+The two hypotheses, <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{H}_{0}$"> and <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{H}_{a}$">, actually represent two distributions since 
+they're talking about means or centers of distributions. <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{H}_{0}$"> says that the mean 
+is <img src="https://render.githubusercontent.com/render/math?math=$\mu_{0}$">  (30 in our example) and H_a says that the mean is <img src="https://render.githubusercontent.com/render/math?math=$\mu_{a}$">.  
 
 In general we reject a hypothesis if, <img src="https://render.githubusercontent.com/render/math?math=$\bar{\mathrm{X}}>30%2B\mathrm{Z}_{1%2D\alpha}\frac{\sigma}{\sqrt{n}}$">  
 Under <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{H}_{0}:\bar{\mathrm{X}}\sim\mathrm{N}\left(\mu_{0}%2C\frac{\sigma^{2}}{n}\right)$">  
