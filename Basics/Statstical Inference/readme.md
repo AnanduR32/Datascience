@@ -642,7 +642,7 @@ And the quantity <img src="https://render.githubusercontent.com/render/math?math
 Effect size has no units, being unit free it can be interpreted across problems.  
 Commonly used method to find power is by using the t-distribution where power is  
 <img src="https://render.githubusercontent.com/render/math?math=$P\left(\frac{\bar{X}%2D\mu_{0}}{\frac{\mathrm{S}}{\sqrt{n}}}>t_{1%2D\alpha%2Cn%2D1}%3B\mu = \mu_{a}\right)$">  
-Since the statistic is centred at <img src="https://render.githubusercontent.com/render/math?math=$\mu_{a}"> instead of <img src="https://render.githubusercontent.com/render/math?math=$\mu_{0}">, calculating it requires non-central t-distribution.
+Since the statistic is centred at <img src="https://render.githubusercontent.com/render/math?math=$\mu_{a}$"> instead of <img src="https://render.githubusercontent.com/render/math?math=$\mu_{0}$">, calculating it requires non-central t-distribution.
   
 In R we 
 can find power using the function ***power.t.test***  

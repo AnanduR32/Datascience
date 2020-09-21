@@ -1,0 +1,147 @@
+---
+title: "regression"
+author: "Anandu R"
+date: "9/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height=5, fig.width=5, fig.align = "centred")
+suppressMessages(
+  {
+    if(!require(manipulate)){
+      install.packages("manipulate")
+      library(manipulate)
+    }
+    library(UsingR)
+    library(dplyr)
+    data("galton")
+  }
+)
+```
+
+### Loading the galton data
+```{r}
+library(UsingR)
+data("galton")
+freqData <- as.data.frame(table(galton$child, galton$parent))
+names(freqData) <- c("child", "parent", "freq")
+freqData = mutate(freqData, child = as.numeric(as.vector(child)), parent = as.numeric(as.vector(parent)))
+```
+
+The data contains the heights of parents and child (paired). We try and estimate 
+the child's height(y) using the height of the parents(x).
+
+### Performing regression analysis without the y-intercept
+With y-intercept 0 or in other words without a y-intercept, but this doesn't 
+result in the best line to  fit the data, 
+```{r, echo = T}
+Beta = as.numeric(coef(lm(galton$child ~ galton$parent - 1)))
+angle = round(atan(Beta)*180/3.14,2)
+mse = mean( (galton$child - Beta * galton$parent)^2 )
+```  
+Using the lm function we find the slope of line to be `r round(Beta, 3)`, and that the 
+line that best fits the data originating from the slope is angled at `r angle` 
+degrees. Using this value of Beta we can manually find the regression line that
+fits the data and the mean square error is found to be `r round(mse, 3)`
+```{r}
+ggplot(
+  galton,
+  aes(
+    x = parent,
+    y = child
+  )
+) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+               cex = 3, alpha = 0.1) +
+  labs(x = "parent", y = "child") +
+  geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
+  geom_point(aes(x = 0, y = 0), cex = 2, pch = 21) +
+  geom_smooth(method = "lm", formula = y~x-1, se = F, col = "skyblue", lwd = 2, lty = 2) + 
+  ggtitle(paste("beta = ", round(Beta,3), "mse = ", round(mse, 3))) +
+  theme_bw() + 
+  coord_cartesian(xlim = range(galton$parent), ylim = range(galton$child))
+```
+
+We see that the broken blue lines representing the regression line computed
+using the lm() function overlaps with the pink line drawn using the Beta
+coefficient estimated earlier.
+
+### Regression with centered data
+If we were to centre the data around the mean and perform the same analysis, 
+we'd get the same result as we'd if the intercept estimator <img src="https://render.githubusercontent.com/render/math?math=$\beta_{0}$">  was under consideration 
+
+```{r, echo = T}
+galtonCentered = mutate(galton, child = child - mean(child), parent = parent - mean(parent))
+Beta = as.numeric(coef(lm(galtonCentered$child ~ galtonCentered$parent - 1)))
+angle = round(atan(Beta)*180/3.14,2)
+mse = mean( (galtonCentered$child - Beta * galtonCentered$parent)^2 )
+```  
+Using the lm function we find the slope of line to be `r round(Beta, 3)`, and that the 
+line that best fits the data originating from the slope is angled at `r angle` 
+degrees. Using this value of Beta we can manually find the regression line that
+fits the data and the mean square error is found to be `r round(mse, 3)`
+
+```{r}
+ggplot(
+  galtonCentered,
+  aes(
+    x = parent,
+    y = child
+  )
+) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+               cex = 3, alpha = 0.1) +
+  labs(x = "parent", y = "child") +
+  geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
+  geom_point(aes(x = 0, y = 0), cex = 2, pch = 21) +
+  geom_smooth(method = "lm", formula = y~x-1, se = F, col = "skyblue", lwd = 2, lty = 2) + 
+  ggtitle(paste("beta = ", round(Beta,3), "mse = ", round(mse, 3))) +
+  theme_bw() + 
+  coord_cartesian(xlim = range(galtonCentered$parent), ylim = range(galtonCentered$child))
+```   
+
+We see that the broken blue lines representing the regression line computed
+using the lm() function overlaps with the pink line drawn using the Beta
+coefficient estimated earlier. 
+
+### Regression with normalized data
+If we were to normalize the data and perform the same analysis, we'd get the
+same result still, furthmore, the <img src="https://render.githubusercontent.com/render/math?math=$\beta$"> coefficient can be calculated 
+as the covariance of X and Y.
+
+```{r, echo = T}
+galtonNormalized = mutate(galton, child = (child - mean(child))/sd(child), parent = (parent - mean(parent))/sd(parent))
+Beta = as.numeric(coef(lm(galtonNormalized$child ~ galtonNormalized$parent - 1)))
+BetaCov = cor(galtonNormalized$child, galtonNormalized$parent)
+angle = round(atan(Beta)*180/3.14,2)
+mse = mean( (galtonNormalized$child - Beta * galtonNormalized$parent)^2 )
+```  
+Using the lm function we find the slope of line to be `r round(Beta, 3)`, and that the 
+line that best fits the data originating from the slope is angled at `r angle` 
+degrees. Using this value of Beta we can manually find the regression line that
+fits the data and the mean square error is found to be `r round(mse, 3)`
+
+```{r}
+ggplot(
+  galtonNormalized,
+  aes(
+    x = parent,
+    y = child
+  )
+) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+               cex = 3, alpha = 0.1) +
+  labs(x = "parent", y = "child") +
+  geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
+  geom_point(aes(x = 0, y = 0), cex = 2, pch = 21) +
+  geom_smooth(method = "lm", formula = y~x-1, se = F, col = "skyblue", lwd = 2, lty = 2) + 
+  ggtitle(paste("betaCov = ", round(BetaCov,3),"beta = ", round(Beta,3), "mse = ", round(mse, 3))) +
+  theme_bw() + 
+  coord_cartesian(xlim = range(galtonNormalized$parent), ylim = range(galtonNormalized$child))
+```   
+
+We get the exact same result in this case as well.
+
+
+
+
+
+
