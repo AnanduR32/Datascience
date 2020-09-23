@@ -70,8 +70,65 @@ We observe in general that the children of tall parent tend to be tall but not
 as tall as their parent, and the children of short parent tend to be short but 
 taller than their parents. This can be explained by the phenomenon known as the
 **regression to the mean**, Regression to the mean, was invented by Francis 
-Galton in the paper “Regression towards mediocrity in hereditary stature”.  
+Galton in the paper - "Regression towards mediocrity in hereditary stature".
 
+## Statistical regression models
+
+* **Interpreting the regression coefficients**
+For <img src="https://render.githubusercontent.com/render/math?math=$\beta_{0}$">  
+We know that,  
+<img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}|X_{i}=x_{i}] = \mu_{i} = \beta_{0}%2B\beta_{1}x_{i}$">  
+
+<img src="https://render.githubusercontent.com/render/math?math=$Var(Y_{i}|X_{i}=x_{i}) = \sigma^{2}$">  
+
+BUt unless the data is centered, this is of no interest because in most datasets 
+there doesn't exist data with value 0 to estimate the intercept at **X** = **0**  
+It can be impossible or far outside the range of the data. 
+**It is the expected response when the predictor is equal to zero**
+
+A fix for this would be to shift the regression variable by a constant "**a**",
+<img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \beta{0}%2C\beta_{1}X_{i}%2B\varepsilon_{i} = \beta_{0}%2Ba\beta_{1}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i} = \tilde{\beta}_{0}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i}$">  
+<img src="https://render.githubusercontent.com/render/math?math=$varepsilon_{i}$"> is the gaussian error where <img src="https://render.githubusercontent.com/render/math?math=$varepsilon_{i}\simN(0,\sigma^{2})$">  
+The new intercept is,  
+<img src="https://render.githubusercontent.com/render/math?math=$\beta{0} = \beta_{0}%2Ba\beta_{1}$">  
+
+Changing the ***X*** values by a value a changes the intercept, but not the 
+slope.  
+Often **a** is set to <img src="https://render.githubusercontent.com/render/math?math=$\bar{X}$"> so that the intercept is interpretted as
+the expected response to the average ***X*** value.
+
+For <img src="https://render.githubusercontent.com/render/math?math=$\beta_{1}$">  
+The regression coefficient <img src="https://render.githubusercontent.com/render/math?math=$\beta_{1}$"> is the slope of the line,
+and generally slope is mapped as ratio of change in **Y** to the change in **X**.
+
+**It is the expected change in reponse for 1 unit change in the predictor**   
+<img src="https://render.githubusercontent.com/render/math?math=$\beta_{1} = E[Y_{i}|X_{i}=x_{i}%2B1]%2DE[Y_{i}|X_{i}=x_{i}] = \beta_{0}%2B\beta_{1}(x_{i}%2B1)%2D(\beta_{0}%2B\beta_{1}x_{i})$">  
+Shifting the **X** variable doesn't change the slope much. But when we scale the 
+**X** quantities,   
+We scale the regression variable by multiplying and dividing by a constant **a**  
+
+<img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \beta_{0}%2B\beta_{1}X_{i}%2B\varepsilon_{i} = \beta_{0}%2B\frac{\beta_{1}}{a}(X_{i}a)%2B\varepsilon_{i} = \beta_{0}%2B\tilde{\beta_{1}}(X_{i}a)%2B\varepsilon_{i}$">  
+Multiplication of ***X*** by a factor **a** results in dividing the coefficient 
+by a factor of **a**.
+
+* **Residuals**: The variation left unexplained around the regression line, i.e,
+the distance of each datapoint from the line is a vector of residuals for the 
+observed data.
+<img src="https://render.githubusercontent.com/render/math?math=$e_{i} = Y_{i}-\hat{Y}_{i}$">
+
+Least squares minimizes <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}^{2}$">  
+The <img src="https://render.githubusercontent.com/render/math?math=$e_{i}$"> can be thought of as the estimates of <img src="https://render.githubusercontent.com/render/math?math=$\varepsilon_{i}$">  
+
+Properties of residuals: 
+- <img src="https://render.githubusercontent.com/render/math?math=$E[e_{i}]=0$">  
+- if you include an intercept, then <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}=0$">  
+- The generalization of above two points, if a regressor variable <img src="https://render.githubusercontent.com/render/math?math=$X_{i}$"> is included, then <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}X_{i}=0$">  
+- Residuals can be used to investigate the performance of a model.  
+- Residuals can be thought of as outcome(***Y***) with the linear association of 
+the predictor(***X***) removed(???).  
+- Residual variation is the variation left unexplained by the regression model, 
+whereas the systematic variation is the variation explained by the regression 
+model.
 
 
 

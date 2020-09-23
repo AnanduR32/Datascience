@@ -51,7 +51,7 @@ ggplot(
     x = parent,
     y = child
   )
-) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+) + geom_point(pch = 21, col = "blue", bg = "hotpink4",
                cex = 3, alpha = 0.1) +
   labs(x = "parent", y = "child") +
   geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
@@ -88,7 +88,7 @@ ggplot(
     x = parent,
     y = child
   )
-) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+) + geom_point(pch = 21, col = "blue", bg = "hotpink4",
                cex = 3, alpha = 0.1) +
   labs(x = "parent", y = "child") +
   geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
@@ -127,7 +127,7 @@ ggplot(
     x = parent,
     y = child
   )
-) + geom_point(pch = 21, col = "blue", bg = "lightblue",
+) + geom_point(pch = 21, col = "blue", bg = "hotpink4",
                cex = 3, alpha = 0.1) +
   labs(x = "parent", y = "child") +
   geom_abline(slope = Beta, lwd = 4, col = "hotpink2") + 
@@ -139,6 +139,40 @@ ggplot(
 ```   
 
 We get the exact same result in this case as well.
+
+### Performing regression analysis with the y-intercept
+Complete regression line using the y-intercept
+
+```{r, echo = T}
+Beta = as.numeric(coef(lm(galton$child ~ galton$parent)))
+Beta0 = Beta[1]
+Beta1 = Beta[2]
+angle = round(atan(Beta1)*180/3.14,2)
+mse = mean( (galton$child - (Beta0 + Beta1 * galton$parent))^2 )
+```  
+Using the lm function we find the slope of line to be `r round(Beta, 3)`, and that the 
+line that best fits the data originating from the slope is angled at `r angle` 
+degrees. Using this value of Beta we can manually find the regression line that
+fits the data and the mean square error is found to be `r round(mse, 3)`
+```{r}
+ggplot(
+  galton,
+  aes(
+    x = parent,
+    y = child
+  )
+) + geom_point(pch = 21, col = "blue", bg = "hotpink4",
+               cex = 3, alpha = 0.1) +
+  labs(x = "parent", y = "child") +
+  geom_abline(intercept = Beta0,slope = Beta1, lwd = 4, col = "hotpink2") + 
+  geom_point(aes(x = 0, y = 0), cex = 2, pch = 21) +
+  geom_smooth(method = "lm", formula = y~x, se = F, col = "skyblue", lwd = 2, lty = 2) + 
+  ggtitle(paste("beta = ", round(Beta,3), "mse = ", round(mse, 3))) +
+  theme_bw() + 
+  coord_cartesian(xlim = range(galton$parent), ylim = range(galton$child))
+```
+
+We get the exact same result as seen in the normalized data regression above.
 
 
 
