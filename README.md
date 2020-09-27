@@ -1,5 +1,4 @@
-# Data_Science_R
-Data Science Basics in R
+# Data Science
 
 ## Datascience Analysis Categories 
 * ### Descriptive analysis
