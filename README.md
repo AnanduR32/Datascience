@@ -107,3 +107,15 @@ A good metric should have the following characteristics:
 
     A metric should be relevant for the business. Here at Dataquest, we could potentially track how many times students use the character a in their answers. But it's unlikely to have any impact on how well they learn.  
     Metrics need to be adjusted to the current needs of the business. Take, for instance, Netflix. They possibly tracked how much business they were losing to piracy. When streaming became easily available and relatively cheap, piracy stopped being a serious issue and there (possibly) was no need to track it anymore.  
+
+### Actionable Metrics
+* **NPS**:
+    By proxy each of these categories are gauged as follows:  
+    * Detractors: Unhappy customers who share their negative experience with the product or company; they may actively spread negative feedback.  
+    * Passives: Customers who may be pleased with the product, but aren't actively promoting it and will quickly turn to the competition if a better opportunity presents itself.  
+    * Promoters: Extremely satisfied customers who will act as brand ambassadors.  
+    
+    NPS is then calculated as the percentage of promoters minus the percentage of detractors.
+* **Churn rate**:
+    Churn rate is the percentage of customers that churned in a given time period.
+    Simply put, when a customer stops being a customer, we say the customer has churned.
