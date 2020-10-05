@@ -130,10 +130,63 @@ the predictor(***X***) removed(???).
 whereas the systematic variation is the variation explained by the regression 
 model.
 
+### Residual plot
+A residual plot is a graph that shows the residuals on the vertical axis and the
+independent variable on the horizontal axis. If the points in a residual plot
+are randomly dispersed around the horizontal axis, a linear regression model is 
+appropriate for the data; otherwise, a nonlinear model is more appropriate.
 
+The residual plot helps to diagnose Heteroscedasticity, which is the trend of 
+greater variablility along the mass variable.
 
+**Residual variation** is the variation around the regression line. This can be 
+obtained by grabbing the sigma variable of the summary of the regression model 
+i.e., 
+```
+  summary(fit)$sigma
+```  
+which is same as when we compute manually,
+```
+  sqrt((sum(resid(fit)^2))/(n-2))
+```  
+Note: The % of total variance - variability disregarding the independent 
+variables, around the mean of the dependent variable - that is explained by the 
+residual variability - the variability explained by the regression model needs 
+to be high, the amount of variance left unexplained must be kept minimum. A 
+metric that defines the variance explained by a regression model is called 
+R-squared.  
+<img src="https://render.githubusercontent.com/render/math?math=$R^{2}=\frac{\sum_{i=1}^{n}(\hat{Y}_{i}%2D\bar{Y})^{2}}{\sum_{i=1}^{n}(Y_{i}%2D\bar{Y})^{2}}$">   
 
+### Inference in Regression
+Variance of the estimator <img src="https://render.githubusercontent.com/render/math?math=$\hat{\beta_{1}}$"> is given as,  
+<img src="https://render.githubusercontent.com/render/math?math=$\sigma^{2}_{\hat{\beta_{1}}} = Var(\hat{\beta_{1}}) = \frac{\sigma^{2}}{\sum^{n}_{i=1}(X_{i}%2D\bar{X})^{2}}$">  
+  
+and, the variance of the intercept is given as,  
+<img src="https://render.githubusercontent.com/render/math?math=$\sigma^{2}_{\hat{\beta_{0}}} = Var(\hat{\beta_{0}}) = \left(\frac{1}{n}%2B\frac{\bar{X}^{2}}{\sum_{i=1}^{n}(X_{i}%2D\bar{X})^{2}}\right)\sigma^{2}$">  
 
+which is the standard deviation around the regression line divided by the sum of 
+squares of the x variable around their mean.
+
+In practice the <img src="https://render.githubusercontent.com/render/math?math=$\sigma^{2}$"> term is replaced by its estimate which is,  
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{1}{n%2D2}\left(\sum_{i=1}^{n}(X%2D\hat{X})^2\right)$">  
+
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{\hat{\beta_{j}}%2D\beta_{j}}{\sigma^{2}_{\hat{\beta_{j}}}}$"> follows a T-distribution with n-2 degrees of freedom.
+
+### Prediction
+Prediction estimate is given by   
+  <img src="https://render.githubusercontent.com/render/math?math=$\hat{\beta}_{0}%2B\hat{\beta}_{1}x_{0}$">  
+
+A standard error is required to create a prediction interval
+
+The prediction interval for standard deviation in predicting the future value of 
+y at any arbitrary point <img src="https://render.githubusercontent.com/render/math?math=$x_{0}$"> is distinctively broader 
+than the confidence interval for a regression line.
+
+The variability is narrowest at the centre of mass of the distribution.
+
+Predicting <img src="https://render.githubusercontent.com/render/math?math=$\hat{Y}$">, value of y for any arbitrary x, ie line at <img src="https://render.githubusercontent.com/render/math?math=$x_{0}$"> se, <img src="https://render.githubusercontent.com/render/math?math=$\hat{\sigma}\sqrt{\frac{1}{n}%2B\frac{(x_{0}%2D\bar{X})^{2}}{\sum_{i=1}^{n}(X_{i}%2D\bar{X})^{2}}}$">  
+
+and, for predicting a future interval, prediction interval se at <img src="https://render.githubusercontent.com/render/math?math=$x_{0}$"> is given by <img src="https://render.githubusercontent.com/render/math?math=$\hat{\sigma}\sqrt{1%2B\frac{1}{n}%2B\frac{(x_{0}%2D\bar{X})^{2}}{\sum_{i=1}^{n}(X_{i}%2D\bar{X})^{2}}}$">  
 
 
 
