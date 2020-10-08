@@ -33,6 +33,8 @@ order) gives a vector of datapoints that is centered around 0 and with standard
 deviation 1.  
 and <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{Z}_{i}=\frac{X_{i}%2D\bar{X}}{\mathrm{s}}$">  
 
+Subtracting the means to eliminate the intercept is a special case of a general technique which is sometimes called Gaussian Elimination.  
+  
 **Covariance**: 
 <img src="https://render.githubusercontent.com/render/math?math=$Cov(X,Y) = \frac{1}{n%2D1}\sum_{i=1}^{n}(X_{i}%2D\bar{X})(Y_{i}%2D\bar{Y})=\frac{1}{n%2D1}\sum_{i=1}^{n}(X_{i}Y_{i}%2Dn\bar{X}\bar{Y})$">  
 Then the correlation is simply the covariance standardized into a unitless 
@@ -172,6 +174,8 @@ In practice the <img src="https://render.githubusercontent.com/render/math?math=
 
 <img src="https://render.githubusercontent.com/render/math?math=$\frac{\hat{\beta_{j}}%2D\beta_{j}}{\sigma^{2}_{\hat{\beta_{j}}}}$"> follows a T-distribution with n-2 degrees of freedom.
 
+The mean of a variable is the coefficient of its regression against the constant, 1. Thus, subtracting the mean is equivalent to replacing a variable by the residual of its regression against 1
+
 ### Prediction
 Prediction estimate is given by   
   <img src="https://render.githubusercontent.com/render/math?math=$\hat{\beta}_{0}%2B\hat{\beta}_{1}x_{0}$">  
@@ -188,6 +192,28 @@ Predicting <img src="https://render.githubusercontent.com/render/math?math=$\hat
 
 and, for predicting a future interval, prediction interval se at <img src="https://render.githubusercontent.com/render/math?math=$x_{0}$"> is given by <img src="https://render.githubusercontent.com/render/math?math=$\hat{\sigma}\sqrt{1%2B\frac{1}{n}%2B\frac{(x_{0}%2D\bar{X})^{2}}{\sum_{i=1}^{n}(X_{i}%2D\bar{X})^{2}}}$">  
 
+Deviance is the sum of the square of residuals.  
+The square of correlation between two variables can also be used to compute the 
+r-squared value.  
 
+
+## Multivariable regression analysis
+Multivariable regression is - looking at relationship of predictor on response
+while at some level having accounted for other variables ie., Establishing the
+right relationship between predictor and outcome in case of multiplicity - 
+availability of multiple regressors.  
+
+Components:  
+- Model selection  
+- Handling overfitting  
+- 
+
+eg: When considering the significance of regression relationship of a person's 
+usage of breath mint and measure of forced expiratory volume. Logically dietary 
+intake shouldn't be having such significance on pulmonary activity. Upon 
+analysis we find the correlation between smokers and breath mint usage, smokers 
+tend to use breath mint more, which shows that it is actually the parameter - "
+whether a person smokes" which is actually signicant parameter to regression
+and not "whether they consume breath mint".
 
       

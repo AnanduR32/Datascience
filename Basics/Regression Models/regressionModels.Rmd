@@ -17,6 +17,8 @@ suppressMessages(
     library(dplyr)
     data("galton")
     data("diamond")
+    data("trees")
+    data("swiss")
   }
 )
 ```
@@ -271,8 +273,107 @@ Which tells us that - "With a 95% confidence interval a 0.1 increase in the
 carat size we see a resultant increase in price in the range 356 to 389. 
 
 
+## Multivariable regression 
+
+### Example 1
+Function to replace a variable in dataset with the residuals of the variable 
+w.r.t the predictor.
+```{r}
+# Regress the given variable on the given predictor,
+# suppressing the intercept, and return the residual.
+regressOneOnOne <- function(predictor, other, dataframe){
+  # Point A. Create a formula such as Girth ~ Height -1
+  formula <- paste0(other, " ~ ", predictor, " - 1")
+  # Use the formula in a regression and return the residual.
+  resid(lm(formula, dataframe))
+}
+
+# Eliminate the specified predictor from the dataframe by
+# regressing all other variables on that predictor
+# and returning a data frame containing the residuals
+# of those regressions.
+eliminate <- function(predictor, dataframe){
+  # Find the names of all columns except the predictor.
+  others <- setdiff(names(dataframe), predictor)
+  # Calculate the residuals of each when regressed against the given predictor
+  temp <- sapply(others, function(other)regressOneOnOne(predictor, other, dataframe))
+  # sapply returns a matrix of residuals; convert to a data frame and return.
+  as.data.frame(temp)
+}
+```
+
+We can use this function to reduce a multivariable regression in n variable to 
+regression in one variable.
+
+Using the trees dataset which can be used to fit a model to compute the volume 
+of a tree given the girth and height of the tree.  
+
+```{r}
+head(trees)
+```
+
+
+A residual is the difference between a variable and its predicted value.
+```{r}
+fit <- lm(Volume ~ ., trees)
+summary(fit)
+```  
+
+Adding constant column
+```{r}
+trees$Constant=1
+```
 
 
 
+Eliminating the "Girth" variable.
+```{r}
+trees2 <- eliminate("Girth", trees)
+head(trees2)
+```
+This is regression in many variables amounts to a series of regressions in one.  
 
+```{r}
+fit2 <- lm(Volume ~ . - 1, trees2)
+lapply(list(fit,fit2),coef)
+```  
+
+### Example 2
+Using the mtcars dataset, fitting a linear model to estimate the mpg given cyl 
+count, weight of vehicle wt, and performance in horsepower hp.
+```{r}
+data = select(mtcars, 1,wt,cyl,hp,mpg)
+rownames(data) <- NULL
+data$const = 1
+head(data)
+```  
+Fitting a linear model on the original dataset with all 4 parameters (including 
+the constant parameter 1 which estimates the mean for the outcome)
+```{r}
+fit = lm(mpg~.-1,data)
+fit
+```
+
+
+Removing the wt parameter by regressing all other parameters with the wt 
+parameter to predict the values of other parameters which estimates the wt
+```{r}
+const = as.numeric(resid(lm(const~wt-1,data)))
+hp = as.numeric(resid(lm(hp~wt-1,data)))
+cyl = as.numeric(resid(lm(cyl~wt-1,data)))
+mpg = as.numeric(resid(lm(mpg~wt-1,data)))
+data2 = data.frame(const,hp,cyl,mpg)
+head(data2)
+```
+
+Fitting a linear model on dataset with wt parameter removed
+```{r}
+fit2 = lm(mpg~.-1,data2)
+```
+
+Comparing the prediction of each models
+```{r}
+paste("Pred with wt: ",as.character(predict(fit, newdata = data.frame(wt=mean(data$wt),cyl=median(data$cyl),hp=mean(data$hp),const=median(data$hp)))))
+paste("pred without wt: ",as.character(predict(fit2, newdata = data.frame(cyl=median(data$cyl),hp=mean(data$hp),const=median(data$hp)))))
+```
 
