@@ -11,6 +11,8 @@ suppressMessages(
   {
     if(!require(manipulate)){
       install.packages("manipulate")
+      install.packages("GGally")
+      library(GGally)
       library(manipulate)
     }
     library(UsingR)
@@ -342,7 +344,7 @@ lapply(list(fit,fit2),coef)
 Using the mtcars dataset, fitting a linear model to estimate the mpg given cyl 
 count, weight of vehicle wt, and performance in horsepower hp.
 ```{r}
-data = select(mtcars, 1,wt,cyl,hp,mpg)
+data = select(mtcars,wt,cyl,hp,mpg)
 rownames(data) <- NULL
 data$const = 1
 head(data)
@@ -375,5 +377,111 @@ Comparing the prediction of each models
 ```{r}
 paste("Pred with wt: ",as.character(predict(fit, newdata = data.frame(wt=mean(data$wt),cyl=median(data$cyl),hp=mean(data$hp),const=median(data$hp)))))
 paste("pred without wt: ",as.character(predict(fit2, newdata = data.frame(cyl=median(data$cyl),hp=mean(data$hp),const=median(data$hp)))))
+```  
+### Example 3
+Now, considering a new subset of original dataset without the constant column,  
+Regressing hp on cyl, wt, and also regressing on the response mpg
+```{r}
+# The intercept constant 1s are by default included
+data = select(mtcars,wt,cyl,hp,mpg)
+ex = as.numeric(resid(lm(hp~wt+cyl,data)))
+ey = as.numeric(resid(lm(mpg~wt+cyl,data)))
 ```
+
+ex represents the values of hp regressed on wt, cyl and column of 1s.  
+ey represents the values of mpg regressed on wt, cyl and column of 1s.  
+Since it is a linear model, the property of linearity holds - we can regress ey 
+on ex(minus the column of 1s - since we already regressed both ex and ey on 1 
+already) to get same response as we would get if we had regressed mpg on column 
+of 1s, wt, cyl and hp.  
+```{r}
+fit1 = lm(ey~ex-1)
+fit2 = lm(mpg~.,data)
+x=round(as.numeric(summary(fit1)$resid),13);y=round(as.numeric(summary(fit2)$resid),13)
+identical(x,y)
+```   
+The values of residuals are practically identical up to 13 decimal numeric 
+precision.  
+
+## Swiss dataset
+
+Summarizing the variables in the dataset
+```{r}
+require(datasets); data(swiss); require(GGally); require(ggplot2)
+smooth_plot_fn = function(data, mapping, method="loess",...){
+  g = ggplot(
+    data = data, 
+    mapping = mapping
+  ) + theme_bw() + 
+    geom_point(col = "skyblue") + 
+    geom_smooth(method = method, formula = y~x, ...) 
+  g
+}
+ggpairs(swiss, lower = list(continuous=wrap(smooth_plot_fn,se=F,col="orange")), progress = F)
+```   
+### Regression on all the variables for illustration purpose
+```{r}
+summary(lm(Fertility~.,swiss))$coefficients
+```  
+This tells us thatL
+* There is an expected 0.17 decrease in fertility for unit 
+increase (1% increase in percentage of males) in agriculture, holding the 
+remaining variables constant.  
+* The Std. Error tells us how precise this observation is.  
+* t values is the t statistic obtained by dividing the Estimate by the Std. 
+Error terms, used for hypothesis testing.  
+
+## Regression on factor variables
+when dealing with factor variables R by default sets a level as the default 
+value and it is interpreted by the intercept coefficient, whereas all the other 
+levels are interpreted as a comparison of it's level to the default level.  
+If we are to subtract the intercept coefficient from a given one we get the 
+relation of this coefficient with the outcome minus the default.  
+
+```{r}
+require(datasets);data(InsectSprays); require(stats); require(ggplot2)
+ggplot(
+  data = InsectSprays,
+  aes(
+    y = count,
+    x = spray,
+    fill  = spray
+  )
+) + 
+  geom_violin(colour = "black", size = 2) +
+  xlab("Type of spray") + 
+  ylab("Insect count")
+```  
+
+With spray group A as the reference the linear model coefficients are
+```{r}
+summary(lm(count ~ spray, data = InsectSprays))$coef
+```  
+This can be used to generate relevant inferences such as whether another spray 
+is infact different from the reference spray using the t-statistic.  
+And so we can test whether spray A is more effective than the others.  
+To interpret the coeffients exactly as the means of the factors remove the 
+x-intercept, as in 
+
+```{r}
+summary(lm(count ~ spray-1, data = InsectSprays))$coef
+```  
+The t-statistic in this case is telling us whether the mean is further away from 
+zero i.e. whether a spray killed any insect and not with respect to how many a 
+reference spray was able to kill.   
+
+To change the reference level we use the relevel function.
+```{r}
+spray2 = relevel(InsectSprays$spray, "C")
+summary(lm(count ~ spray2, data = InsectSprays))$coef
+
+```
+
+
+
+
+
+
+
+
 

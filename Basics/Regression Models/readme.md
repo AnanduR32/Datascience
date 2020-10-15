@@ -88,8 +88,10 @@ there doesn't exist data with value 0 to estimate the intercept at **X** = **0**
 It can be impossible or far outside the range of the data. 
 **It is the expected response when the predictor is equal to zero**
 
-A fix for this would be to shift the regression variable by a constant "**a**",
-<img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \beta{0}%2C\beta_{1}X_{i}%2B\varepsilon_{i} = \beta_{0}%2Ba\beta_{1}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i} = \tilde{\beta}_{0}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i}$">  
+A fix for this would be to shift the regression variable by a constant "**a**",   
+
+<img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \beta{0}%2B\beta_{1}X_{i}%2B\varepsilon_{i} = \beta_{0}%2Ba\beta_{1}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i} = \tilde{\beta}_{0}%2B\beta_{1}(X_{i}%2Da)%2B\varepsilon_{i}$">  
+
 <img src="https://render.githubusercontent.com/render/math?math=$varepsilon_{i}$"> is the gaussian error where <img src="https://render.githubusercontent.com/render/math?math=$varepsilon_{i}\simN(0,\sigma^{2})$">  
 The new intercept is,  
 <img src="https://render.githubusercontent.com/render/math?math=$\beta{0} = \beta_{0}%2Ba\beta_{1}$">  
@@ -110,6 +112,7 @@ Shifting the **X** variable doesn't change the slope much. But when we scale the
 We scale the regression variable by multiplying and dividing by a constant **a**  
 
 <img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \beta_{0}%2B\beta_{1}X_{i}%2B\varepsilon_{i} = \beta_{0}%2B\frac{\beta_{1}}{a}(X_{i}a)%2B\varepsilon_{i} = \beta_{0}%2B\tilde{\beta_{1}}(X_{i}a)%2B\varepsilon_{i}$">  
+
 Multiplication of ***X*** by a factor **a** results in dividing the coefficient 
 by a factor of **a**.
 
@@ -127,7 +130,7 @@ Properties of residuals:
 - The generalization of above two points, if a regressor variable <img src="https://render.githubusercontent.com/render/math?math=$X_{i}$"> is included, then <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}X_{i}=0$">  
 - Residuals can be used to investigate the performance of a model.  
 - Residuals can be thought of as outcome(***Y***) with the linear association of 
-the predictor(***X***) removed(???).  
+the predictor(***X***) removed.  
 - Residual variation is the variation left unexplained by the regression model, 
 whereas the systematic variation is the variation explained by the regression 
 model.
@@ -214,6 +217,30 @@ intake shouldn't be having such significance on pulmonary activity. Upon
 analysis we find the correlation between smokers and breath mint usage, smokers 
 tend to use breath mint more, which shows that it is actually the parameter - "
 whether a person smokes" which is actually signicant parameter to regression
-and not "whether they consume breath mint".
+and not "whether they consume breath mint".  
+
+For multivariate regression, the regression coefficient is interpreted as **the 
+change in the response for unit change in one of the regressors/predictors, 
+keeping all other regressors constant.  
+
+For multivariable regression we have,
+- Model <img src="https://render.githubusercontent.com/render/math?math=$Y_{i} = \sum_{k=1}^{p}X_{ik}\beta_{k}%2B\varepsilon_{i} \sim N(0,\sigma^{2})$">  
+- Fitted response <img src="https://render.githubusercontent.com/render/math?math=$\hat{Y}_{i} = \sum_{k=1}^{p}X_{ik}\hat{\beta}_{k}$">   
+- Residuals <img src="https://render.githubusercontent.com/render/math?math=$\varepsilon_{i} = Y_{i} %2D \hat{Y}_{i}$">  
+- variance estimate,  <img src="https://render.githubusercontent.com/render/math?math=$\hat{\sigma}^{2} = \frac{1}{n-p}\sum_{i=1}^{n}e_{i}^{2}$"> // Constrainted over each predictor p.
+- To get predicted responses at new values,  <img src="https://render.githubusercontent.com/render/math?math=$x_{i}%2C%2E%2E%2E%2Cx_{p}%2C$"> simply plug them into the linear model <img src="https://render.githubusercontent.com/render/math?math=$\sum_{k=1}^{p}X_{k}\hat{\beta}_{k}$">  
+
+Each coefficient has a standard error(se) with general representation <img src="https://render.githubusercontent.com/render/math?math=$\hat{\sigma}_{\hat{beta}_{k}}$">  
+We can test for whether specific coefficients are zero with t-test:  
+ <img src="https://render.githubusercontent.com/render/math?math=$\frac{\hat{beta}_{k}%2D\beta_{k}}{\hat{\sigma}_{\hat{beta}_{k}}}$">   
+
+
+## Regression on factor variables
+when dealing with factor variables R by default sets a level as the default 
+value and it is interpreted by the intercept coefficient, whereas all the other 
+levels are interpreted as a comparison of it's level to the default level.  
+If we are to subtract the intercept coefficient from a given one we get the 
+relation of this coefficient with the outcome minus the default
+
 
       
