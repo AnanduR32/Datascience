@@ -438,7 +438,7 @@ levels are interpreted as a comparison of it's level to the default level.
 If we are to subtract the intercept coefficient from a given one we get the 
 relation of this coefficient with the outcome minus the default.  
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 require(datasets);data(InsectSprays); require(stats); require(ggplot2)
 ggplot(
   data = InsectSprays,
@@ -474,10 +474,75 @@ To change the reference level we use the relevel function.
 ```{r}
 spray2 = relevel(InsectSprays$spray, "C")
 summary(lm(count ~ spray2, data = InsectSprays))$coef
+```   
 
+### Illustration of regression with a continous and a factor variable
+Continous variable - Agriculture  
+Factor variable - CatholicBin (Whether >0.5 percent in a locality catholic or
+not)  
+```{r, fig.height=5, fig.width=7}
+swiss = mutate(swiss, CatholicBin = 1 * (Catholic > 50))
+g = ggplot(
+  swiss, 
+  aes(
+    x = Agriculture,
+    y = Fertility, 
+    colour = factor(CatholicBin)
+    )
+  ) + geom_point(size = 6, colour = "black") +
+  geom_point(size = 4) + 
+  xlab("% in Agriculture") +
+  ylab("Fertility")
+g
+```
+
+**When disregarding the factor variable - Baseline**
+```{r, fig.width=7}
+fit = lm(Fertility ~ Agriculture, data = swiss)
+g + geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2], size = 2)
+```  
+
+Intercept = `r coef(fit)[1]`  
+Slope = `r coef(fit)[2]`  
+
+**Using factor - Scenario 1 - Only changing the intercept**  
+
+Adding the factor variable creates just 3 coefficients
+```{r}
+fit = lm(Fertility ~ Agriculture + factor(CatholicBin), data = swiss)
+summary(fit)$coef
 ```
 
 
+```{r, fig.width=7}
+g + geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2], size = 2) +
+  geom_abline(intercept = coef(fit)[1] + coef(fit)[3], slope = coef(fit)[2], size = 2, col = 2)
+```  
+Intercept = `r coef(fit)[1] + coef(fit)[3]`  
+Slope = `r coef(fit)[2]`
+
+**Using factor - Scenario 2 - Changing slope and intercept**  
+
+When using 'variable * factor', R creates coefficients of variables in 
+multiples of factor levels.  
+In this case the factor has two levels, and by default the variable would have 2
+coefficients the slope and the intercep, when using the *, there will be 4
+coefficients.
+```{r, fig.width=7}
+fit = lm(Fertility ~ Agriculture * factor(CatholicBin), data = swiss)
+summary(fit)$coef
+```  
+Since the coef[1], coef[2] are the reference, whereas the coef[3] is the 
+deviation of intercept from reference when <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=1$">
+and coef[4] is deviation of slope coefficient from the reference similarly.
+
+```{r}
+g + geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2], size = 2) +
+  geom_abline(intercept = coef(fit)[1] + coef(fit)[3], slope = coef(fit)[2] + coef(fit)[4], size = 2, col = 2)
+```
+
+Intercept = `r coef(fit)[1] + coef(fit)[3]`  
+Slope = `r coef(fit)[2] + coef(fit)[4]`
 
 
 

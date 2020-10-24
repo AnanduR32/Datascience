@@ -128,7 +128,9 @@ Properties of residuals:
 - <img src="https://render.githubusercontent.com/render/math?math=$E[e_{i}]=0$">  
 - if you include an intercept, then <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}=0$">  
 - The generalization of above two points, if a regressor variable <img src="https://render.githubusercontent.com/render/math?math=$X_{i}$"> is included, then <img src="https://render.githubusercontent.com/render/math?math=$\sum_{i=1}^{n}e_{i}X_{i}=0$">  
-- Residuals can be used to investigate the performance of a model.  
+- Residuals can be used to investigate the performance of a model. We look for 
+systematic details in the residuals vs fitted values plot to infer that the 
+model is poorly fit.  
 - Residuals can be thought of as outcome(***Y***) with the linear association of 
 the predictor(***X***) removed.  
 - Residual variation is the variation left unexplained by the regression model, 
@@ -242,5 +244,103 @@ levels are interpreted as a comparison of it's level to the default level.
 If we are to subtract the intercept coefficient from a given one we get the 
 relation of this coefficient with the outcome minus the default
 
+When regression on a factor variable, we consider the general equations of lines
+as,   
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = \beta_{0}%2B\beta_{1}X_{1}%2B\beta_{2}X_{2}$">  
+where we disregard the factor variable  
 
-      
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = \beta_{0}%2B\beta_{1}X_{1}%2B\beta_{2}X_{2}$">  
+Here we include the factor variable, 
+Case 1: <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=0$">  
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = \beta_{0}%2B\beta_{1}X_{1}$">  
+Case 2: <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=1$">  
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = (\beta_{0} %2B \beta_{2})%2B\beta_{1}X_{1}$">  
+We observe that the slope remains the same in either cases while the intercept 
+shifts.
+
+In third scenario we introduce a new term to the equation   
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = \beta_{0}%2B\beta_{1}X_{1}%2B\beta_{2}X_{2}%2B\beta_{3}X_{1}X_{2}$">  
+Case 1: <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=0$">  
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = \beta_{0}%2B\beta_{1}X_{1}$">  
+Case 2: <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=1$">  
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = (\beta_{0} %2B \beta_{2})%2B(\beta_{1}%2B\beta_{3})X_{1}$">  
+Where the intercept and the slope both change.
+
+## Adjustment 
+Adjustment, is the idea of putting regressors into a linear model to investigate
+the role of a third variable on the relationship between another two.   
+Example, introducing smoking as a third variable in regression between lung 
+cancer and breath mint users.  
+
+According to ncbi - The process of accounting for covariates is called 
+adjustment (similar to logistic regression model) and comparing the results of 
+simple and multiple linear regressions can clarify that how much the confounders 
+in the model distort the relationship between exposure and outcome.
+
+Simpson's paradox in terms of adjustment: Things can change to exact opposite 
+when you perform adjustment.  
+
+A **propensity score** is the probability of a unit (e.g., person, classroom, 
+school) being assigned to a particular treatment given a set of observed
+covariates. Propensity scores are used to reduce selection bias by equating 
+groups based on these covariates.
+
+
+## Outliers, residuals and diagnostics
+For a datapoint to have high leverage on the overall data, it must be far away 
+from the cloud of datapoint, similar to the leveraging of a fulcrum with 
+increase in the effort arm length. In concept, how far away the datapoint is 
+from the centre of the x's is the leverage of that dataset. Whereas influence is
+whether or not that datapoint chooses to exert that leverage. Influence of a 
+datapoint is highest if it doesn't conform to the linear regression of the x's 
+with the outcome.  
+
+**Influence measures** to identify outliers diagnose certain variable and based
+on certain tests identify the residual data and thereby the outlying datapoint.
+
+Use ?influence.measures to see full suite of influence measures in stats.
+- rstandard and rstudent diagnose on the residuals.(Residuals have same unit as 
+the outcome)  
+- havalues - hatvalues(fit)  
+- dffits for everydata point measures how much the fitted value changes given 
+whether or not that particular datapoint is included, and similarly  
+dfbeta measures how much the slope coefficient changes. dfbetas(fit)   
+- cooks.distance summarises the dfbetas ie. it is measure of difference in the 
+coefficients.  
+- resid
+- press residuals: resid(fit)/(1-hatvalues(fit)) mostly used to validate the 
+model fit  
+
+dfbetas() and hatvalues() together can be used to acertain whether a point in 
+the dataset has influence and/or leverage. If dfbetas() is significantly 
+different it denotes that the point has high significance, and if hatvalues() is 
+significantly high it denotes that the point has high leverage.  
+
+## Model selection
+"A model is a lense through which we look at data, any model that can tell us 
+the true information about data is considered as a right model".  
+Introducing unnecessary variables into the regression model can lead to high
+standard errors for the other regressors.  
+Excluding important regressors lead to bias in the fitted model, whereas 
+including unimportant regressors lead to variance inflation(standard error 
+increase).  
+
+The more the covariance of the regressors to the resonse, the more the standard 
+error.  
+
+"Randomization as a method of experimental control has been extensively used in
+human clinical trials and other biological experiments. It prevents the 
+selection bias and insures against the accidental bias. It produces the
+comparable groups and eliminates the source of bias in treatment assignments."  
+
+Since the true value of residuals is not known, we use ratios of inflation to 
+compare the models to find the best one.  
+The variance inflation factor(VIF) is the increase in the variance for the ith
+regressor compared to the ideal setting where it is orthogonal to the other 
+regressors.  
+
+
+
+
+
+
