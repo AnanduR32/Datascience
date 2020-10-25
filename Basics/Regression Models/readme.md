@@ -266,6 +266,11 @@ Case 2: <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=1
 <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{E}\left[y | x_{1}, x_{2}\right] = (\beta_{0} %2B \beta_{2})%2B(\beta_{1}%2B\beta_{3})X_{1}$">  
 Where the intercept and the slope both change.
 
+Suppose we have two interacting predictors and one of them is held constant. The
+expected change in the outcome for a unit change in the other predictor is the 
+coefficient of that changing predictor + the coefficient of the interaction * 
+the value of the predictor held constant.
+
 ## Adjustment 
 Adjustment, is the idea of putting regressors into a linear model to investigate
 the role of a third variable on the relationship between another two.   
@@ -332,6 +337,13 @@ error.
 human clinical trials and other biological experiments. It prevents the 
 selection bias and insures against the accidental bias. It produces the
 comparable groups and eliminates the source of bias in treatment assignments."  
+For example, If we were to study whether mouth mint usage is correlated with 
+forced expiratory volume, we'd want our samples to be randomized in the sense 
+that the mint users must not be predominantely smokers, which is the underlying 
+variable that can affect the outcome of the analysis, randomization helps spread
+the smokers among the mint users and non-mint user subsets.  
+Randomized test is unbiased because no unknown or known variable is influencing 
+the response of the model unnecessarily.  
 
 Since the true value of residuals is not known, we use ratios of inflation to 
 compare the models to find the best one.  
@@ -339,6 +351,11 @@ The variance inflation factor(VIF) is the increase in the variance for the ith
 regressor compared to the ideal setting where it is orthogonal to the other 
 regressors.  
 
+Nested models for model selection is a valid measure to identify the best model
+where we use likelihood ratios to measure a model's fit compared to the rest. In 
+nested model we keep adding parameters one by one and check the performance of 
+the model with each nesting.  
+The 'anova(fit1,fit2,fit3,...)' is used in conjuncture with nested models.  
 
 
 
