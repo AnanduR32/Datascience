@@ -300,6 +300,8 @@ whether or not that datapoint chooses to exert that leverage. Influence of a
 datapoint is highest if it doesn't conform to the linear regression of the x's 
 with the outcome.  
 
+When calculating influence, if 
+
 **Influence measures** to identify outliers diagnose certain variable and based
 on certain tests identify the residual data and thereby the outlying datapoint.
 
@@ -320,6 +322,44 @@ dfbetas() and hatvalues() together can be used to acertain whether a point in
 the dataset has influence and/or leverage. If dfbetas() is significantly 
 different it denotes that the point has high significance, and if hatvalues() is 
 significantly high it denotes that the point has high leverage.  
+
+Note: When a sample is included in a model, it pulls the regression line closer
+to itself (orange line) than that of the model which excludes it. Its residual, 
+the difference between its actual y value and that of a regression line, is thus
+smaller in magnitude when it is included than when it is omitted. The ratio of 
+these two residuals, included to omitted, is therefore small in magnitude for an
+influential sample.  
+For a sample which is not influential the ratio would be close to 1. Hence, 1 
+minus the ratio is a measure of influence, near 0 for points which are not 
+influential, and near 1 for points which are. Manually calculated as:  
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{1%2Dresid(fit)[1]}{(data[1,1]-predict(fitno,data[1,]))}$">  
+where,  
+- We're only considering the first sample for analysis  
+- fit is the model fitten with the sample  
+- fitno is model fitted without the sample   
+- data is the dataset  
+This can be obtained using the hatvalues(fit) function.  
+
+To get standard deviations of individual samples, we first multiply 
+sigma(standard error in the residuals) with the square root of 1-hatvalues(fit), 
+then we divide resid(fit) by this term, the result is known as the standardized
+residual - which can be computed using rstandard(fit) function.  
+Manually it is computed as:  
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{resid(fit)}{summary(fit)\$sigma*(1%2Dhatvalues(fit))}$">  
+where,  
+- sigma is <img src="https://render.githubusercontent.com/render/math?math=$\sqrt{\frac{deviance(fit)}{fit\$df.residual}}$">  
+- deviance is <img src="https://render.githubusercontent.com/render/math?math=$resid(fit)^{2}$">  
+The **Scale-Location** plot shows the square root of standardized residuals against fitted values.  
+
+The rstudent(fit) function can be used to calculate the studentized residuals 
+for each sample. The manual alternative to it, for the first sample, is:
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{resid(fit)[1]}{summary(fitno)\$sigma*(1%2Dhatvalues(fit)[1])}$">  
+
+The cooks distance can be manually calculated by finding the difference between 
+the predicted values and normalizing through division by the residual sample 
+variance times number of predictors(coefficients).  
+<img src="https://render.githubusercontent.com/render/math?math=$\Delta{Y}*[nCoefficients]*\sigma^{2}$">   
+The **Residuals vs Leverage** plot(5) visualizes the cook's distance for a fit.  
 
 ## Model selection
 "A model is a lense through which we look at data, any model that can tell us 
