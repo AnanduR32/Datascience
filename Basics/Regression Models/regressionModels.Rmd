@@ -9,11 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, fig.height=5, fig.width=5, fig.align = "centred")
 suppressMessages(
   {
-    if(!require(manipulate)){
+    if(!require(manipulate|!require(GGally)|!require(lmtest))){
       install.packages("manipulate")
       install.packages("GGally")
+      install.packages("lmtest")
       library(GGally)
       library(manipulate)
+      library(lmtest)
     }
     library(UsingR)
     library(dplyr)
@@ -545,8 +547,64 @@ Intercept = `r coef(fit)[1] + coef(fit)[3]`
 Slope = `r coef(fit)[2] + coef(fit)[4]`
 
 
+## Regression Multivariable - factors 
+Fit a model with mpg as the outcome that includes number of cylinders as a 
+factor variable and weight as a possible confounding variable. Compare the 
+effect of 8 versus 4 cylinders on mpg for the adjusted and unadjusted by weight
+models.  
 
 
 
+
+Here, adjusted means including the weight variable as a term in the
+regression model and unadjusted means the model without weight included.  
+What can be said about the effect comparing 8 and 4 cylinders after looking at 
+models with and without weight included?.  
+```{r}
+print(paste('Unadjusted coefficient:',as.character(summary(lm(mpg~cyl,mtcars))$coef[3])))
+print(paste('Adjusted coefficient:',as.character(summary(lm(mpg~cyl+wt,mtcars))$coef[3])))
+```
+
+Holding weight constant, cylinder appears to have less of an impact on mpg than 
+if weight is disregarded.  
+
+Fit a model with mpg as the outcome that considers number of cylinders as a 
+factor variable and weight as confounder. Now fit a second model with mpg as the 
+outcome model that considers the interaction between number of cylinders
+(as a factor variable) and weight. Give the P-value for the likelihood ratio
+test comparing the two models and suggest a model using 0.05 as a type I error
+rate significance benchmark.
+```{r}
+fitNoInt = lm(mpg~cyl+wt,mtcars)
+fitInt = lm(mpg~cyl*wt,mtcars)
+lrtest(fitNoInt,fitInt) 
+```  
+
+From the likelihood ratio test, P-value is larger than 0.05. So, according to
+our criterion, we would fail to reject, which suggests that the interaction 
+terms may not be necessary.
+
+### hatvalues of most influencial point
+Consider the following data set  
+```
+  x <- c(0.586, 0.166, -0.042, -0.614, 11.72)  
+  y <- c(0.549, -0.026, -0.127, -0.751, 1.344)  
+```
+Give the hat diagonal for the most influential point  
+```{r}
+x <- c(0.586, 0.166, -0.042, -0.614, 11.72)
+y <- c(0.549, -0.026, -0.127, -0.751, 1.344)
+fit = lm(y~x)
+hatvalues(fit)
+```
+Consider the following data set  
+```
+  x <- c(0.586, 0.166, -0.042, -0.614, 11.72)  
+  y <- c(0.549, -0.026, -0.127, -0.751, 1.344)  
+```
+Give the slope dfbeta for the point with the highest hat value above.  
+```{r}
+dfbetas(fit)[5,2]
+```
 
 

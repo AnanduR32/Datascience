@@ -373,6 +373,10 @@ increase).
 The more the covariance of the regressors to the resonse, the more the standard 
 error.  
 
+The variance inflation factor(VIF) can be obtained for a fit to compare the 
+correlation between variables(if high then yes), this can be computed using 
+function 'vif(fit)'
+
 "Randomization as a method of experimental control has been extensively used in
 human clinical trials and other biological experiments. It prevents the 
 selection bias and insures against the accidental bias. It produces the
@@ -396,6 +400,55 @@ where we use likelihood ratios to measure a model's fit compared to the rest. In
 nested model we keep adding parameters one by one and check the performance of 
 the model with each nesting.  
 The 'anova(fit1,fit2,fit3,...)' is used in conjuncture with nested models.  
+
+## Generalized linear models 
+
+According to wikipedia:   
+> Ordinary linear regression predicts the expected value of a given unknown 
+quantity (the response variable, a random variable) as a linear combination of a
+set of observed values (predictors). This implies that a constant change in a 
+predictor leads to a constant change in the response variable (i.e. a 
+linear-response model). This is appropriate when the response variable can vary,
+to a good approximation, indefinitely in either direction, or more generally for
+any quantity that only varies by a relatively small amount compared to the 
+variation in the predictive variables, e.g. human heights.  
+However, these assumptions are inappropriate for some types of response
+variables. For example, in cases where the response variable is expected to be 
+always positive and varying over a wide range, constant input changes lead to 
+geometrically (i.e. exponentially) varying, rather than constantly varying, 
+output changes. As an example, suppose a linear prediction model learns from
+some data (perhaps primarily drawn from large beaches) that a 10 degree 
+temperature decrease would lead to 1,000 fewer people visiting the beach. This
+model is unlikely to generalize well over different sized beaches. More 
+specifically, the problem is that if you use the model to predict the new
+attendance with a temperature drop of 10 for a beach that regularly receives 50
+beachgoers, you would predict an impossible attendance value of -950. Logically, 
+a more realistic model would instead predict a constant rate of increased beach
+attendance (e.g. an increase in 10 degrees leads to a doubling in beach 
+attendance, and a drop in 10 degrees leads to a halving in attendance). Such a
+model is termed an exponential-response model (or log-linear model, since the 
+logarithm of the response is predicted to vary linearly).  
+Similarly, a model that predicts a probability of making a yes/no choice (a 
+Bernoulli variable) is even less suitable as a linear-response model, since 
+probabilities are bounded on both ends (they must be between 0 and 1). Imagine,
+for example, a model that predicts the likelihood of a given person going to the
+beach as a function of temperature. A reasonable model might predict, for
+example, that a change in 10 degrees makes a person two times more or less 
+likely to go to the beach. But what does "twice as likely" mean in terms of a 
+probability? It cannot literally mean to double the probability value (e.g. 50%
+becomes 100%, 75% becomes 150%, etc.). Rather, it is the odds that are doubling:
+from 2:1 odds, to 4:1 odds, to 8:1 odds, etc. Such a model is a log-odds or
+logistic model.  
+Generalized linear models cover all these situations by allowing for response 
+variables that have arbitrary distributions (rather than simply normal 
+distributions), and for an arbitrary function of the response variable (the link
+function) to vary linearly with the predicted values (rather than assuming that 
+the response itself must vary linearly). For example, the case above of 
+predicted number of beach attendees would typically be modeled with a Poisson
+distribution and a log link, while the case of predicted probability of beach 
+attendance would typically be modeled with a Bernoulli distribution (or binomial
+distribution, depending on exactly how the problem is phrased) and a log-odds 
+(or logit) link function. 
 
 
 
