@@ -44,6 +44,8 @@ quantity.
 <img src="https://render.githubusercontent.com/render/math?math=$Cor(X,Y)=Cor(Y,X)$">  
 
 ### Regression model example
+We use a model to describe the process that results in the data
+that are observed, one such model is the linear regression model.  
 Fitting a model with y-intercept to find the height of the child given the 
 parent's height.  
 Then the line of best fit would be:  
@@ -404,7 +406,7 @@ The 'anova(fit1,fit2,fit3,...)' is used in conjuncture with nested models.
 ## Generalized linear models 
 
 According to wikipedia:   
-> Ordinary linear regression predicts the expected value of a given unknown 
+> [Ordinary linear regression](https://en.wikipedia.org/wiki/Generalized_linear_model#:~:text=Generalized%20linear%20models%20cover%20all,rather%20than%20assuming%20that%20the) predicts the expected value of a given unknown 
 quantity (the response variable, a random variable) as a linear combination of a
 set of observed values (predictors). This implies that a constant change in a 
 predictor leads to a constant change in the response variable (i.e. a 
@@ -450,6 +452,36 @@ attendance would typically be modeled with a Bernoulli distribution (or binomial
 distribution, depending on exactly how the problem is phrased) and a log-odds 
 (or logit) link function. 
 
+Components of a generalized linear model:  
+- Distribution family on which the response has to be modelled - exponential family model.  
+- The systematic component via a linear predictor  
+- Link function connects connects the mean of response to the linear predictor.  
+
+In case of linear models which uses gaussian distribution(which is an 
+exponential family distribution ), <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~N(\mu_{i}%2C\sigma^{2})$">  
+We define a linear predictor as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
+and link function, g is the identify function <img src="https://render.githubusercontent.com/render/math?math=$\mu_{i}=\eta_{i}$">  
+
+## Logistic regression
+In case of logistic regression, the generalized linear model follows a bernoulli
+distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Bernoulli(\mu_{i})$"> so that <img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i]$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu~[0,1]$">  
+The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
+with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\frac{\mu}{1%2D\mu}\right)$">, g is the natural log odds, referred to as **logit**.  
+
+## Poisson regression
+The generalized linear model follows poisson distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Poisson(\mu_{i})$"> so that
+<img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i}$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu\ge0$">  
+The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
+with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\mu\right)$">  
+
+The maximum likelihood estimate can be interpreted as <img src="https://render.githubusercontent.com/render/math?math=$0=\sum_{i=1}^{n}\frac{(Y_{i}%2D\mu_{i})}{Var(Y_{i})}W_{i}$">  
+[Maximum likelihood estimation](https://towardsdatascience.com/probability-concepts-explained-maximum-likelihood-estimation-c7b4342fdbb1) is a method that determines values for the 
+parameters of a model. The parameter values are found such that they maximise
+the likelihood that the process described by the model produced the data that 
+were actually observed.  
+
+
+  
 
 
 
