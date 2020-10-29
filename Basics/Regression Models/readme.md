@@ -480,6 +480,20 @@ parameters of a model. The parameter values are found such that they maximise
 the likelihood that the process described by the model produced the data that 
 were actually observed.  
 
+When calculating MLE, we calculate the total probability of observing a data 
+given a distribution with parameters to define it.
+
+Consider a bunch of datapoints forming a gaussian distribution, the probability 
+of observing a datapoint at a location is given by <img src="https://render.githubusercontent.com/render/math?math=$P(x:\mu,\sigma)=\frac{1}{\sigma\sqrt{2\pi}}\mathrm{exp}\left(%2D\frac{(x%2D\mu)^2}{2\sigma^2}\right)$">  
+For calculating the probability distribution of the joint distribution, assuming 
+the datapoints are independent, we simply multiply all the probabilities - for 
+which finding the maxima taking the derivative can be quite complicated 
+depending on the size of the dataset, therefore we take the log of the equation 
+and then derivate w.r.t <img src="https://render.githubusercontent.com/render/math?math=$\mu$"> to find the mean of the distribution(given it is a gaussian distribution) otherwise the <img src="https://render.githubusercontent.com/render/math?math=$\sigma$"> the 
+standard deviation.  
+Thus we can easily calculate the parameters that define the selected 
+distribution/modelling a distribution that defines the dataset.  
+
 
   
 
