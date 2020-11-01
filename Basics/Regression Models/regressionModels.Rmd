@@ -2,14 +2,16 @@
 title: "regression"
 author: "Anandu R"
 date: "9/21/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height=5, fig.width=5, fig.align = "centred")
 suppressMessages(
   {
-    if(!require(manipulate|!require(GGally)|!require(lmtest))){
+    if(!require(manipulate)|!require(GGally)|!require(lmtest)){
       install.packages("manipulate")
       install.packages("GGally")
       install.packages("lmtest")
@@ -75,7 +77,7 @@ coefficient estimated earlier.
 
 ### Regression with centered data
 If we were to centre the data around the mean and perform the same analysis, 
-we'd get the same result as we'd if the intercept estimator <img src="https://render.githubusercontent.com/render/math?math=$\beta_{0}$">  was under consideration 
+we'd get the same result as we'd if the intercept estimator $\beta_{0}$  was under consideration 
 
 ```{r, echo = T}
 galtonCentered = mutate(galton, child = child - mean(child), parent = parent - mean(parent))
@@ -112,7 +114,7 @@ coefficient estimated earlier.
 
 ### Regression with normalized data
 If we were to normalize the data and perform the same analysis, we'd get the
-same result still, furthmore, the <img src="https://render.githubusercontent.com/render/math?math=$\beta$"> coefficient can be calculated 
+same result still, furthmore, the $\beta$ coefficient can be calculated 
 as the covariance of X and Y.
 
 ```{r, echo = T}
@@ -535,7 +537,7 @@ fit = lm(Fertility ~ Agriculture * factor(CatholicBin), data = swiss)
 summary(fit)$coef
 ```  
 Since the coef[1], coef[2] are the reference, whereas the coef[3] is the 
-deviation of intercept from reference when <img src="https://render.githubusercontent.com/render/math?math=$X_{2}=1$">
+deviation of intercept from reference when $X_{2}=1$
 and coef[4] is deviation of slope coefficient from the reference similarly.
 
 ```{r}
@@ -621,21 +623,21 @@ head(ravensData)
 ```
 
 
-Linear regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{response}_{i}=b_{0}%2Bb_{1}\mathrm{predictor}_{i}%2Be_{i}$">   
-Logistic regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">  
+Linear regression $\mathrm{response}_{i}=b_{0}+b_{1}\mathrm{predictor}_{i}+e_{i}$   
+Logistic regression $\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1-\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}+b_{1}predictor_{i}$  
 If, score==0 then we have  
-<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}$">   
+$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1-\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}$   
 Thus,  
-- <img src="https://render.githubusercontent.com/render/math?math=$b_{0}$" style="float:left"> - Log odds of Ravens win if they score zero points  
-- <img src="https://render.githubusercontent.com/render/math?math=$b_{1}$" style="float:left"> - Log odds ratio of win probability for each point scored(relative to the zero point)  
-- <img src="https://render.githubusercontent.com/render/math?math=$exp(b_{1})$" style="float:left"> - Odds ratio of win probability for each point scored(relative to the zero point)
+- $b_{0}$ - Log odds of Ravens win if they score zero points  
+- $b_{1}$ - Log odds ratio of win probability for each point scored(relative to the zero point)  
+- $exp(b_{1})$ - Odds ratio of win probability for each point scored(relative to the zero point)
 
-and <img src="https://render.githubusercontent.com/render/math?math=$\frac{e^{b_{0}}}{1%2Be^{b_{0}}}$" style="display:inline"> is the probability of whether raven's win with score "0"  
+and $\frac{e^{b_{0}}}{1+e^{b_{0}}}$ is the probability of whether raven's win with score "0"  
 
 To find the unit increase in probability of winning,  
-- Let <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i})$" style="display:inline"> be the probability of winning for given score, and     
-- <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)$" style="display:inline"> be the probability of winning for given score + 1, which means the probability given unit increase in score.    
+- Let $b_{0}+b_{1}(predictor_{i})$ be the probability of winning for given score, and     
+- $b_{0}+b_{1}(predictor_{i}+1)$" style="display:inline be the probability of winning for given score + 1, which means the probability given unit increase in score.    
 
-Subtracting the terms we get, <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)%2D\b_{0}%2Bb_{1}(predictor_{i})=b_{1}$">
+Subtracting the terms we get, $b_{0}+b_{1}(predictor_{i}+1)-b_{0}+b_{1}(predictor_{i})=b_{1}$
 
 
