@@ -468,6 +468,15 @@ distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_
 The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
 with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\frac{\mu}{1%2D\mu}\right)$">, g is the natural log odds, referred to as **logit**.  
 
+A [binomial random variable](https://online.stat.psu.edu/stat800/book/export/html/658) counts how often a particular event occurs in a fixed
+number of tries or trials. For a variable to be a binomial random variable, ALL 
+of the following conditions must be met:  
+- There are a fixed number of trials (a fixed sample size).  
+- On each trial, the event of interest either occurs or does not.  
+- The probability of occurrence (or not) is the same on each trial.  
+- Trials are independent of one another.  
+
+
 ## Poisson regression
 The generalized linear model follows poisson distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Poisson(\mu_{i})$"> so that
 <img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i}$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu\ge0$">  
@@ -494,6 +503,25 @@ standard deviation.
 Thus we can easily calculate the parameters that define the selected 
 distribution/modelling a distribution that defines the dataset.  
 
+Unlike in linear models in which we have constant variance(for the residuals) 
+i.e. <img src="https://render.githubusercontent.com/render/math?math=$Var(Y_{i})=\sigma^{2}$">, 
+we do not observe such a trend in case of non-gaussian distribution family 
+models.   
+For instance, in case of the bernoulli distribution family model, we have 
+<img src="https://render.githubusercontent.com/render/math?math=$Var(Y_{i})=\mu_{i}(1%2D\mu{i})$">  
+and in case of poisson, <img src="https://render.githubusercontent.com/render/math?math=$\mu_{i}$">  
+The variance depends on the ith observed data.  
+
+Odds = Probability/(1-Probability)  
+Probability = Odds/(1+Odds)  
+Log Odds(logit) = log(Odds)  
+
+In case of linear regression we have, <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{response}_{i}=b_{0}%2Bb_{1}\mathrm{predictor}_{i}%2Be_{i}$">  
+Which can be realised to <img src="https://render.githubusercontent.com/render/math?math=$E[\mathrm{response}_{i}|\mathrm{predictor}_{i},b_{0},b_{1}]=b_{0}%2Bb_{1}\mathrm{predictor}$">  
+
+And in case of logistic regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})=\frac{exp(b_{0}%2Bb_{1}predictor_{i})}{1%2Bexp(b_{0}%2Bb_{1}predictor_{i})}$">  
+which can then be realized as <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{exp(a)}{1%2Bexp(a)}$"> is known as xbit.  
 
   
 
