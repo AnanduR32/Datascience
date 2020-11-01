@@ -523,6 +523,23 @@ And in case of logistic regression <img src="https://render.githubusercontent.co
 which can then be realized as <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">
 <img src="https://render.githubusercontent.com/render/math?math=$\frac{exp(a)}{1%2Bexp(a)}$"> is known as xbit.  
 
+Consider the ravens win/loss rate dataset   
+Linear regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{response}_{i}=b_{0}%2Bb_{1}\mathrm{predictor}_{i}%2Be_{i}$">   
+Logistic regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">  
+If, score==0 then we have  
+<img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}$">   
+Thus,  
+- <img src="https://render.githubusercontent.com/render/math?math=$b_{0}$"> - Log odds of Ravens win if they score zero points  
+- <img src="https://render.githubusercontent.com/render/math?math=$b_{1}$"> - Log odds ratio of win probability for each point scored(relative to the zero point)  
+- <img src="https://render.githubusercontent.com/render/math?math=$exp(b_{1})$"> - Odds ratio of win probability for each point scored(relative to the zero point)
+
+and <img src="https://render.githubusercontent.com/render/math?math=$\frac{e^{b_{0}}}{1%2Be^{b_{0}}}$"> is the probability of whether raven's win with score "0"  
+
+To find the unit increase in probability of winning,  
+- Let <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i})$"> be the probability of winning for given score, and     
+- <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)$" style="display:inline"> be the probability of winning for given score + 1, which means the probability given unit increase in score.    
+
+Subtracting the terms we get, <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)%2D\b_{0}%2Bb_{1}(predictor_{i})=b_{1}$">
   
 
 
