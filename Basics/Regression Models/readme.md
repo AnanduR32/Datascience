@@ -462,28 +462,6 @@ exponential family distribution ), <img src="https://render.githubusercontent.co
 We define a linear predictor as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
 and link function, g is the identify function <img src="https://render.githubusercontent.com/render/math?math=$\mu_{i}=\eta_{i}$">  
 
-## Logistic regression
-In case of logistic regression, the generalized linear model follows a bernoulli
-distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Bernoulli(\mu_{i})$"> so that <img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i]$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu~[0,1]$">  
-The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
-with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\frac{\mu}{1%2D\mu}\right)$">, g is the natural log odds, referred to as **logit**.  
-
-A [binomial random variable](https://online.stat.psu.edu/stat800/book/export/html/658) counts how often a particular event occurs in a fixed
-number of tries or trials. For a variable to be a binomial random variable, ALL 
-of the following conditions must be met:  
-- There are a fixed number of trials (a fixed sample size).  
-- On each trial, the event of interest either occurs or does not.  
-- The probability of occurrence (or not) is the same on each trial.  
-- Trials are independent of one another.  
-
-
-## Poisson regression
-The generalized linear model follows poisson distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Poisson(\mu_{i})$"> so that
-<img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i}$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu\ge0$">  
-The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
-with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\mu\right)$">  
-
-The maximum likelihood estimate can be interpreted as <img src="https://render.githubusercontent.com/render/math?math=$0=\sum_{i=1}^{n}\frac{(Y_{i}%2D\mu_{i})}{Var(Y_{i})}W_{i}$">  
 [Maximum likelihood estimation](https://towardsdatascience.com/probability-concepts-explained-maximum-likelihood-estimation-c7b4342fdbb1) is a method that determines values for the 
 parameters of a model. The parameter values are found such that they maximise
 the likelihood that the process described by the model produced the data that 
@@ -503,6 +481,20 @@ standard deviation.
 Thus we can easily calculate the parameters that define the selected 
 distribution/modelling a distribution that defines the dataset.  
 
+## Logistic regression
+In case of logistic regression, the generalized linear model follows a bernoulli
+distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Bernoulli(\mu_{i})$"> so that <img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i]$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu~[0,1]$">  
+The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
+with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\frac{\mu}{1%2D\mu}\right)$">, g is the natural log odds, referred to as **logit**.  
+
+A [binomial random variable](https://online.stat.psu.edu/stat800/book/export/html/658) counts how often a particular event occurs in a fixed
+number of tries or trials. For a variable to be a binomial random variable, ALL 
+of the following conditions must be met:  
+- There are a fixed number of trials (a fixed sample size).  
+- On each trial, the event of interest either occurs or does not.  
+- The probability of occurrence (or not) is the same on each trial.  
+- Trials are independent of one another.  
+
 Unlike in linear models in which we have constant variance(for the residuals) 
 i.e. <img src="https://render.githubusercontent.com/render/math?math=$Var(Y_{i})=\sigma^{2}$">, 
 we do not observe such a trend in case of non-gaussian distribution family 
@@ -520,7 +512,7 @@ In case of linear regression we have, <img src="https://render.githubusercontent
 Which can be realised to <img src="https://render.githubusercontent.com/render/math?math=$E[\mathrm{response}_{i}|\mathrm{predictor}_{i},b_{0},b_{1}]=b_{0}%2Bb_{1}\mathrm{predictor}$">  
 
 And in case of logistic regression <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})=\frac{exp(b_{0}%2Bb_{1}predictor_{i})}{1%2Bexp(b_{0}%2Bb_{1}predictor_{i})}$">  
-which can then be realized as <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">
+which can then be realized as <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{log}\left(\frac{\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}{1%2D\mathrm{Pr}(response_{i}|predictor_{i},b_{0},b_{1})}\right)=b_{0}%2Bb_{1}predictor_{i}$">  
 <img src="https://render.githubusercontent.com/render/math?math=$\frac{exp(a)}{1%2Bexp(a)}$"> is known as xbit.  
 
 Consider the ravens win/loss rate dataset   
@@ -536,11 +528,122 @@ Thus,
 and <img src="https://render.githubusercontent.com/render/math?math=$\frac{e^{b_{0}}}{1%2Be^{b_{0}}}$"> is the probability of whether raven's win with score "0"  
 
 To find the unit increase in probability of winning,  
-- Let <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i})$"> be the probability of winning for given score, and     
-- <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)$" style="display:inline"> be the probability of winning for given score + 1, which means the probability given unit increase in score.    
+- Let <img src="https://render.githubusercontent.com/render/math?math=$b_{0}%2Bb_{1}(predictor_{i})$"> be the probability of winning for given score, and     
+- <img src="https://render.githubusercontent.com/render/math?math=$b_{0}%2Bb_{1}(predictor_{i}%2B1)$" style="display:inline"> be the probability of winning for given score + 1, which means the probability given unit increase in score.    
 
-Subtracting the terms we get, <img src="https://render.githubusercontent.com/render/math?math=$\b_{0}%2Bb_{1}(predictor_{i}%2B1)%2D\b_{0}%2Bb_{1}(predictor_{i})=b_{1}$">
-  
+Subtracting the terms we get, <img src="https://render.githubusercontent.com/render/math?math=$b_{0}%2Bb_{1}(predictor_{i}%2B1)%2Db_{0}%2Bb_{1}(predictor_{i})=b_{1}$">  
+
+Note:   
+- Log odds ratio closer to 0 signifies that there is no significant change for 
+per unit increase in the value of the concerned predictor. In case of odds ratio
+a value closer to 1 signifies the same,  
+- Odds ratio <0.5 or >2 are said to be "moderate effect"  
+- Relative risk, <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{Pr}(response_{i}|predictor_{i}=10)}{\mathrm{Pr}(response_{i}|predictor_{i}=0)}$"> is easier to 
+interpret but more difficult to compute. Note: For small probabilities, it is 
+closer to the odds ratio.  
+
+## Poisson regression
+The generalized linear model follows poisson distribution <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}~Poisson(\mu_{i})$"> so that
+<img src="https://render.githubusercontent.com/render/math?math=$E[Y_{i}]=\mu_{i}$"> where <img src="https://render.githubusercontent.com/render/math?math=$\mu\ge0$">  
+The linear predictor is defined as, <img src="https://render.githubusercontent.com/render/math?math=$\eta_{i}=\sum_{k=1}^{p}X_{ik}\beta_{k}$">  
+with link function, <img src="https://render.githubusercontent.com/render/math?math=$g(\mu)=\eta=log\left(\mu\right)$">  
+lambda is expected to grow depending on some time.  
+
+The maximum likelihood estimate can be interpreted as <img src="https://render.githubusercontent.com/render/math?math=$0=\sum_{i=1}^{n}\frac{(Y_{i}%2D\mu_{i})}{Var(Y_{i})}W_{i}$">  
+
+Poisson distribution can be defined as <img src="https://render.githubusercontent.com/render/math?math=$P(X=x)=\frac{(t\lambda)^{x}e^{%2Dt\lambda}}{x!}$">  
+Expected value of a poisson count is given as, <img src="https://render.githubusercontent.com/render/math?math=$E[X]=t\lambda$">, thus <img src="https://render.githubusercontent.com/render/math?math=$E[x/t]=\lambda$">  
+variance, <img src="https://render.githubusercontent.com/render/math?math=$Var(X)=t\lambda$">  
+Note: Poisson tends to normal as the mean(<img src="https://render.githubusercontent.com/render/math?math=$t\lambda$">) gets larger.  
+
+Easiest way to do count data regression is to take the log of the outcome (adding 
++1 to the response to avoid log(0) error).  
+<img src="https://render.githubusercontent.com/render/math?math=$log(response_{i})=b_{0}%2Bb_{1}predictor_{i}%2Be_{i}$">  
+The coefficients by default "the mean of predictor regressed with the response",
+in this case the if we are to exponentiate the coefficients we get a term <img src="https://render.githubusercontent.com/render/math?math=$e^{E[log(Y)]}$"> which 
+is equivalent to the geomettric mean of the predictor since  
+<img src="https://render.githubusercontent.com/render/math?math=$e^{\frac{1}{n}\sum_{i=1}^{n}log(y_{i})}=(\prod_{i=1}^{n}y_{i})^{1/n}$">  
+"The geometric mean is simply exponentiating the arithematic mean of the log 
+data", therefore when taking log of outcome then the exponentiated predictors 
+can interpreted with respect to geometric means.  
+
+In case of linear regression we have, <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{response}_{i}=b_{0}%2Bb_{1}\mathrm{predictor}_{i}%2Be_{i}$">  
+Which can be realised to <img src="https://render.githubusercontent.com/render/math?math=$E[\mathrm{response}_{i}|\mathrm{predictor}_{i},b_{0},b_{1}]=b_{0}%2Bb_{1}\mathrm{predictor}$">  
+
+And in case of poisson/log-linear regression <img src="https://render.githubusercontent.com/render/math?math=$log(E[response_{i}|predictor_{i},b_{0},b_{1}])=b_{0}%2Bb_{1}predictor_{i}$">  
+which can then be realized as  
+<img src="https://render.githubusercontent.com/render/math?math=$E[response_{i}|predictor_{i},b_{0},b_{1}]=e^{(b_{0}%2Bb_{1}predictor_{i})}$">  
+<img src="https://render.githubusercontent.com/render/math?math=$E[response_{i}|predictor_{i},b_{0},b_{1}]=e^{(b_{0}}e^{b_{1}predictor_{i})}$">  
+
+The slope coefficient is interpreted as the relative increase or decrease in the 
+mean per unit change in the regressor.
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{e^{(b_{0}%2Bb_{1}(predictor_{i}%2B1))}}{e^{(b_{0}%2Bb_{1}predictor_{i})}}=e^{b_{1}}$">  
+
+When there are a lot of zero counts in the response, the arising problem is 
+called the "zero inflation problem", in r we have a package called "pscl" which 
+gives us strategies to handle this problem.  
+
+
+## Fitting functions using linear models 
+Consider the model <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}=f(x_{i})%2B\varepsilon$">  
+Which can be modelled using <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}=\beta_{0}%2B\beta_{1}X_{i}%2B\sum_{k=1}^{d}(x_{i}%2D\xi_{k})_{%2B}\gamma_{k}%2B\varepsilon_{i}$">   
+where,
+- <img src="https://render.githubusercontent.com/render/math?math=$(a)_{%2B}=a:a>0%3B%200%20\mathrm{otherwise}$">  
+- The extra terms add knots and splineTerms that breaks the regression line into
+multiple lines that can explain the variance in the data with the given function.  
+
+### Spline regression
+In spline regression the dataset is divided into different bins according to the 
+number of knots, and each bin has its separate fit.  
+Thus by fitting multiple models along the dataset we are better able to explain 
+the variance with relatively simple model instead of having to opt for 
+polynomial regression models.  
+<img src="https://render.githubusercontent.com/render/math?math=$Y_{i}=\beta_{0}%2B\beta_{1}X_{i}%2B\sum_{k=1}^{d}(x_{i}%2D\xi_{k})_{%2B}\gamma_{k}%2B\varepsilon_{i}$">  
+
+To get continous smooth curve, add square terms to the function to get <img src="https://render.githubusercontent.com/render/math?math=$Y_{i}=\beta_{0}%2B\beta_{1}X_{i}%2B\beta_{2}X_{i}^{2}%2B\sum_{k=1}^{d}(x_{i}%2D\xi_{k})^{2}_{%2B}\gamma_{k}%2B\varepsilon_{i}$">  
+
+The discrete fourier transform is used by sound engineers to plot a spectrum
+which essentially just uses a linear model with a lot of sin and cosine terms as
+regressors to distinctively identify the notes in sound.  
+
+
+## F-Statistic
+An F statistic is a ratio of two sums of squares divided by their respective 
+degrees of freedom. If the two scaled sums are independent and centrally 
+chi-squared distributed with the same variance, the statistic will have an F 
+distribution with parameters given by the two degrees of freedom.  
+
+To calculate for two nested models:
+<img src="https://render.githubusercontent.com/render/math?math=$\frac{\left(\frac{deviance(fit1)-deviance(fit2)}{diff(df(fit2),df(fit1))}\right)}{\left(\frac{deviance(fit2)}{df(fit2)}\right)}$">   
+Now, calculating the p-value, the probability that a value of theoretical 
+F-statistic or larger would be drawn from an F distribution which has parameters
+diff(df(fit1),df(fit2)) and df(fit1), using the pf() function.
+```
+  pf(F-sTATISTIC, DIFF, DF_FIRST_FIT, lower.tail=FALSE)
+```  
+While testing the significance of a model using p-value we are assuming that the 
+distribution of the residuals is normal, to test the normality of residuals of a 
+fit we can use the *shapiro-Wilk* test implemented using the function
+```
+  shapiro.test(fit$residuals)
+```  
+For a value >0.05 we fail to reject the normality.
+
+Note: When adding regressors, the reduction in residual sums of squares should
+be tested for significance above and beyond that of reducing residual degrees of
+freedom because including more regressors will reduce a model's residual sum of 
+squares, even if the new regressors are irrelevant.  
+
+
+
+
+
+
+
+
+
+
+
 
 
 

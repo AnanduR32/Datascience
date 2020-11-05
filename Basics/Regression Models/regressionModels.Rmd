@@ -622,3 +622,51 @@ load("./data/ravensData.rda")
 head(ravensData)
 ```
 
+
+## Spline Regression
+```{r}
+n <- 500; x <- seq(0, 4 * pi, length = n); y <- sin(x) + rnorm(n, sd = .3)
+knots <- seq(0, 8 * pi, length = 20); 
+splineTerms <- sapply(knots, function(knot) (x > knot) * (x - knot))
+xMat <- cbind(1, x, splineTerms)
+yhat <- predict(lm(y ~ xMat - 1))
+data = data.frame(x,y,yhat)
+ggplot(data,aes(x=x,y=y))+
+  geom_point(alpha=0.7,pch=21,fill="skyblue",col="lightblue",cex=3)+
+  geom_line(aes(x=x,y=yhat),col="hotpink2", lwd=1.5)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+``` 
+
+To get continuous smooth curve, add square terms to the function (beta*2x)**2  
+The collection of regressors in spline regression are called basis.  
+
+### Harmonics using linear regression
+A musical chord is made up of 3 or more notes combined together
+```{r}
+notes4 <- c(261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25)
+t <- seq(0, 2, by = .001); n <- length(t)
+c4 <- sin(2 * pi * notes4[1] * t); e4 <- sin(2 * pi * notes4[3] * t); 
+g4 <- sin(2 * pi * notes4[5] * t)
+chord <- c4 + e4 + g4 + rnorm(n, 0, 0.3)
+```  
+
+The 'chord' above represents the actual chord,  
+Fitting a model that predicts the actual notes using all 9 frequencies.
+```{r}
+x <- sapply(notes4, function(freq) sin(2 * pi * freq * t))
+fit <- lm(chord ~ x - 1)
+summary(fit)
+```  
+
+Visualizing
+```{r}
+plot(fit$coefficients,type="b", axes=F, col = "hotpink3")
+axis(1, at = 1 : 8, labels = c("c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"))
+axis(2)
+```  
+
+
+
+
+
