@@ -559,6 +559,20 @@ Note: Poisson tends to normal as the mean(<img src="https://render.githubusercon
 Easiest way to do count data regression is to take the log of the outcome (adding 
 +1 to the response to avoid log(0) error).  
 <img src="https://render.githubusercontent.com/render/math?math=$log(response_{i})=b_{0}%2Bb_{1}predictor_{i}%2Be_{i}$">  
+Equivalent to  
+<img src="https://render.githubusercontent.com/render/math?math=$log(\lambda)=b_{0}%2Bb_{1}time$">  
+Since we are modeling on the growth rate lambda<img src="https://render.githubusercontent.com/render/math?math=$(\lambda)$">  
+<img src="https://render.githubusercontent.com/render/math?math=$\lambda$">, is exponentially dependent on the time.  
+<img src="https://render.githubusercontent.com/render/math?math=$\lambda=e^{b_{0}}*e_{b_{1}time}$">  
+Thus <img src="https://render.githubusercontent.com/render/math?math=$e^{b1}$"> represents the percentage growth per day.  
+The arithmetic properties of date type fields allow us to use them as predictors.
+We'll use Poisson regression to predict <img src="https://render.githubusercontent.com/render/math?math=$log(\lambda)$"> as a linear function of date in a way which maximizes the likelihood of the counts we actually see.  
+
+To get the value of lambda for any given time use the <img src="https://render.githubusercontent.com/render/math?math=$\mathrm{model$fitted.values[n}^{th}\mathrm{%20fitted%20row%20representing%20the%20date]}$">  
+Using the qpois() function we can find the confidence intervals with ease.  
+To gauge the importance of another variable on the response we can make use of 
+the offset parameter of the glm() function to model frequencies and proportions.  
+
 The coefficients by default "the mean of predictor regressed with the response",
 in this case the if we are to exponentiate the coefficients we get a term <img src="https://render.githubusercontent.com/render/math?math=$e^{E[log(Y)]}$"> which 
 is equivalent to the geomettric mean of the predictor since  
@@ -633,7 +647,6 @@ Note: When adding regressors, the reduction in residual sums of squares should
 be tested for significance above and beyond that of reducing residual degrees of
 freedom because including more regressors will reduce a model's residual sum of 
 squares, even if the new regressors are irrelevant.  
-
 
 
 

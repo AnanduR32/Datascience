@@ -1,0 +1,193 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height=5, fig.width=5, fig.align = "centred")
+```
+
+# Motor Trend: Automatic vs manual transmission comparative study   
+You work for Motor Trend, a magazine about the automobile industry. Looking at a
+data set of a collection of cars, they are interested in exploring the 
+relationship between a set of variables and miles per gallon (MPG) (outcome). 
+They are particularly interested in the following two questions:  
+- “Is an automatic or manual transmission better for MPG”  
+- “Quantify the MPG difference between automatic and manual transmissions”  
+
+Data | Description
+--- | ---
+mpg| Miles per US gallon                        
+cyl| Number of cylinders                      
+disp| Displacement (cubic inches)                    
+hp|Gross horsepower                         
+drat| Rear axle ratio                          
+wt| Weight (lb / 1000)                         
+qsec| 1 / 4 mile time                            
+vs| V/S                                      
+am| Transmission (0 = automatic, 1 = manual) 
+gear| Number of forward gears                  
+carb| Number of carburetors
+
+
+## 1.Loading prerequisites  
+#### 1.1. Libraries  
+```{r}
+suppressMessages(
+    {
+        if(!require(manipulate)){
+            install.packages("manipulate")
+        }
+        if(!require(GGally)){
+            install.packages("GGally")
+        }
+        if(!require(lmtest)){
+            install.packages("lmtest")
+        }
+        if(!require(dplyr)){
+            install.packages("dplyr")
+        }
+        if(!require(ggplot2)){
+            install.packages("ggplot2")
+        }
+        library(GGally)
+        library(manipulate)
+        library(lmtest)
+        library(dplyr)
+        library(ggplot2)
+    }
+)
+```
+
+#### 1.1. data  
+```{r}
+data(mtcars)
+head(mtcars)
+```  
+
+## 2. Exploratory Analysis    
+**Variables**  
+```{r}
+names(mtcars)
+```
+**Understanding variable types**  
+```{r}  
+apply(mtcars,2,class)
+```
+**Fixing the types**  
+```{r}
+mtcars$cyl <- factor(mtcars$cyl)
+mtcars$vs <- factor(mtcars$vs)
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+mtcars$am <- factor(mtcars$am,labels=c('Automatic','Manual'))
+```
+
+
+**Summarizing each variables**  
+```{r}
+summary(mtcars)
+``` 
+
+## 3. Regression modelling   
+Fitting a model with all the variables   
+```{r}
+mdl_all = glm(mpg~., family = "gaussian", data = mtcars)
+summary(mdl_all)
+```
+The above model tells us that the average **mpg** is `r round(summary(mdl_all)$coef[1,1],2)`  
+
+#### 3.1 Model selection  
+- We would want to select a model that has larger adjusted and predicted R-squared
+values.
+- In regression, p-values less than the significance level indicate that the 
+term is statistically significant. We reduce the model by repeatedly removing 
+parameters corresponding to coefficients that do not have significant effect on 
+the model performance.  
+- Upon arriving at the manually identified "best" model, we will compare the 
+model performance against an automated model selection procedure using step 
+regression function. step()  
+- We will analyse whether there is significant effect on mpg when considering 
+the transmission model using the t.test() function.
+
+The wt, carb and disp parameters has least significant effects on the model 
+performance, Hence we remove them to analyse the variation in the p-value of the
+other variables. If there is large improvements then it'd mean that there is no
+correlation between them.
+```{r}
+mdl_test_1 = glm(mpg~.-wt-disp-carb, family = "gaussian", data = mtcars)
+summary(mdl_test_1)
+```
+Similary we remove qsec, gear, drat and vs
+```{r}
+mdl_test_2 = glm(mpg~.-wt-disp-carb-qsec-gear-drat-vs, family = "gaussian", data = mtcars)
+summary(mdl_test_2)
+```  
+
+Automated best model selection using step regression  
+```{r results=F, warning=F, message=F}
+mdl_best = step(mdl_all, direction = "backward")
+```
+```{r}
+summary(mdl_best)
+```
+
+The two models seem to be very similar with exception of just the wt parameter
+being omitted from the manually subsetted model.
+
+#### 3.2 Analyzing the models  
+
+Analysing the residual plots manually fitted vs step regressed.
+```{r fig.height=4, fig.width=7}
+par(mfrow=c(1,2))
+plot(mdl_test_2, which =1)
+plot(mdl_best, which =1)
+```  
+It is observed that the manually fitted model has lower standard error.
+
+**Asserting the normality of the residuals of each models**
+```{r fig.height=4, fig.width=7}
+par(mfrow=c(1,2))
+plot(mdl_test_2, which =2)
+plot(mdl_best, which =2)
+```
+
+
+#### 3.3 Using T-test to identify significance of transmission type on mpg
+```{r}
+t.test(mpg ~ am, data = mtcars)
+```
+The above t.test with p-statistic <0.05 shows that there is significant effect 
+of type of transmission on the mpg of a motor vehicle.  
+
+Visualizing the difference
+```{r}
+ggplot(
+  mtcars,
+  aes(
+    x=am,
+    y=mpg,
+    fill = am
+  )
+) + geom_boxplot() +
+  labs(x = "Transmission type", y = "miles per gallon") + 
+  ggtitle("Effect of transmission type on mpg of motor vehicles") +
+  theme_bw() 
+```  
+
+## 4. Conclusion
+Based on my analysis I was able to identify that there is significant effect of 
+transmission type of the motor vehicle on its miles per gallon metric - that the 
+manual transmission performes better than automatic type.  
+
+The rate of change of the conditional mean mpg with respect to am is about 4.1 
+conidering the manually subsetted model and 1.8 with the best subset selection 
+using the step function.  
+
+Using the T-test we were able to infer that there is indeed a significance in 
+transmission type on mpg visualized using boxplot shown above
+
+
+
+
