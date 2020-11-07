@@ -1,7 +1,7 @@
 ---
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -32,8 +32,7 @@ carb| Number of carburetors
 
 
 ## 1.Loading prerequisites  
-#### 1.1. Libraries  
-```{r}
+```{r echo=FALSE,results=F,warning=F}
 suppressMessages(
     {
         if(!require(manipulate)){
@@ -59,23 +58,22 @@ suppressMessages(
     }
 )
 ```
-
-#### 1.1. data  
+#### 1.2. data   
 ```{r}
 data(mtcars)
 head(mtcars)
 ```  
 
 ## 2. Exploratory Analysis    
-**Variables**  
+#### 2.1 Variables   
 ```{r}
 names(mtcars)
 ```
-**Understanding variable types**  
+#### 2.2 Understanding variable types
 ```{r}  
 apply(mtcars,2,class)
 ```
-**Fixing the types**  
+#### 2.3 Fixing the types  
 ```{r}
 mtcars$cyl <- factor(mtcars$cyl)
 mtcars$vs <- factor(mtcars$vs)
@@ -85,7 +83,7 @@ mtcars$am <- factor(mtcars$am,labels=c('Automatic','Manual'))
 ```
 
 
-**Summarizing each variables**  
+#### 2.4 Summarizing each variables  
 ```{r}
 summary(mtcars)
 ``` 
@@ -136,8 +134,7 @@ summary(mdl_best)
 The two models seem to be very similar with exception of just the wt parameter
 being omitted from the manually subsetted model.
 
-#### 3.2 Analyzing the models  
-
+#### 3.2 Analyzing the models   
 Analysing the residual plots manually fitted vs step regressed.
 ```{r fig.height=4, fig.width=7}
 par(mfrow=c(1,2))
@@ -146,7 +143,7 @@ plot(mdl_best, which =1)
 ```  
 It is observed that the manually fitted model has lower standard error.
 
-**Asserting the normality of the residuals of each models**
+#### 3.3 Asserting the normality of the residuals of each models  
 ```{r fig.height=4, fig.width=7}
 par(mfrow=c(1,2))
 plot(mdl_test_2, which =2)
@@ -154,7 +151,7 @@ plot(mdl_best, which =2)
 ```
 
 
-#### 3.3 Using T-test to identify significance of transmission type on mpg
+#### 3.4 Using T-test to identify significance of transmission type on mpg
 ```{r}
 t.test(mpg ~ am, data = mtcars)
 ```
