@@ -80,10 +80,10 @@ Based on which, with context of medical diagnosting, we derive:
     <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{TN}}{\mathrm{(TN%2BFP)}}$">  
 - Positive predicted value: Pr(disease|positive test)   
     What fraction of the positively tested individuals actually have the disease  
-    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{(TP%2BFN)}}{\mathrm{true%20positive}}$">  
+    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{TP}}{\mathrm{(TP%2BFP)}}$">  
 - Negative predicted value: Pr(no disease|negative test)  
     What fraction of the negatively tested individuals actually don't have the
     disease  
-    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{(TN%2BFP)}}{\mathrm{TN}}$">
+    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{TN}}{\mathrm{(TN%2BFN)}}$">
 - Accuracy: Pr(correct outcome)  
-    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{(TN%2BTP)}}{\mathrm{TN%2BTP%2BFP%2BFN}}$">  
+    <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{(TN%2BTP)}}{\mathrm{(TN%2BTP%2BFP%2BFN)}}$">  
