@@ -119,11 +119,11 @@ on each iteration of model fitting.
 - K-Fold: Divide the training set into K equal datasets and then in each 
 iteration consider the next dataset as the validation set.  
 <img style="height:180px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSJJDgKO23CMExcfazJlOxWdPHYPKBa3kzcLA&usqp=CAU">  
-    - If k is large<img style="display:inline" src="https://render.githubusercontent.com/render/math?math=$\to$">Less bias, More variance  
-    - if k is small<img style="display:inline" src="https://render.githubusercontent.com/render/math?math=$\to$">More bias, Less variance   
+    - If k is large => Less bias, More variance  
+    - if k is small => More bias, Less variance   
 - Leave on out: Leave exactly one sample out of the training set and validate on
 that sample.  
-<img style="height:180px" src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png">
+<img style="height:180px;" src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png">
 
 ## Using the right data
 When creating a predictive model use like data to predict like response, when 
