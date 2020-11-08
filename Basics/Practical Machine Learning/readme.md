@@ -116,11 +116,14 @@ bootstrap algorithm.
 - Random subsampling(Monte Carlo crossvalidation): Randomly split the training set into train and validation 
 on each iteration of model fitting.  
 <img src="https://www.researchgate.net/profile/Alejandro_Gomez_Montoya/publication/311428042/figure/fig1/AS:522223791415296@1501519262399/Figure-Cross-Validation-Holdout-with-random-subsampling-6.png" height="200"/>  
+
 - K-Fold: Divide the training set into K equal datasets and then in each 
 iteration consider the next dataset as the validation set.  
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSJJDgKO23CMExcfazJlOxWdPHYPKBa3kzcLA&usqp=CAU" height="200"/>  
-  - If k is large => Less bias, More variance  
-  - if k is small => More bias, Less variance   
+
+    - If k is large => Less bias, More variance  
+    - if k is small => More bias, Less variance  
+  
 - Leave on out: Leave exactly one sample out of the training set and validate on
 that sample.  
 <img src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png" height="200"/>
