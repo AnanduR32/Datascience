@@ -87,3 +87,46 @@ Based on which, with context of medical diagnosting, we derive:
     <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{TN}}{\mathrm{(TN%2BFN)}}$">
 - Accuracy: Pr(correct outcome)  
     <img src="https://render.githubusercontent.com/render/math?math=$\frac{\mathrm{(TN%2BTP)}}{\mathrm{(TN%2BTP%2BFP%2BFN)}}$">  
+    
+In continous data  
+Mean Squared Error(MSE): <img src="https://render.githubusercontent.com/render/math?math=$\frac{1}{n}\sum_{i=1}^{n}(Prediction_{i}%2DTruth_{i})^{2}$">  
+Root Mean Squared Error(RMSE): <img src="https://render.githubusercontent.com/render/math?math=$\sqrt{\frac{1}{n}\sum_{i=1}^{n}(Prediction_{i}%2DTruth_{i})^{2}}$">  
+Median absolute deviation: Median of the distance between the observed and 
+predicted value and take absolute instead of square.  
+
+## ROC Curves
+Receiver Operating characteristic(ROC) curves are commonly used to measure the 
+quality prediction algorithm.
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Roc-draft-xkcd-style.svg/250px-Roc-draft-xkcd-style.svg.png">  
+In the graph, the x-axis represents (1-specificity) and the y-axis represents 
+the sensitivity.  
+The area under the curve(AUC) is used to quantify the quality of the algorithm.   
+- if AUC = 0.5, it is equivalent ot a classifier that randomly guesses the outcome
+similar to outcome of flipping of a fair coin.  
+- AUC = 1, it then represents a perfect classifier which has 100% specificity 
+and 100% sensitivity.
+- Generally, AUC <img src="https://render.githubusercontent.com/render/math?math=$\ge$"> 0.8 is considered optimal.  
+
+## Cross Validation  
+Split the training set into train and validation set to reduce the bias of the 
+model.   
+Sampling is done without replacement, if with replacement then it is 
+boostrap which underestimates the error - which can be fixed using 0.632 
+bootstrap algorithm.  
+- Random subsampling(Monte Carlo crossvalidation): Randomly split the training set into train and validation 
+on each iteration of model fitting.  
+<img src="https://www.researchgate.net/profile/Alejandro_Gomez_Montoya/publication/311428042/figure/fig1/AS:522223791415296@1501519262399/Figure-Cross-Validation-Holdout-with-random-subsampling-6.png">  
+- K-Fold: Divide the training set into K equal datasets and then in each 
+iteration consider the next dataset as the validation set.  
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSJJDgKO23CMExcfazJlOxWdPHYPKBa3kzcLA&usqp=CAU">  
+    - If k is large <img src="https://render.githubusercontent.com/render/math?math=$\to$"> Less bias, More variance  
+    - if k is small <img src="https://render.githubusercontent.com/render/math?math=$\to$"> More bias, Less variance  
+- Leave on out: Leave exactly one sample out of the training set and validate on
+that sample.  
+<img src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png">
+
+## Using the right data
+When creating a predictive model use like data to predict like response, when 
+using unrelated data be careful interpreting why the prediction algorithm works 
+or doesn't work - understanding correlations.  
+
