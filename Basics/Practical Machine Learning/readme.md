@@ -97,7 +97,7 @@ predicted value and take absolute instead of square.
 ## ROC Curves
 Receiver Operating characteristic(ROC) curves are commonly used to measure the 
 quality prediction algorithm.
-<img style="height:180px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Roc-draft-xkcd-style.svg/250px-Roc-draft-xkcd-style.svg.png">  
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Roc-draft-xkcd-style.svg/250px-Roc-draft-xkcd-style.svg.png" height="200"/>  
 In the graph, the x-axis represents (1-specificity) and the y-axis represents 
 the sensitivity.  
 The area under the curve(AUC) is used to quantify the quality of the algorithm.   
@@ -115,15 +115,15 @@ boostrap which underestimates the error - which can be fixed using 0.632
 bootstrap algorithm.  
 - Random subsampling(Monte Carlo crossvalidation): Randomly split the training set into train and validation 
 on each iteration of model fitting.  
-<img style="height:180px" src="https://www.researchgate.net/profile/Alejandro_Gomez_Montoya/publication/311428042/figure/fig1/AS:522223791415296@1501519262399/Figure-Cross-Validation-Holdout-with-random-subsampling-6.png">  
+<img src="https://www.researchgate.net/profile/Alejandro_Gomez_Montoya/publication/311428042/figure/fig1/AS:522223791415296@1501519262399/Figure-Cross-Validation-Holdout-with-random-subsampling-6.png" height="200"/>  
 - K-Fold: Divide the training set into K equal datasets and then in each 
 iteration consider the next dataset as the validation set.  
-<img style="height:180px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSJJDgKO23CMExcfazJlOxWdPHYPKBa3kzcLA&usqp=CAU">  
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSJJDgKO23CMExcfazJlOxWdPHYPKBa3kzcLA&usqp=CAU" height="200"/>  
   - If k is large => Less bias, More variance  
   - if k is small => More bias, Less variance   
 - Leave on out: Leave exactly one sample out of the training set and validate on
 that sample.  
-<img style="height:180px;" src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png">
+<img src="https://miro.medium.com/max/1682/1*Oz6Hopj7ipJh0vtA2FE-FQ.png" height="200"/>
 
 ## Using the right data
 When creating a predictive model use like data to predict like response, when 
