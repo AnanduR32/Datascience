@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align = "left", fig.width = 6, fig.height = 4)
 ```
 
 ## Email Spam Detection and Classification
@@ -60,21 +60,22 @@ head(spam)[,1:6]
 As we can see they represent the frequency of occurance of these terms within 
 the mail(represented by a record in the dataset).
 
-#### Comparing the values of data classified as spam vs nonspam
+#### Comparing the values of data classified as spam vs nonspam   
 ```{r}
 plot(
   log10(trainSpam$capitalAve+1) ~trainSpam$type,
   ylab = "Frequency of occurance",
   xlab = "Type")
-```
+```  
 
 The spam data has higher median value for the occurance of 'capitalAve' ie. 
 average usage of capital letter in the body of the mail for spam mails.
 
-#### Analysing the relationships between various predictors
+#### Analysing the relationships between various predictors  
 ```{r}
 plot(log10(trainSpam[,1:4]+1))
-```
+```  
+
 
 We do this to observe whether there is some correlation between the predictors, 
 it is important that they be linearly independent for statistical reasons.
@@ -85,7 +86,8 @@ To see which all predictors play a larger role in classifying the dataset
 mdist = dist(t(log(trainSpam[,1:55]+1)))
 hclustering = hclust(mdist)
 plot(as.dendrogram(hclustering))
-```
+```  
+
 
 ##### Converting the label from character string to numeric type
 ```{r}
@@ -164,12 +166,12 @@ crossTab = table(pred_y,testSpam$type)
 crossTab
 ```
 
-Error rate 
+Accuracy 
 ```{r}
-errorRate = sum(crossTab[2:3])/sum(crossTab[1:4])
-errorRate 
+accuracy = sum(crossTab[-c(2:3)])/sum(crossTab[1:4])
+accuracy 
 ```
-Which means our model has an error rate of 15.6%
+Which means our model has an accuracy score of `r round(accuracy*100,2)`
 
 
 
