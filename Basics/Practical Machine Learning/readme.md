@@ -133,3 +133,22 @@ When creating a predictive model use like data to predict like response, when
 using unrelated data be careful interpreting why the prediction algorithm works 
 or doesn't work - understanding correlations.  
 
+## The caret package
+The caret package is a tool designed to implement practical machine learning 
+models in R.  
+Some of it's basic functionalities are:  
+- Basic preprocessing(cleaning)
+  - preProcess
+- Data splitting
+  - createDataPartition
+  - createResample
+  - createTimeSlices
+  - createFolds
+- Training/Testing function
+  - train
+  - predict
+- Model Comparison
+  - confusionMatrix
+ 
+
+
