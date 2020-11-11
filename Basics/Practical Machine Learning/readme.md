@@ -150,5 +150,35 @@ Some of it's basic functionalities are:
 - Model Comparison
   - confusionMatrix
  
+Metric options  
+- Continous outcome
+  - RMSE
+  - RSquared
+- Categorical outcome
+  - Accuracy
+  - Kappa
+
+The trainControl() function parameter of the train() in caret package allows us 
+to specify various parameters for when we train the model.   
+It allows us to set resampling methos, whether to save in-sample predictions, 
+initialWindow - the length of timeframe in case of time-series data, the seed, 
+whether to allowParallel processing in case of multicore workloads and so on.  
+
+trainControl resampling  
+- method
+  - boot = bootstrapping
+  - boot632 = bootstrapping with adjustment accounting for overestimation of coefficients.  
+  - cv = cross-validation  
+  - repeatedcv = repeated cross-validation  
+  - LOOCV = Leave one out cross validation  
+- number  
+  - For boost/cross-validation  
+  - number of subsamples to take  
+- repeats  
+  - number of times to repeat subsampling  
+  - if big can slow things down.  
+
+Continous predictors can be plotted as categorical by cutting the data into 
+bins using the cut2(series,g=) from the Hmisc package.  
 
 
