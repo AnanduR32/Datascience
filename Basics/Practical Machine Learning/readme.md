@@ -181,4 +181,52 @@ trainControl resampling
 Continous predictors can be plotted as categorical by cutting the data into 
 bins using the cut2(series,g=) from the Hmisc package.  
 
+## Covariate creation  
+
+Taking the **raw unstructured data** and converting it into **tidy covariates** which 
+could be used for the modelling of predictive models.  
+eg: Converting unstructured emails into frequency columns of for each word (The 
+faction of time a word appears within the mail). These are variables that 
+describe the raw data.   
+
+In case of modelling algorithms that depends on the distribution of the data 
+such as regression and SVMs **feature transformations** are important, but not so
+much in case of classification trees.   
+
+**Dummifying covariates**: Turning covariates which are qualitative into dummy variables is
+common when training predictive models, since the models don't generally use
+those qualitative information to do something productive.  
+
+**Removing zero or near-zero covariates**: Removing the covariates that give no 
+significant information that can be used in modelling a predictve model, they 
+have very little to no variability and hence doesn't serve any purpose to the 
+model creation. eg: In case of mails the column "any_letters" will certainly 
+always be "True" since every mail will have atleast one letter in it.  
+
+## Principal component analyis
+To observe correlation among the covariates and flag those that are highly 
+correlated - which means those variables that are almost identical to each other.  
+To exclude unnecessary or too much information from a model while retaining a 
+summarization of the covariates which captures most of the information we use
+PCA.   
+The idea is to take weighted combination of predictors which explains the change
+in the data. PCA reduced the number of predictors we need to use while also 
+reducing the noise since weighted averaging is done to identify the components.  
+
+- PCA allows us to find new set of variables that aren't correlated with each 
+other and explains as much of the variance as possible.   
+- PCA is mathematically finding the lowest rank of matrix that explains the 
+original data. This allows for data compression.  
+
+The prcomp() function can be used to obtain the pricipal componenets of given 
+data, 
+
+**SVD** breaks down the matrix into three components - the set of left singular 
+vectors, the diagonal matrix and corresponding sets of right singular vectors.  
+The principal components are equal to the right singular values if you first 
+scale the variables.  
+
+
+
+
 
