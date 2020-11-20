@@ -226,7 +226,118 @@ vectors, the diagonal matrix and corresponding sets of right singular vectors.
 The principal components are equal to the right singular values if you first 
 scale the variables.  
 
+### Exploratory analysis on the fitted model
+Plotting the fit and coloring the variables on some factor parameter can reveal 
+important characteristics and help identify and understand outliers better.   
+Any trends observed when plotting the residuals against index could suggest 
+missing values.
+
+## Decision Trees
+Classification trees are non-linear models.  
+**Basic Algorithm**  
+- Start with all variables in one group   
+- Find the variable/split that best separates the outcomes 
+- Divide the data into two groups ("Leaves") on that split ("Node")  
+- With each split, find the best variable/split that separates the outcomes  
+- continue unitl the groups are too small or sufficiently homogeneous ("pure")  
+
+### Measure of impurity
+Entropy: It is the measure of disorder, or the measure of impurity which 
+accounts for the randomness in the datapoints.  
+<img src="https://render.githubusercontent.com/render/math?math=$\hat{P}_{mk}=\frac{1}{N_{m}}\sum_{x_{i} in Leaf m}(y_{i}=k)$">  
+<img src="https://render.githubusercontent.com/render/math?math=$(y_{i}=k)$">: The number of times class k appears on the leaf m.  
+
+Misclassification error: <img src="https://render.githubusercontent.com/render/math?math=$1%2D\hat{P}_{mk}$">  
+- 0: Perfect purity  
+- 0.5: No purity  
+
+**Gini index**:  
+Gini Index, also known as Gini impurity, calculates the amount of probability of
+a specific feature that is classified incorrectly when selected randomly. If all
+the elements are linked with a single class then it can be called pure.  
+<img src="https://render.githubusercontent.com/render/math?math=$\sum_{k\ne{k'}}\hat{P}_{mk}\times\hat{P}_{mk'}=\sum_{k=1}^{K}\hat{P}_{mk}(1%2D\hat{P}_{mk})=1%2D\sum_{k=1}^{K}P^{2}_{mk}$">  
+
+**Deviance/Information gain**:  
+Information Gain is applied to quantify which feature provides maximal 
+information about the classification based on the notion of entropy.  
+<img src="https://render.githubusercontent.com/render/math?math=$%2D\sum_{k=1}^{K}\hat{P}_{mk}\mathrm{log}_{2}\hat{P}_{mk}$">  
+Where <img src="https://render.githubusercontent.com/render/math?math=$P_{mk}$"> denotes the probability of an element being classified for a distinct class.  
+- 0: Perfect purity  
+- 1: no purity  
+
+## Bagging 
+Similar to bootstrapping, where data is resampled with replacement. In bagging 
+models are built on various subsamples and the predictions from all the models 
+are either averaged or majority vote is used to select the best model.  
+Bagging reduces variance while delivering similar bias.  
+
+## Random forests 
+It is an extension to bagging in decision trees, where each tree is generated 
+from a random subsample at each split only a subset of the variables is
+considered at each potential split (bootstrap variables). A large number of
+trees are created making the analoge of it being randomly subsampled forests - 
+random forests, and then finally the averaged or majority voted prediction is
+taken.    
+Random forests are highly accurate, but they are slow, complicated to understand
+and also can be overfitted.  
+**Ensemble model**:   
+Forest output probability <img src="https://render.githubusercontent.com/render/math?math=$p(c|v)=\frac{1}{T}\sum_{t}^{T}p_{t}(c|v)$">  
 
 
+## Boosting
+Training a bunch of individual models in a sequential way. Each individual model 
+learns from mistakes made by the previous model.  
+- Taking weak predictors and adding them up gives us a stronger predictor.  
 
+Basic idea:  
+- Take a set of classifiers <img src="https://render.githubusercontent.com/render/math?math=$h_{1},h_{2},...,h_{k}$">  
+    - Examples: All possible trees, all possible regression models, all possible
+    cutoffs.  
+- Create a classifier that combines classification functions: <img src="https://render.githubusercontent.com/render/math?math=$f(x)=\mathrm{sgn}\left(\sum_{t=1}^{T}\alpha_{t}h_{t}(x)\right)$">  
+    - Goal is to minimize classification error.  
+    - Iterative select one h at each step  
+    - Calculate weights based on errors.  
+    - Upweight missed classifications and select next h  
+    
+## Model based prediction  
+Assuming that the data follows a probabilistic model, use Bayes' theorem to 
+identify optimal classifiers.  
+
+**Model based approach**:  
+- The goal is to build a parametric model for conditional distribution <img src="https://render.githubusercontent.com/render/math?math=$P(Y=k|X=x)$">  
+- The above parametric model can be built using bayes' theorem:  
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X=x)=\frac{Pr(X=x|Y=k)Pr(Y=k)}{sum_{l=1}^{K}Pr(X=x|Y=l)Pr(Y=l)}$">  
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X=x)=\frac{f_{k}(x)\pi_{k}}{\sum_{l=1}^{K}f_{l}(x)\pi_{l}}$">  
+<img src="https://render.githubusercontent.com/render/math?math=$f_{k}(x)$"> is a gaussian distribution function on univariate or multivariate gaussian distribution.  
+<img src="https://render.githubusercontent.com/render/math?math=$f_{k}(x)=\frac{1}{\sigma_{k}\sqrt{2\pi}}e^{%2D\frac{(x%2D\mu_{k})^{2}}{\sigma_{k}^{2}}}$"> where <img src="https://render.githubusercontent.com/render/math?math=$(\mu_{k},\sigma_{k}^{2})$"> are estimated from the data.  
+The class is assigned based on whichever class probabilities is the highest.  
+
+**Classifiers**  
+- Linear discriminate analysis assumes <img src="https://render.githubusercontent.com/render/math?math=$f_{k}(x)$"> to be multivariate gaussian with same covariance - to which linear lines are fitted.  
+- Quadratic discriminate analysis assumes <img src="https://render.githubusercontent.com/render/math?math=$f_{k}(x)$"> to be multivariate gaussian with different covariance - which allows for
+quadratic curves to be used to fit the data.  
+- Model based prediction assumes more complicated versions for the covariance 
+matrix.  
+- Naive Bayes classifier assumes independence between each of the classifying 
+features. 
+
+**Discriminate function**  
+Decide on the class of the datapoint to a class k which has highest value for <img src="https://render.githubusercontent.com/render/math?math=$\hat{Y}(x)=argmax_{k}\delta_{k}(x)$">, where  
+<img src="https://render.githubusercontent.com/render/math?math=$\delta_{k}(x)=x^{T}\sum^{-1}\mu_{k}%2D\frac{1}{2}\mu_{k}\sum^{-1}\mu_{k}%2Blog(\mu_{k})$">  
+We usually estimate paramters using MLE.  
+
+**Naive Bayes**  
+Required model: <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X_{1},X_{2},...,X_{m})$">  
+Using Bayes theorem we can get:   
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X_{1},X_{2},...,X_{m})=\frac{\pi_{k}P(X_{1},X_{2},...,X_{m}|Y=k)}{\sum_{l=1}^{K}\pi_{l}P(X_{1},X_{2},...,X_{m}|Y=l)}\propto\pi_{k}P(X_{1},X_{2},...,X_{m}|Y=k)$"> since the denominator is constant for each.  
+This can be written as:  
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X_{1},X_{2},...,X_{m})=\pi_{k}P(X_{1}|Y=k)P(X_{2}, X_{3},...,X_{m}|Y=k)$">  
+    which can be further expanded to  
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X_{1},X_{2},...,X_{m})=\pi_{k}P(X_{1}|Y=k)P(X_{2}|X_{1},Y=k)...P(X_{m}|X_{1},...,X_{m-1},Y=k)$">  
+Thus we can approximate to the conclusion assuming all variables are indepent of
+each other: 
+    <img src="https://render.githubusercontent.com/render/math?math=$Pr(Y=k|X_{1},X_{2},...,X_{m})\approx\pi_{k}P(X_{1}|Y=k)P(X_{2}|Y=k)...P(X_{m}|Y=k)$">  
+    
+Naive Bayes works best when the dataset has a lot of binary or categorical 
+features.  
 
