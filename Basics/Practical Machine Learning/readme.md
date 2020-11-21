@@ -382,6 +382,25 @@ Inclusion of <img src="https://render.githubusercontent.com/render/math?math=$\l
 
 ## Forecasting  
 Used on data that are dependent on time.
+Time series decomposition:  
+- Trends: Consistently increasing pattern over time  
+- Seasonal: When there is a pattern over a fixed period of time that recurs.  
+- Cyclic: When data rises and falls over non fixed points  
 
+Training and test sets are built by selecting consecutive time frames/windows 
+
+Using **moving average** to forecast the data.  
+<img src="https://render.githubusercontent.com/render/math?math=$Y_{i}=\frac{1}{2*k%2B1}\sum_{j=-k}^{k}y_{i%2Bj}$">  
+  
+**Exponential smoothing**: <img src="https://render.githubusercontent.com/render/math?math=$Y_{t%2B1}=\alphay_{t}%2B(1%2D\alpha)\hat{y}_{t%2D1}$">  
+
+## Unsupervised learning
+When the labels of the records in the dataset are not given explicitly and our 
+aim is to mine the implicit variation within the data.  
+Generally used in the following scenarios:  
+- Create clusters  
+- Name clusters  
+- Build predictors for clusters  
+- To predict clusters  
 
 
