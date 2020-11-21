@@ -371,21 +371,10 @@ test_preds
 
 
 ```R
-fancyRpartPlot(mdl_rf$finalModel)
+mdl_rpart = train(classe~., method = "rpart", data = training)
+fancyRpartPlot(mdl_rpart$finalModel, sub="")
 ```
 
 
-    Error in fancyRpartPlot(mdl_rf$finalModel$forest): The model object must be an rpart object. Instead we found: list.
-    Traceback:
-    
+![png](output_25_0.png)
 
-    1. fancyRpartPlot(mdl_rf$finalModel$forest)
-
-    2. stop("The model object must be an rpart object. ", "Instead we found: ", 
-     .     paste(class(model), collapse = ", "), ".")
-
-
-
-```R
-
-```
