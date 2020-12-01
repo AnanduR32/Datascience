@@ -1,49 +1,35 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
+ui = fluidPage(
+  titlePanel("Factorial"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("num", "integer", 140, 240, 180,step = 1)),
+    mainPanel(
+      tableOutput("print")
+    ))
 )
 
-# Define server logic required to draw a histogram
-server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+server = function(input, output) {
+  
+  # The predictor vector.
+  Height = c(151, 174, 138, 186, 128, 136, 179, 163, 152, 131)
+  
+  # The response vector.
+  Weight <- c(63, 81, 56, 91, 47, 57, 76, 72, 62, 48)
+  
+  # Apply the lm() function.
+  relation <- lm(Weight~Height)
+  
+  # Server output
+  output$print = renderPrint({ 
+    output$print = renderPrint({ 
+      x<-input$num
+      a=predict(relation,data.frame(Height = x))
+      cat(a," is the predicted weight for person with height ",x,"<br>")
     })
+    
+  })
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
