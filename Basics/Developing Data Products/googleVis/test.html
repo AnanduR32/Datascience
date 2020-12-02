@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml">
+<head>
+<title>ComboChartID1e7428ec6dca</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<style type="text/css">
+body {
+  color: #444444;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 75%;
+  }
+  a {
+  color: #4D87C7;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+ <!-- ComboChart generated in R 4.0.3 by googleVis 0.6.9 package -->
+<!-- Wed Dec 02 17:12:37 2020 -->
+
+
+<!-- jsHeader -->
+<script type="text/javascript">
+ 
+// jsData 
+function gvisDataComboChartID1e7428ec6dca () {
+var data = new google.visualization.DataTable();
+var datajson =
+[
+ [
+"New York",
+450,
+200
+],
+[
+"Boston",
+450,
+300
+],
+[
+"Miami",
+450,
+400
+],
+[
+"Chicago",
+450,
+500
+],
+[
+"Los Angeles",
+450,
+600
+],
+[
+"Houston",
+450,
+700
+] 
+];
+data.addColumn('string','City');
+data.addColumn('number','Mean');
+data.addColumn('number','Popularity');
+data.addRows(datajson);
+return(data);
+}
+ 
+// jsDrawChart
+function drawChartComboChartID1e7428ec6dca() {
+var data = gvisDataComboChartID1e7428ec6dca();
+var options = {};
+options["allowHtml"] = true;
+options["seriesType"] = "bars";
+options["width"] = 450;
+options["height"] = 300;
+options["title"] = "City Popularity";
+options["series"] = {0: {type:"line"}};
+
+
+    var chart = new google.visualization.ComboChart(
+    document.getElementById('ComboChartID1e7428ec6dca')
+    );
+    chart.draw(data,options);
+    
+
+}
+  
+ 
+// jsDisplayChart
+(function() {
+var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+var chartid = "corechart";
+  
+// Manually see if chartid is in pkgs (not all browsers support Array.indexOf)
+var i, newPackage = true;
+for (i = 0; newPackage && i < pkgs.length; i++) {
+if (pkgs[i] === chartid)
+newPackage = false;
+}
+if (newPackage)
+  pkgs.push(chartid);
+  
+// Add the drawChart function to the global list of callbacks
+callbacks.push(drawChartComboChartID1e7428ec6dca);
+})();
+function displayChartComboChartID1e7428ec6dca() {
+  var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+  var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+  window.clearTimeout(window.__gvisLoad);
+  // The timeout is set to 100 because otherwise the container div we are
+  // targeting might not be part of the document yet
+  window.__gvisLoad = setTimeout(function() {
+  var pkgCount = pkgs.length;
+  google.load("visualization", "1", { packages:pkgs, callback: function() {
+  if (pkgCount != pkgs.length) {
+  // Race condition where another setTimeout call snuck in after us; if
+  // that call added a package, we must not shift its callback
+  return;
+}
+while (callbacks.length > 0)
+callbacks.shift()();
+} });
+}, 100);
+}
+ 
+// jsFooter
+</script>
+ 
+<!-- jsChart -->  
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartComboChartID1e7428ec6dca"></script>
+ 
+<!-- divChart -->
+  
+<div id="ComboChartID1e7428ec6dca" 
+  style="width: 450; height: 300;">
+</div>
+ <div><span>Data: data &#8226; Chart ID: <a href="Chart_ComboChartID1e7428ec6dca.html">ComboChartID1e7428ec6dca</a> &#8226; <a href="https://github.com/mages/googleVis">googleVis-0.6.9</a></span><br /> 
+<!-- htmlFooter -->
+<span> 
+  R version 4.0.3 (2020-10-10) 
+  &#8226; <a href="https://developers.google.com/terms/">Google Terms of Use</a> &#8226; <a href="https://developers.google.com/chart/interactive/docs/gallery/combochart">Documentation and Data Policy</a>
+</span></div>
+</body>
+</html>

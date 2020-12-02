@@ -3,8 +3,8 @@ multiply_Numbers = function(num1, num2){
   ui = miniPage(
     gadgetTitleBar("Multiply Two Numbers"),
     miniContentPanel(
-      selectInput("num1", "First Number", choice = num1),
-      selectInput("num2", "Second Number", choice = num2)
+      selectInput("num1", "First Number", choices = num1),
+      selectInput("num2", "Second Number", choices = num2)
     )
   )
   server = function(input, output, session){
@@ -19,4 +19,4 @@ multiply_Numbers = function(num1, num2){
   }
   runGadget(ui, server)
 }
-multiply_Numbers(4,8)
+multiply_Numbers(1:10,1:10)
