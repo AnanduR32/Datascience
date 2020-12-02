@@ -1,0 +1,59 @@
+---
+title: "Leaflet demo"
+author: "Anandu R"
+date: "12/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Import libraries
+```{r}
+library(leaflet)
+```
+
+### Creating dataset
+```{r}
+## Set seed 
+set.seed(2020-12-2)
+
+## Creating a dummy dataset of lat and lng values
+df = data.frame(lat = c(runif(20, min = 10, max = 11)),
+                lng = c(runif(20, min = 76, max = 77))
+               )
+```
+
+### Defining custom marker properties
+```{r}
+## Defining custom icon image
+iconCustom = makeIcon(
+    iconUrl = "images/kathakali.png",
+    iconWidth = 31*215/230, iconHeight = 31,
+    iconAnchorX = 31*215/230/2, iconAnchorY = 16
+)
+
+## Custom popups
+## Popups
+popUpsCustom = c("<a href='https://www.google.com/maps/place/Angamaly,+Kerala/@10.2025846,76.3459067,13z/data=!3m1!4b1!4m5!3m4!1s0x3b080665e0bb9959:0x19b75e6b4e671ef1!8m2!3d10.1926394!4d76.3869289'>Coimbatore</a>",
+                "<a href='https://www.google.com/maps/place/Munnar,+Kerala+685612/@10.0806706,77.0554017,15z/data=!3m1!4b1!4m5!3m4!1s0x3b0799794d099a6d:0x63250e5553c7e0c!8m2!3d10.0889333!4d77.0595248'>Angamaly</a>",
+                "<a href='https://www.google.com/maps/place/Palakkad,+Kerala/@10.6940934,76.5592458,11.01z/data=!4m5!3m4!1s0x3ba86dfa087d31ad:0xf542d6eb7a870a56!8m2!3d10.7867303!4d76.6547932'>Parambikulam</a>",
+                "<a href='https://www.google.com/maps/place/Sholayar+Reserve+Forest/@10.2553494,76.4237653,10.66z/data=!4m13!1m7!3m6!1s0x3b080665e0bb9959:0x19b75e6b4e671ef1!2sAngamaly,+Kerala!3b1!8m2!3d10.1926394!4d76.3869289!3m4!1s0x3b07f7e4357c5bb7:0x79f660133de14894!8m2!3d10.3574759!4d76.5719604'>Munnar</a>",
+                "<a href='https://www.google.com/maps/place/Coimbatore,+Tamil+Nadu/@11.01187,76.8970227,12z/data=!3m1!4b1!4m5!3m4!1s0x3ba859af2f971cb5:0x2fc1c81e183ed282!8m2!3d11.0168445!4d76.9558321'>Palghat</a>")
+
+## Subsetting the dataset
+df_custom = df[2:6,]
+```
+
+### Creating plot using leaflet
+```{r}
+df_custom %>% leaflet() %>% addTiles %>% addMarkers(icon = iconCustom, popup = popUpsCustom)
+```
+
+
+
+
+
+
+
