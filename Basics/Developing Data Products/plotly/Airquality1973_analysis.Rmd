@@ -1,0 +1,60 @@
+---
+title: "plotly"
+author: "Anandu R"
+date: "12/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", fig.width = 7, fig.height = 4)
+```
+
+### Import libraries
+```{r, results='hide', echo=T, output = F, warning=F, message=F}
+library(plotly)
+library(ggplot2)
+library(dplyr)
+library(imputeTS)
+library(tidyr)
+```
+
+### Data
+```{r}
+data("airquality")
+head(airquality)
+```
+
+Cleaning the data
+```{r}
+## Count of missing values 
+sapply(airquality, function(x) {sum(is.na(x))})
+```
+
+
+
+Creating a datatime variable to plot a timeseries plot
+```{r}
+year = rep(1973, nrow(airquality))
+datetime = as.Date(strptime(paste0(year,"-",airquality$Month,"-",airquality$Day),
+                    format = "%Y-%m-%d"))
+data = airquality %>% 
+  select(Ozone, Solar.R,Wind, Temp) %>%
+  mutate(Ozone = na_interpolation(Ozone),
+         Solar.R = na_interpolation(Solar.R)) %>%
+  gather(param, level) %>% 
+  mutate(time = rep(datetime,4))
+head(data)
+```  
+
+### Visualizing  
+
+Comparing Ozone, Solar.R, Wind and Temp levels through Q3 of 1973
+```{r, warning=F}
+plot_ly(data = data, 
+        x = ~time, y = ~level ,
+        color = ~param, 
+        type = "scatter", mode = "lines")
+```
+
+
+
