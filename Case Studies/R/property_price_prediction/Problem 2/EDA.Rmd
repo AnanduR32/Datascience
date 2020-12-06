@@ -1,0 +1,71 @@
+---
+title: "EDA"
+author: "Anandu R"
+date: "12/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Packages/Libraries
+```{r}
+suppressMessages(
+  {
+    library(ggplot2)
+    library(dplyr)
+    library(leaflet)
+  }
+)
+```
+
+## Data
+```{r}
+data = read.csv("beijing.csv"); dim(data)
+```
+
+```{r}
+head(data)
+```
+
+```{r}
+names(data)
+```
+
+### Unique districts in the dataset
+```{r}
+length(unique(data$district))
+```
+
+### Missing values 
+```{r}
+temp = sapply(data, function(x){sum(is.na(x))})
+temp[as.numeric(which(temp>0))]
+```
+
+### Unique values in each columns
+```{r}
+temp = sapply(data, function(x){length(unique(factor(x)))})
+temp[as.numeric(which(temp>0))]
+```
+
+## Distribution of price in each regions
+```{r}
+ggplot(data, 
+       aes(y = price, x = factor(district), fill = factor(district))
+      ) + geom_bar(stat = "identity") 
+```
+
+## Map view of districts
+```{r results='asis'}
+## Subsetting data for mapplot
+data_mp = select(data, select = c(Lat, Lng, district))
+names(data_mp) = c("lat","lng", "district")
+
+data_mp %>% 
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers(clusterOptions = markerClusterOptions()) 
+```
+

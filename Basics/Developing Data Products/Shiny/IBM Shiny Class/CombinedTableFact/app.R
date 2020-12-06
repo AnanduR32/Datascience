@@ -17,7 +17,6 @@ ui = fluidPage(
 server = function(input, output) {
   # Server output
   output$print = renderPrint({ 
-    output$print = renderPrint({ 
       x<-input$num
       ch = input$choice
       if(ch == "tabl"){
@@ -30,8 +29,6 @@ server = function(input, output) {
         cat(a," is the factorial of ",x,"<br>")
       }
     })
-      
-  })
 }
 
 shinyApp(ui = ui, server = server)
