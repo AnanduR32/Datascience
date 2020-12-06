@@ -1,15 +1,15 @@
 ---
-title: "plotly"
+title: "Air quality analysis"
 author: "Anandu R"
 date: "12/6/2020"
-output: html_document
+output: ioslides_presentation
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center", fig.width = 7, fig.height = 4)
 ```
 
-### Import libraries
+## Import libraries
 ```{r, results='hide', echo=T, output = F, warning=F, message=F}
 library(plotly)
 library(ggplot2)
@@ -24,19 +24,22 @@ data("airquality")
 head(airquality)
 ```
 
-Cleaning the data
+## Cleaning the data
 ```{r}
 ## Count of missing values 
 sapply(airquality, function(x) {sum(is.na(x))})
 ```
 
-
-
 Creating a datatime variable to plot a timeseries plot
 ```{r}
 year = rep(1973, nrow(airquality))
-datetime = as.Date(strptime(paste0(year,"-",airquality$Month,"-",airquality$Day),
+datetime = as.Date(strptime(paste0(year,"-",airquality$Month,
+                                   "-",airquality$Day),
                     format = "%Y-%m-%d"))
+```
+
+## Modifying data to plot multiline timeseries
+```{r}
 data = airquality %>% 
   select(Ozone, Solar.R,Wind, Temp) %>%
   mutate(Ozone = na_interpolation(Ozone),
@@ -46,15 +49,13 @@ data = airquality %>%
 head(data)
 ```  
 
-### Visualizing  
-
+## Visualizing  
 Comparing Ozone, Solar.R, Wind and Temp levels through Q3 of 1973
 ```{r, warning=F}
-plot_ly(data = data, 
-        x = ~time, y = ~level ,
-        color = ~param, 
+plot_ly(data = data, x = ~time, y = ~level , color = ~param, 
         type = "scatter", mode = "lines")
 ```
 
+## Thank You
 
 

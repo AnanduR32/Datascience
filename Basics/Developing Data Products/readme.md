@@ -61,6 +61,11 @@ passed as parameter, which contains all the required files/folders to be filled
 in by user.  
 
 
+### Swirl  
+Use package `swirlify` to create swirl courses with various lessons.  
+The `wq_...` series commands can be used to create question templates in the 
+yaml file generated using the `new_lesson()` function
+
 
 
 
