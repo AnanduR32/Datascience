@@ -1,0 +1,79 @@
+---
+title: "House Price Prediction"
+author: "Anandu R"
+date: "12/6/2020"
+output: ioslides_presentation 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The problem
+```{r echo = F, message= F, warning= F}
+library(dplyr); library(ggplot2); library(caret)
+```
+House price prediction using Beijing, China house price dataset.  
+
+### The data
+```{r}
+data = read.csv("../data/cleaned_beijing.csv")
+data = select(data, square, constructionTime,
+              subway, district, price)
+head(data)
+```
+
+## Exploratory analysis
+
+```{r echo = F, message= F, warning= F}
+set.seed(109)
+inAnalysis = createDataPartition(data$price, p = 0.2, list = F)
+data = data[inAnalysis,]
+```
+
+### Analysing the median price of houses in each district
+Code
+```{r, warning=F, message=F}
+g = data %>% 
+  group_by(district, subway) %>%
+  summarise(
+    price = median(price)/10e3
+  ) %>%
+  ggplot(aes(x = district,
+             y = price)
+         ) + 
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90)) + 
+  scale_y_continuous(name="Price (in K)") + 
+  scale_x_discrete(name="District") 
+``` 
+
+***   
+Plot   
+```{r echo = F, message= F, warning= F}
+g
+```
+
+## Creating a model using caret package
+```{r echo = F, message= F, warning= F}
+inTrain = createDataPartition(data$price, p = 0.7, list = F)
+training = data[inTrain,]
+testing = data[-inTrain,]
+```
+
+```{r comment=""}
+mdl = train(price~., data = training, method = "glm",
+            family = "gaussian")
+plot(mdl$finalModel, which = 1)
+```  
+
+## Gauging the performance using RMSE score  
+
+On test data
+```{r comment=""}
+pred = predict(mdl, newdata = testing)
+sqrt(sum((pred-testing$price)^2)/nrow(testing))
+```
+
+
