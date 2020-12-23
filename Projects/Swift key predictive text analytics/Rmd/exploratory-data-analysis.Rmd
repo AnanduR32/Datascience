@@ -1,0 +1,164 @@
+---
+title: "Text mining"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+fontsize: 10pt
+output:
+  rmdformats::readthedown:
+    code_download: yes
+
+    df_print: paged
+    highlight: haddock
+    thumbnails: false
+    lightbox: false
+  html_document:
+    code_download: yes
+
+    df_print: paged
+    highlight: haddock
+    toc: yes
+    toc_depth: 4
+  word_document:
+    toc: yes
+    toc_depth: '4'
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+    toc_depth: '3'
+    keep_tex: true
+header-includes:
+- \DeclareMathOperator*{\argmin}{arg\,min}
+- \newcommand*{\prob}{\mathsf{P}}
+
+urlcolor: 'blue'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.align = "center", fig.width = 8, fig.height = 6
+)
+```
+
+# Introduction
+#### Understanding the problem 
+<p align="justify">
+NLP is a hot topic and is being used widely in the industry to penetrate deeper
+into user analytics and understand the user better, learn the vocabulory and 
+suggest auto-completion, analyze behaviour and so on.</p>
+
+<p align="justify">
+Here use apply the knowledge to build a text/sentence auto completion product 
+which requires us to: </p>
+<ol>
+  <li>Analyzing a large corpus of text documents to discover the structure in the data 
+and how words are put together. </li>
+  <li>Cleaning and analyzing text data, then building and sampling from a predictive 
+text model</li>
+  <li>Finally, to build a predictive text product.</li>
+</ol>
+
+#### Packages used for analysis
+```{r message=FALSE, warning=FALSE}
+library(ngram)
+library(tm)
+library(corpus)
+library(qdap)
+library(ggplot2)
+```
+
+
+# Data exploration/mining
+
+<p align="justify">
+Data exploration and understanding is a key aspect of data science, for the 
+purpose of understanding the kind of data we are working with.</p>
+
+#### Getting the data
+
+<p align="justify">
+The data is obtained as part of the coursera datascience specialization capstone 
+project, and consists of 4 folders that each consist of data from twitter, news 
+and blogs. Each folder represents languages: English, Finnish, German and 
+Russian.</p>
+
+```{r message=FALSE, warning=FALSE}
+fileUrl = 
+  'https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip'
+dir.create(file.path('../data'), recursive = TRUE,showWarnings = F)
+if(!dir.exists('../data/en_US')){
+  download.file(fileUrl,'../data/dataset.zip', mode = 'wb')
+  unzip("../data/dataset.zip", exdir = '../data')
+  file.copy("../data/final/en_US", "../data", recursive = T)
+  file.copy("../data/final/de_DE", "../data", recursive = T)
+  file.copy("../data/final/fi_FI", "../data", recursive = T)
+  file.copy("../data/final/ru_RU", "../data", recursive = T)
+}
+unlink('../data/final', recursive = T)
+unlink("../data/dataset.zip")
+```
+
+#### Loading the en_US blogs, news and twitter data
+
+<p align="justify">
+The data extracted consists of just lines of text/sentences that are to be mined 
+to distill actionable insights.
+The files are read one by one using the readLines() function with encoding set 
+to utf-8, the standard encoding standard, skipping through the null lines.</p>
+
+```{r message=FALSE, warning=FALSE}
+en_blogs = readLines(
+  "../data/en_US/en_US.blogs.txt", encoding="UTF-8", 
+  skipNul = TRUE, warn = TRUE)
+en_news = readLines(
+  "../data/en_US/en_US.news.txt", encoding="UTF-8", 
+  skipNul = TRUE, warn = TRUE)
+en_twitter = readLines(
+  "../data/en_US/en_US.twitter.txt", encoding="UTF-8", 
+  skipNul = TRUE, warn = TRUE)
+```
+
+#### Building a corpus document
+<p align="justify">A corpus is a collection of documents, We create a volatile corpus to from the 
+vector of texts obtained.</p>
+
+<p align="justify">Make a vector source using the tm package, then converting 
+the source vector into a VCorpus object</p>
+```{r}
+twitter_source = VectorSource(en_twitter)
+twitter_corpus = VCorpus(twitter_source)
+print(twitter_corpus)
+```
+<p align="justify">The VCorpus object uses a nested - list of list structure to 
+hold the data. At each index of the VCorpus object, there is a PlainTextDocument
+object, which is a list containing actual text data (content), and some
+corresponding metadata (meta). It can help to visualize a VCorpus object to 
+conceptualize the whole thing.</p>
+
+#### Cleaning and preprocessing text
+<p align="justify">Using tm's built-in text processing methods to mine data from 
+the corpus.
+
+#### Exploratory data analysis
+<p align="justify">Using qdap's fre_terms() functions to count the frequency of 
+words in the datasets and presenting the information in tabluar and graphical 
+methods.</p>
+```{r}
+freq_terms(twitter_corpus[[1]][1])
+```
+
+```{r}
+replace_abbreviation(twitter_corpus[[1]][1])
+```  
+
+
+\footnotesize
+
+```{r, echo = FALSE, results='hold'}
+options(width = 100)
+
+## Deleting data after analysis
+unlink("../data",recursive = T)
+
+cat("R Session Info:\n")
+sessionInfo()
+```

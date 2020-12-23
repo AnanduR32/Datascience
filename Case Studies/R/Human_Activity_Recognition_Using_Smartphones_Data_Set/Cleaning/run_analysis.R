@@ -86,6 +86,6 @@ baseData = melt(reqData,(id.vars=c("subject","activity")))
 secondDataSet = dcast(baseData, subject + activity ~ variable, mean)
 write.table(secondDataSet, "tidy_data.txt",row.names = F)
 
-## Deleting unecessary folder
+## Deleting data after analysis
 unlink("./UCI HAR Dataset",recursive = T)
 
