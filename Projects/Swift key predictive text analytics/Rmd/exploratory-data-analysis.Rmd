@@ -60,10 +60,16 @@ text model</li>
 #### Packages used for analysis
 ```{r message=FALSE, warning=FALSE}
 library(ngram)
+library(NLP)
 library(tm)
+library(RWeka)
+library(data.table)
 library(corpus)
 library(qdap)
 library(ggplot2)
+library(tidytext)
+require(stringi)
+library(dplyr)
 ```
 
 
@@ -93,6 +99,7 @@ if(!dir.exists('../data/en_US')){
   file.copy("../data/final/fi_FI", "../data", recursive = T)
   file.copy("../data/final/ru_RU", "../data", recursive = T)
 }
+rm(fileUrl)
 unlink('../data/final', recursive = T)
 unlink("../data/dataset.zip")
 ```
@@ -117,6 +124,34 @@ en_twitter = readLines(
   skipNul = TRUE, warn = TRUE)
 ```
 
+#### Summary statistics on the data
+```{r}
+blogs_info = c(stri_stats_general(en_blogs)[1],  stri_stats_latex(en_blogs)[4], file.info("../data/en_US/en_US.blogs.txt")$size/(2^20))
+news_info = c(stri_stats_general(en_news)[1], stri_stats_latex(en_news)[4], file.info("../data/en_US/en_US.news.txt")$size/(2^20))
+twitter_info = c(stri_stats_general(en_twitter)[1], stri_stats_latex(en_twitter)[4], file.info("../data/en_US/en_US.twitter.txt")$size/(2^20))
+total_info = blogs_info+news_info+twitter_info
+
+table_info <- as.data.frame(rbind(blogs_info, news_info, twitter_info, total_info))
+rm(blogs_info, news_info, twitter_info, total_info)
+colnames(table_info)[3] <- "Size in Mb"
+table_info
+```
+
+
+#### Sampling and combining the data
+```{r}
+sample_size = 30000
+blogs = en_blogs[sample(1:length(en_blogs),sample_size)]
+news = en_news[sample(1:length(en_news),sample_size)]
+twitter = en_twitter[sample(1:length(en_twitter),sample_size)]
+rm(sample_size)
+text_data = rbind(blogs, news, twitter)
+rm(en_blogs, en_news, en_twitter, blogs, news, twitter)
+```
+
+
+
+
 #### Building a corpus document
 <p align="justify">A corpus is a collection of documents, We create a volatile corpus to from the 
 vector of texts obtained.</p>
@@ -124,9 +159,10 @@ vector of texts obtained.</p>
 <p align="justify">Make a vector source using the tm package, then converting 
 the source vector into a VCorpus object</p>
 ```{r}
-twitter_source = VectorSource(en_twitter)
-twitter_corpus = VCorpus(twitter_source)
-print(twitter_corpus)
+text_source = VectorSource(text_data)
+text_corpus = VCorpus(text_source)
+rm(text_source)
+print(text_corpus)
 ```
 <p align="justify">The VCorpus object uses a nested - list of list structure to 
 hold the data. At each index of the VCorpus object, there is a PlainTextDocument
@@ -143,12 +179,79 @@ the corpus.
 words in the datasets and presenting the information in tabluar and graphical 
 methods.</p>
 ```{r}
-freq_terms(twitter_corpus[[1]][1])
+freq_terms(text_corpus[[1]][1])
 ```
 
 ```{r}
-replace_abbreviation(twitter_corpus[[1]][1])
+replace_abbreviation(text_corpus[[1]][1])
 ```  
+
+#### Cleaning the corpus document 
+```{r}
+clean_corpus <- function (corpus) {
+    corpus <- tm_map(corpus, tolower) # all lowercase
+    corpus <- tm_map(corpus, removePunctuation) # Eleminate punctuation
+    corpus <- tm_map(corpus, removeNumbers) # Eliminate numbers
+    corpus <- tm_map(corpus, stripWhitespace) # Strip Whitespace
+    corpus <- tm_map(corpus, removeWords, stopwords("english")) # Eliminate English stop words
+    corpus <- tm_map(corpus, stemDocument) # Stem the document
+    corpus <- tm_map(corpus, PlainTextDocument) # Create plain text format
+}
+text_corpus_cleaned = clean_corpus(text_corpus)
+```
+
+Comparing with original data
+```{r}
+text_corpus[[1]][1]
+text_corpus_cleaned[[1]][1]
+```
+Disposing off the original corpus
+```{r}
+rm(text_corpus)
+```
+
+
+#### Creating a document-term matrix for analysis
+When we wish to represent the data with the document as rows and the words as 
+column we use document term matrix, the transpose of which is term document 
+matrix. 
+The fields then represent the frequency of words in the data. However, other
+frequency measures do exist
+
+```{r}
+text_dtm = DocumentTermMatrix(text_corpus_cleaned)
+rm(text_corpus_cleaned)
+text_dtm
+```
+
+Converting the twitter_dtm to a matrix
+```{r}
+text_dtm_m = tidytext::tidy(text_dtm)
+rm(text_dtm)
+dim(text_dtm_m)
+```
+#### Sentiment analysis
+```{r}
+text_sentiments <- text_dtm_m %>%
+  inner_join(get_sentiments("bing"), by = c(term = "word"))
+print(dim(text_sentiments))
+head(text_sentiments, 10)
+```
+
+Visualizing
+```{r}
+text_sentiments %>%
+  count(sentiment, term, wt = count) %>%
+  filter(n >= 150) %>%
+  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  mutate(term = reorder(term, n)) %>%
+  ggplot(aes(term, n, fill = sentiment)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Contribution to sentiment")
+```
+
+
 
 
 \footnotesize
