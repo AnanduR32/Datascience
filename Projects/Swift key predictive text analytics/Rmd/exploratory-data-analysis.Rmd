@@ -7,14 +7,17 @@ output:
     code_download: yes
 
     df_print: paged
-    highlight: haddock
+    theme: cosmo
+    highlight: tango
     thumbnails: false
     lightbox: false
   html_document:
     code_download: yes
-
     df_print: paged
-    highlight: haddock
+    fig_width: 8
+    fig_height: 5
+    theme: cosmo
+    highlight: tango
     toc: yes
     toc_depth: 4
   word_document:
@@ -40,7 +43,7 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction
-#### Understanding the problem 
+## Understanding the problem 
 <p align="justify">
 NLP is a hot topic and is being used widely in the industry to penetrate deeper
 into user analytics and understand the user better, learn the vocabulory and 
@@ -57,29 +60,32 @@ text model</li>
   <li>Finally, to build a predictive text product.</li>
 </ol>
 
-#### Packages used for analysis
+## Packages used for analysis
 ```{r message=FALSE, warning=FALSE}
-library(ngram)
-library(NLP)
-library(tm)
-library(RWeka)
-library(data.table)
-library(corpus)
-library(qdap)
-library(ggplot2)
-library(tidytext)
+require(ngram)
+require(NLP)
+require(tm)
+require(RWeka)
+require(data.table)
+require(corpus)
+require(qdap)
+require(ggplot2)
+require(tidytext)
 require(stringi)
-library(dplyr)
+require(dplyr)
+require(viridisLite)
+require(plotrix)
+require(dendextend)
 ```
 
 
-# Data exploration/mining
+# Data gathering and info
 
 <p align="justify">
 Data exploration and understanding is a key aspect of data science, for the 
 purpose of understanding the kind of data we are working with.</p>
 
-#### Getting the data
+## Getting the data
 
 <p align="justify">
 The data is obtained as part of the coursera datascience specialization capstone 
@@ -104,8 +110,7 @@ unlink('../data/final', recursive = T)
 unlink("../data/dataset.zip")
 ```
 
-#### Loading the en_US blogs, news and twitter data
-
+## Loading the en_US blogs, news and twitter data
 <p align="justify">
 The data extracted consists of just lines of text/sentences that are to be mined 
 to distill actionable insights.
@@ -124,70 +129,64 @@ en_twitter = readLines(
   skipNul = TRUE, warn = TRUE)
 ```
 
-#### Summary statistics on the data
+## Summary statistics on the data
 ```{r}
-blogs_info = c(stri_stats_general(en_blogs)[1],  stri_stats_latex(en_blogs)[4], file.info("../data/en_US/en_US.blogs.txt")$size/(2^20))
-news_info = c(stri_stats_general(en_news)[1], stri_stats_latex(en_news)[4], file.info("../data/en_US/en_US.news.txt")$size/(2^20))
-twitter_info = c(stri_stats_general(en_twitter)[1], stri_stats_latex(en_twitter)[4], file.info("../data/en_US/en_US.twitter.txt")$size/(2^20))
+blogs_info = c(stri_stats_general(en_blogs)[1],  stri_stats_latex(en_blogs)[4],
+               max(summary(nchar(en_blogs))),
+               sum(grepl("love", en_blogs))/sum(grepl("hate", en_blogs)),
+               file.info("../data/en_US/en_US.blogs.txt")$size/(2^20))
+news_info = c(stri_stats_general(en_news)[1], stri_stats_latex(en_news)[4],
+              max(summary(nchar(en_news))), 
+              sum(grepl("love", en_news))/sum(grepl("hate", en_news)),
+              file.info("../data/en_US/en_US.news.txt")$size/(2^20))
+twitter_info = c(stri_stats_general(en_twitter)[1], stri_stats_latex(en_twitter)[4],
+                 max(summary(nchar(en_twitter))), 
+                 sum(grepl("love", en_twitter))/sum(grepl("hate", en_twitter)),
+                 file.info("../data/en_US/en_US.twitter.txt")$size/(2^20))
 total_info = blogs_info+news_info+twitter_info
 
 table_info <- as.data.frame(rbind(blogs_info, news_info, twitter_info, total_info))
 rm(blogs_info, news_info, twitter_info, total_info)
-colnames(table_info)[3] <- "Size in Mb"
+colnames(table_info) = c("Lines", "Words", "Longest line", 'love/hate ratio', "Size in Mb")
 table_info
 ```
-
-
-#### Sampling and combining the data
-```{r}
-sample_size = 30000
+# data processing
+## Sampling and combining the data
+```{r sampling-data}
+set.seed(193)
+sample_size = 2250
 blogs = en_blogs[sample(1:length(en_blogs),sample_size)]
 news = en_news[sample(1:length(en_news),sample_size)]
 twitter = en_twitter[sample(1:length(en_twitter),sample_size)]
-rm(sample_size)
 text_data = rbind(blogs, news, twitter)
-rm(en_blogs, en_news, en_twitter, blogs, news, twitter)
+rm(sample_size, en_blogs, en_news, en_twitter)
 ```
 
 
 
-
-#### Building a corpus document
+## Creating volatile corpus document
+### Building a corpus document
 <p align="justify">A corpus is a collection of documents, We create a volatile corpus to from the 
 vector of texts obtained.</p>
 
 <p align="justify">Make a vector source using the tm package, then converting 
 the source vector into a VCorpus object</p>
-```{r}
-text_source = VectorSource(text_data)
-text_corpus = VCorpus(text_source)
-rm(text_source)
+```{r build-corpus}
+text_corpus = VCorpus(VectorSource(text_data))
+rm(text_data)
 print(text_corpus)
 ```
+
 <p align="justify">The VCorpus object uses a nested - list of list structure to 
 hold the data. At each index of the VCorpus object, there is a PlainTextDocument
 object, which is a list containing actual text data (content), and some
 corresponding metadata (meta). It can help to visualize a VCorpus object to 
 conceptualize the whole thing.</p>
 
-#### Cleaning and preprocessing text
+### Cleaning and preprocessing text
 <p align="justify">Using tm's built-in text processing methods to mine data from 
-the corpus.
-
-#### Exploratory data analysis
-<p align="justify">Using qdap's fre_terms() functions to count the frequency of 
-words in the datasets and presenting the information in tabluar and graphical 
-methods.</p>
-```{r}
-freq_terms(text_corpus[[1]][1])
-```
-
-```{r}
-replace_abbreviation(text_corpus[[1]][1])
-```  
-
-#### Cleaning the corpus document 
-```{r}
+the corpus.</p>
+```{r clean-corpus}
 clean_corpus <- function (corpus) {
     corpus <- tm_map(corpus, tolower) # all lowercase
     corpus <- tm_map(corpus, removePunctuation) # Eleminate punctuation
@@ -198,65 +197,316 @@ clean_corpus <- function (corpus) {
     corpus <- tm_map(corpus, PlainTextDocument) # Create plain text format
 }
 text_corpus_cleaned = clean_corpus(text_corpus)
-```
 
-Comparing with original data
-```{r}
-text_corpus[[1]][1]
-text_corpus_cleaned[[1]][1]
-```
-Disposing off the original corpus
-```{r}
+# Comparing with original data
+cat("Original document: ",content(text_corpus[[1]]))
+cat("\nCleaned document: ",content(text_corpus_cleaned[[1]]))
+
+# Disposing off the original corpus
 rm(text_corpus)
 ```
 
-
-#### Creating a document-term matrix for analysis
-When we wish to represent the data with the document as rows and the words as 
+## Creating a document-term matrix for analysis
+<p align="justify">When we wish to represent the data with the document as rows and the words as 
 column we use document term matrix, the transpose of which is term document 
-matrix. 
+matrix.<br>
 The fields then represent the frequency of words in the data. However, other
-frequency measures do exist
+frequency measures do exist.</p>
 
-```{r}
-text_dtm = DocumentTermMatrix(text_corpus_cleaned)
-rm(text_corpus_cleaned)
-text_dtm
+```{r create-TermDocument-Matrix}
+text_tdm = TermDocumentMatrix(text_corpus_cleaned)
+# rm(text_corpus_cleaned)
+text_tdm
 ```
 
-Converting the twitter_dtm to a matrix
-```{r}
-text_dtm_m = tidytext::tidy(text_dtm)
-rm(text_dtm)
-dim(text_dtm_m)
+## Convert term document matrix to matrix
+The term document is converted into a large matrix in which each cell represents 
+the count/frequency of the word(row) in the corresponding document(column). 
+```{r convert-tdm-to-m}
+text_m = as.matrix(text_tdm)
 ```
-#### Sentiment analysis
-```{r}
-text_sentiments <- text_dtm_m %>%
+
+# Exploratory analysis
+<p align="justify">Using qdap's fre_terms() functions to count the frequency of 
+words in the datasets and presenting the information in tabular and graphical 
+methods.</p>
+
+## Most frequently used words
+```{r term-frequency-barplot}
+term_frequency = rowSums(text_m)
+term_frequency <- sort(term_frequency, decreasing = T)
+rm(text_m)
+barplot(term_frequency[1:10], col = "hotpink4", las = 2, main = "Most frequently used words")
+```
+
+## Sentiment analysis 
+### Creating a tibble 
+<p align="justify">Converting the twitter_dtm to a tibble for sentiment analysis using tidytext
+package.</p>
+```{r sentiment-analysis-init}
+text_tbl = tidytext::tidy(text_tdm)
+text_tbl = text_tbl[,c("term","count")]
+print(dim(text_tbl))
+head(text_tbl, 10)
+```
+
+### Forming analysis
+```{r sentiment-analysis-create}
+text_sentiments <- text_tbl %>%
   inner_join(get_sentiments("bing"), by = c(term = "word"))
 print(dim(text_sentiments))
 head(text_sentiments, 10)
 ```
 
-Visualizing
-```{r}
+### Visualizing
+```{r sentiment-analysis-plot}
 text_sentiments %>%
   count(sentiment, term, wt = count) %>%
   filter(n >= 150) %>%
   mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
   mutate(term = reorder(term, n)) %>%
-  ggplot(aes(term, n, fill = sentiment)) +
+  ggplot(aes(term, n, fill = sentiment)) + 
+  theme_minimal() +
   geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1)) + #element_blank()) +
   ylab("Contribution to sentiment")
 ```
 
+```{r clean-up-trigrams, echo = F, error=F, warning=F}
+rm(text_tbl, text_sentiments)
+```
+
+## Word cloud 
+```{r word-cloud-text}
+word_freqs = data.frame(
+  term = names(term_frequency),
+  num = term_frequency
+)
+wordcloud::wordcloud(
+  word_freqs$term, word_freqs$num, 
+  max.words = 100, colors = cividis(n = 3)
+)
+```
+```{r clean-up-cloud-freq, echo = F, error=F, warning=F}
+rm(word_freqs)
+```
+
+### Comparisons using word cloud 
+
+<p align="justify">Preparing the data</p>
+```{r preprocess-for-wordcloud-comparisons}
+all_blogs = paste(blogs, collapse = "")
+all_news = paste(news, collapse = "")
+all_twitter = paste(twitter ,collapse = "")
+all_texts = c(all_blogs, all_news, all_twitter)
+
+rm(blogs, news, twitter)
+all_texts = VCorpus(VectorSource(all_texts))
+all_texts = clean_corpus(all_texts)
+
+all_dm = TermDocumentMatrix(all_texts)
+all_tdm = TermDocumentMatrix(all_texts)
+colnames(all_tdm) = c("Blogs", "News", "Twitter")
+all_m = as.matrix(all_dm)
+all_mc = as.matrix(all_tdm)
+```
+
+#### Commonality
+<p align="justify">Using commonality word cloud to how similar the three corpus 
+are</p>
+```{r wordcloud-intersection}
+wordcloud::commonality.cloud(all_m, colors = magma(n = 5), max.words = 100)
+```  
+
+#### Comparison
+<p align="justify">Using comparison cloud to understand the distribution of 
+words in each category of texts - blogs, news and twitter</p>
+```{r word-cloud-difference}
+wordcloud::comparison.cloud(all_mc, colors = c("orange","skyblue","hotpink3"), max.words = 100)
+```
+
+## Polaized tag plot 
+
+### Creating data for plot
+<p align="justify">using the pyramid package </br>
+blogs and news: </p>
+```{r}
+# subset the common words in the documents
+common_words = as.data.frame(subset(all_mc, all_mc[,1]>0 & all_mc[,2]>0 & all_mc[,3]>0))
+# Finding the difference and then ordering by it
+common_words = mutate(common_words, 
+                      diff_bn = abs(common_words[,1] - common_words[,2]),
+                      diff_bt = abs(common_words[,1] - common_words[,3]),
+                      diff_nt = abs(common_words[,2] - common_words[,3]),
+                      labels = rownames(common_words)
+)
+common_words = common_words[order(-common_words[,4]),]
+top_25_bn = common_words[1:25,]
+common_words = common_words[order(-common_words[,5]),]
+top_25_bt = common_words[1:25,]
+common_words = common_words[order(-common_words[,6]),]
+top_25_nt = common_words[1:25,]
+```
+
+### Difference between common terms in blogs and news
+```{r pyramid-plot-blogs-vs-news}
+pyramid.plot(
+  top_25_bn$Blogs, top_25_bn$News, labels = top_25_bn$labels,
+  main = "Words in common between blogs and news", gap = 150,
+  unit = NULL, raxlab = NULL, laxlab = NULL, top.labels = 
+    c("blogs", "words", "news")
+)
+```
+
+
+### Difference between common terms in blogs and twitter
+```{r pyramid-plot-blogs-vs-twitter}
+pyramid.plot(
+  top_25_bt$Blogs, top_25_bt$News, labels = top_25_bt$labels,
+  main = "Words in common between blogs and news", gap = 100,
+  unit = NULL, raxlab = NULL, laxlab = NULL, top.labels = 
+    c("blogs", "words", "twitter")
+)
+```
+
+
+### Difference between common terms in news and twitter
+```{r pyramid-plot-news-vs-twitter}
+pyramid.plot(
+  top_25_nt$Blogs, top_25_nt$News, labels = top_25_nt$labels,
+  main = "Words in common between blogs and news", gap = 200,
+  unit = NULL, raxlab = NULL, laxlab = NULL, top.labels = 
+    c("news", "words", "twitter")
+)
+``` 
+
+```{r clean-up-all, echo = F, error=F, warning=F}
+rm(top_25_nt, common_words, top_25_bt, top_25_bn, all_mc, all_m, all_texts, all_twitter, all_news, all_blogs, all_dm, all_tdm)
+```
+
+
+## Analyzing words using dendrogram plot
+<p align="justify">Dendrograms reduce complicated multi-dimensional datasets to simple clustering
+information. This makes them a valuable tool to reduce complexity. Using the
+distance matrix and hclust() function we create a hierarchical cluster object
+which is then passed into the function as.dendrogram.</br>
+</br>
+Removing sparsity of the term document using the removeSparseTerms to reduce the
+number of terms, the parameter 'sparse' species the percent cut-off for number 
+of zeroes that is allowed for each term.</p>
+```{r preparedata-dendrogram}
+# Removing sparse terms 
+text_reduced = removeSparseTerms(text_tdm, sparse = 0.97)
+text_reduced_m = as.matrix(text_reduced)
+text_reduced_dist = dist(text_reduced_m)
+
+# Creating hclust object
+text_hc = hclust(text_reduced_dist)
+
+# Converting hclust object to dendrogram
+text_dend = as.dendrogram(text_hc)
+
+# Labels of dendrogram object
+labels(text_dend)
+```
+```{r dendrogram-plot}
+# Changing color of branches 'year', 'love' and 'said' to red
+text_dend_colored = branches_attr_by_labels(
+  text_dend, 
+  c("year","love","said"),
+  "red"
+)
+# Plot
+plot(text_dend_colored, main = "Dendrogram analysis")
+
+# Adding rectangles
+rect.dendrogram(tree = text_dend_colored, k = 3, border = "grey50")
+```
+
+```{r clean-up-dend, echo = F, error=F, warning=F}
+rm(text_dend, text_dend_colored, text_hc, text_reduced, text_reduced_m)
+```
+
+## Word associations
+<p align="justify">Using the findAssocs() function of tm package and calculating the correlation of
+a word with every other words/terms in the document in the range [0,1].</p>
+```{r association-analysis}
+text_associations = findAssocs(text_tdm, "year", 0.10)
+
+# Converting to dataframe for plot
+text_associations_df = list_vect2df(
+  text_associations, col2 = "word", col3 = "score"
+)
+# plot
+ggplot(text_associations_df, aes(score, word)) +
+  geom_point(size = 3) + 
+  theme_minimal()
+rm(text_associations, text_associations_df)
+```
+
+## N-gram tokenize
+So far we've studied the association of a token containing just one word with 
+other words/tokens, this part of the analysis concentrates on analysis of 
+tokens containing more than one word.
+
+### Defining functions
+```{r tokenize-function-definition}
+# Creating a tokenizer functions using the RWeka package
+bigram_tokenizer = function(x){
+  NGramTokenizer(x, Weka_control(min = 2, max = 2))
+}
+trigram_tokenizer = function(x){
+  NGramTokenizer(x, Weka_control(min = 3, max = 3))
+}
+```
+
+### Bigrams
+#### Creating a bigram tdm
+```{r}
+bigram_tdm = TermDocumentMatrix(
+  text_corpus_cleaned,
+  control = list(tokenize = bigram_tokenizer)
+)
+bigram_m = as.matrix(bigram_tdm)
+```
+#### wordcloud analysis
+```{r bigram-cloud, warning=F}
+freq = rowSums(bigram_m)
+bi_tokens = names(freq)
+wordcloud::wordcloud(bi_tokens, freq, max.words = 15, colors = cividis(n = 3))
+```
+
+
+```{r clean-up-bigrams, echo = F, error=F, warning=F}
+rm(bigram_m, bigram_tdm, bi_tokens, freq)
+```
+
+
+### Trigrams
+#### Creating a trigram tdm
+```{r}
+trigram_tdm = TermDocumentMatrix(
+  text_corpus_cleaned,
+  control = list(tokenize = trigram_tokenizer)
+)
+trigram_m = as.matrix(trigram_tdm)
+```
+#### wordcloud analysis
+```{r trigram-cloud, warning=F}
+freq = rowSums(trigram_m)
+tri_tokens = names(freq)
+wordcloud::wordcloud(tri_tokens, freq, max.words = 15, colors = cividis(n = 3))
+```
+
+```{r clean-up-wordcloud, echo = F, error=F, warning=F}
+rm(trigram_m, trigram_tdm, tri_tokens, freq)
+```
 
 
 
 \footnotesize
 
-```{r, echo = FALSE, results='hold'}
+```{r session-end, echo = FALSE, results='hold'}
 options(width = 100)
 
 ## Deleting data after analysis
