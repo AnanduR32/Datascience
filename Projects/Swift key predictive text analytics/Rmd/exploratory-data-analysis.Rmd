@@ -154,7 +154,7 @@ table_info
 ## Sampling and combining the data
 ```{r sampling-data}
 set.seed(193)
-sample_size = 2250
+sample_size = 2750
 blogs = en_blogs[sample(1:length(en_blogs),sample_size)]
 news = en_news[sample(1:length(en_news),sample_size)]
 twitter = en_twitter[sample(1:length(en_twitter),sample_size)]
@@ -458,6 +458,9 @@ bigram_tokenizer = function(x){
 trigram_tokenizer = function(x){
   NGramTokenizer(x, Weka_control(min = 3, max = 3))
 }
+tetragram_tokenizer = function(x){
+  NGramTokenizer(x, Weka_control(min = 4, max = 4))
+}
 ```
 
 ### Bigrams
@@ -473,12 +476,22 @@ bigram_m = as.matrix(bigram_tdm)
 ```{r bigram-cloud, warning=F}
 freq = rowSums(bigram_m)
 bi_tokens = names(freq)
-wordcloud::wordcloud(bi_tokens, freq, max.words = 15, colors = cividis(n = 3))
+bi_token_df = data.frame(token = bi_tokens, freq = freq)
+row.names(bi_token_df) = NULL
+wordcloud::wordcloud(bi_token_df$token, bi_token_df$freq, max.words = 150, colors = cividis(n = 3))
+```  
+
+#### Subset top 1%
+```{r}
+## Identifying the 95th quantile
+top_bigrams = bi_token_df %>%
+  filter(freq >= 3)
+save(top_bigrams, file = "../NGrams/top_bigrams.rda")
 ```
 
 
 ```{r clean-up-bigrams, echo = F, error=F, warning=F}
-rm(bigram_m, bigram_tdm, bi_tokens, freq)
+rm(bigram_m, bigram_tdm, bi_tokens, freq, top_bigrams, bi_token_df)
 ```
 
 
@@ -495,14 +508,56 @@ trigram_m = as.matrix(trigram_tdm)
 ```{r trigram-cloud, warning=F}
 freq = rowSums(trigram_m)
 tri_tokens = names(freq)
-wordcloud::wordcloud(tri_tokens, freq, max.words = 15, colors = cividis(n = 3))
+tri_token_df = data.frame(token = tri_tokens, freq = freq)
+row.names(tri_token_df) = NULL
+wordcloud::wordcloud(
+  words = tri_token_df$token, freq = tri_token_df$freq, 
+  max.words = 150, colors = cividis(n = 3)
+)
+```  
+
+#### Subset top 1%
+```{r}
+## Identifying the 95th quantile
+top_trigrams = tri_token_df %>%
+  filter(freq >= 2)
+save(top_trigrams, file = "../NGrams/top_trigrams.rda")
 ```
 
-```{r clean-up-wordcloud, echo = F, error=F, warning=F}
-rm(trigram_m, trigram_tdm, tri_tokens, freq)
+```{r clean-up-trigram, echo = F, error=F, warning=F}
+rm(trigram_m, trigram_tdm, tri_tokens, freq, tri_token_df, top_trigrams)
+```
+
+### Tetragrams
+#### Creating a tetragram tdm
+```{r}
+tetragram_tdm = TermDocumentMatrix(
+  text_corpus_cleaned,
+  control = list(tokenize = tetragram_tokenizer)
+)
+tetragram_m = as.matrix(tetragram_tdm)
+```
+#### wordcloud analysis
+```{r tetragram-cloud, warning=F}
+freq = rowSums(tetragram_m)
+tetra_tokens = names(freq)
+tetra_token_df = data.frame(token = tetra_tokens, freq = freq)
+row.names(tetra_token_df) = NULL
+wordcloud::wordcloud(tetra_token_df$token, tetra_token_df$freq, max.words = 150, colors = cividis(n = 3))
+```  
+
+#### Subset top 1%
+```{r}
+## Identifying the 95th quantile
+top_tetragrams = tetra_token_df %>%
+  filter(freq >= 2)
+save(top_tetragrams, file = "../NGrams/top_tetragrams.rda")
 ```
 
 
+```{r clean-up-tetragrams, echo = F, error=F, warning=F}
+rm(tetragram_m, tetragram_tdm, tetra_tokens, freq, top_tetragrams, tetra_token_df)
+```
 
 \footnotesize
 
