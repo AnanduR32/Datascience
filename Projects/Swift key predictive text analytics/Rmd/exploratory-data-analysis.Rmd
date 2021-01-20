@@ -72,6 +72,7 @@ require(qdap)
 require(ggplot2)
 require(tidytext)
 require(stringi)
+require(stringr)
 require(dplyr)
 require(viridisLite)
 require(plotrix)
@@ -154,15 +155,21 @@ table_info
 ## Sampling and combining the data
 ```{r sampling-data}
 set.seed(193)
-sample_size = 2750
+sample_size = 2500
 blogs = en_blogs[sample(1:length(en_blogs),sample_size)]
+blogs = removeWords(blogs, stopwords("en"))
+blogs = gsub("\\s+", " ", blogs)
+blogs = str_trim(blogs, side = c("both"))
 news = en_news[sample(1:length(en_news),sample_size)]
+news = removeWords(news, stopwords("en"))
+news = gsub("\\s+", " ", news)
+news = str_trim(news, side = c("both"))
 twitter = en_twitter[sample(1:length(en_twitter),sample_size)]
-text_data = rbind(blogs, news, twitter)
+twitter = removeWords(twitter, stopwords("en"))
+twitter = gsub("\\s+", " ", twitter)
+twitter = str_trim(twitter, side = c("both"))
 rm(sample_size, en_blogs, en_news, en_twitter)
 ```
-
-
 
 ## Creating volatile corpus document
 ### Building a corpus document
@@ -172,9 +179,16 @@ vector of texts obtained.</p>
 <p align="justify">Make a vector source using the tm package, then converting 
 the source vector into a VCorpus object</p>
 ```{r build-corpus}
-text_corpus = VCorpus(VectorSource(text_data))
-rm(text_data)
-print(text_corpus)
+create_corpus = function(text_data){
+  text_corpus = VCorpus(
+    VectorSource(text_data),
+      readerControl=list(readPlain, language="en", load=TRUE)
+  )
+  text_corpus
+}
+blogs_corpus = create_corpus(blogs)
+news_corpus = create_corpus(news)
+twitter_corpus = create_corpus(twitter)
 ```
 
 <p align="justify">The VCorpus object uses a nested - list of list structure to 
@@ -190,20 +204,29 @@ the corpus.</p>
 clean_corpus <- function (corpus) {
     corpus <- tm_map(corpus, tolower) # all lowercase
     corpus <- tm_map(corpus, removePunctuation) # Eleminate punctuation
-    corpus <- tm_map(corpus, removeNumbers) # Eliminate numbers
+    corpus <- tm_map(corpus, replace_number) # Eliminate numbers
+    corpus <- tm_map(corpus, replace_abbreviation) # Eliminate abbreviations
+    corpus <- tm_map(corpus, replace_contraction) # Eliminate contractions
+    corpus <- tm_map(corpus, replace_symbol) # Eliminate symbols
     corpus <- tm_map(corpus, stripWhitespace) # Strip Whitespace
     corpus <- tm_map(corpus, removeWords, stopwords("english")) # Eliminate English stop words
-    corpus <- tm_map(corpus, stemDocument) # Stem the document
+    # corpus <- tm_map(corpus, stemDocument) # Stem the document
     corpus <- tm_map(corpus, PlainTextDocument) # Create plain text format
 }
+
+text_corpus = c(news_corpus,blogs_corpus,twitter_corpus, recursive = FALSE)
 text_corpus_cleaned = clean_corpus(text_corpus)
 
 # Comparing with original data
 cat("Original document: ",content(text_corpus[[1]]))
 cat("\nCleaned document: ",content(text_corpus_cleaned[[1]]))
 
+## Saving corpus cleaned 
+getwd()
+writeLines(as.character(text_corpus_cleaned), con="../Corpus/text_corpus_cleaned.txt")
+
 # Disposing off the original corpus
-rm(text_corpus)
+rm(text_corpus, blogs_corpus, news_corpus, twitter_corpus)
 ```
 
 ## Creating a document-term matrix for analysis
@@ -247,7 +270,7 @@ package.</p>
 text_tbl = tidytext::tidy(text_tdm)
 text_tbl = text_tbl[,c("term","count")]
 print(dim(text_tbl))
-head(text_tbl, 10)
+head(text_tbl[order(-text_tbl$count),], 10)
 ```
 
 ### Forming analysis
@@ -302,7 +325,7 @@ all_texts = c(all_blogs, all_news, all_twitter)
 
 rm(blogs, news, twitter)
 all_texts = VCorpus(VectorSource(all_texts))
-all_texts = clean_corpus(all_texts)
+# all_texts = clean_corpus(all_texts)
 
 all_dm = TermDocumentMatrix(all_texts)
 all_tdm = TermDocumentMatrix(all_texts)
@@ -317,6 +340,11 @@ are</p>
 ```{r wordcloud-intersection}
 wordcloud::commonality.cloud(all_m, colors = magma(n = 5), max.words = 100)
 ```  
+
+```{r}
+rm(all_m, all_dm)
+```
+
 
 #### Comparison
 <p align="justify">Using comparison cloud to understand the distribution of 
@@ -381,7 +409,7 @@ pyramid.plot(
 ``` 
 
 ```{r clean-up-all, echo = F, error=F, warning=F}
-rm(top_25_nt, common_words, top_25_bt, top_25_bn, all_mc, all_m, all_texts, all_twitter, all_news, all_blogs, all_dm, all_tdm)
+rm(top_25_nt, common_words, top_25_bt, top_25_bn, all_mc, all_texts, all_twitter, all_news, all_blogs, all_tdm)
 ```
 
 
@@ -413,7 +441,7 @@ labels(text_dend)
 # Changing color of branches 'year', 'love' and 'said' to red
 text_dend_colored = branches_attr_by_labels(
   text_dend, 
-  c("year","love","said"),
+  c("two","will","said"),
   "red"
 )
 # Plot
@@ -441,7 +469,7 @@ text_associations_df = list_vect2df(
 ggplot(text_associations_df, aes(score, word)) +
   geom_point(size = 3) + 
   theme_minimal()
-rm(text_associations, text_associations_df)
+rm(text_associations, text_associations_df, text_tdm)
 ```
 
 ## N-gram tokenize
@@ -538,13 +566,20 @@ tetragram_tdm = TermDocumentMatrix(
 tetragram_m = as.matrix(tetragram_tdm)
 ```
 #### wordcloud analysis
-```{r tetragram-cloud, warning=F}
+```{r tetragram-head, warning=F}
 freq = rowSums(tetragram_m)
 tetra_tokens = names(freq)
 tetra_token_df = data.frame(token = tetra_tokens, freq = freq)
 row.names(tetra_token_df) = NULL
-wordcloud::wordcloud(tetra_token_df$token, tetra_token_df$freq, max.words = 150, colors = cividis(n = 3))
+head(tetra_token_df[order(-tetra_token_df$freq),])
 ```  
+```{r tetragram-cloud, warning=F}
+wordcloud::wordcloud(
+  words = tetra_token_df$token, freq = tetra_token_df$freq, 
+  max.words = 150, colors = cividis(n = 5)
+)
+```
+
 
 #### Subset top 1%
 ```{r}
@@ -558,6 +593,32 @@ save(top_tetragrams, file = "../NGrams/top_tetragrams.rda")
 ```{r clean-up-tetragrams, echo = F, error=F, warning=F}
 rm(tetragram_m, tetragram_tdm, tetra_tokens, freq, top_tetragrams, tetra_token_df)
 ```
+
+## Creating prediction function   
+Creating a function that predicts the next word for a given input list of words  
+
+```{r}
+## Loading the n-grams 
+top_bigrams = get(load("../NGrams/top_bigrams.rda"))
+top_trigrams = get(load("../NGrams/top_trigrams.rda"))
+top_tetragrams = get(load("../NGrams/top_tetragrams.rda"))
+
+
+## Function
+predictWord = function(str){
+  str = removeWords(str, stopwords("en"))
+  str = gsub("\\s+", " ", str)
+  str = str_trim(str, side = c("both"))
+  n_words = str_count(str, " ") + 1
+  if(n_words == 3){
+    matching_tetragrams<-grepl(str, top_tetragrams[,1], ignore.case=TRUE)
+    matching_trigrams<-grep(str, top_trigrams[,1], ignore.case=TRUE)
+    matching_bigrams<-grep(str, top_bigrams[,1], ignore.case=TRUE)
+  }
+}
+```
+
+
 
 \footnotesize
 
