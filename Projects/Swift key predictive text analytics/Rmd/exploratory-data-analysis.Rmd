@@ -285,7 +285,7 @@ head(text_sentiments, 10)
 ```{r sentiment-analysis-plot}
 text_sentiments %>%
   count(sentiment, term, wt = count) %>%
-  filter(n >= 150) %>%
+  filter(n >= 35) %>%
   mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
   mutate(term = reorder(term, n)) %>%
   ggplot(aes(term, n, fill = sentiment)) + 
@@ -337,7 +337,7 @@ all_mc = as.matrix(all_tdm)
 #### Commonality
 <p align="justify">Using commonality word cloud to how similar the three corpus 
 are</p>
-```{r wordcloud-intersection}
+```{r wordcloud-intersection, warning=F}
 wordcloud::commonality.cloud(all_m, colors = magma(n = 5), max.words = 100)
 ```  
 
@@ -349,7 +349,7 @@ rm(all_m, all_dm)
 #### Comparison
 <p align="justify">Using comparison cloud to understand the distribution of 
 words in each category of texts - blogs, news and twitter</p>
-```{r word-cloud-difference}
+```{r word-cloud-difference, warning=F}
 wordcloud::comparison.cloud(all_mc, colors = c("orange","skyblue","hotpink3"), max.words = 100)
 ```
 
@@ -594,7 +594,7 @@ save(top_tetragrams, file = "../NGrams/top_tetragrams.rda")
 rm(tetragram_m, tetragram_tdm, tetra_tokens, freq, top_tetragrams, tetra_token_df)
 ```
 
-## Creating prediction function   
+# Creating prediction model   
 Creating a function that predicts the next word for a given input list of words  
 
 ```{r}
