@@ -204,7 +204,7 @@ the corpus.</p>
 clean_corpus <- function (corpus) {
     corpus <- tm_map(corpus, tolower) # all lowercase
     corpus <- tm_map(corpus, removePunctuation) # Eleminate punctuation
-    corpus <- tm_map(corpus, replace_number) # Eliminate numbers
+    corpus <- tm_map(corpus, removeNumbers) # Eliminate numbers
     corpus <- tm_map(corpus, replace_abbreviation) # Eliminate abbreviations
     corpus <- tm_map(corpus, replace_contraction) # Eliminate contractions
     corpus <- tm_map(corpus, replace_symbol) # Eliminate symbols
@@ -459,7 +459,7 @@ rm(text_dend, text_dend_colored, text_hc, text_reduced, text_reduced_m)
 <p align="justify">Using the findAssocs() function of tm package and calculating the correlation of
 a word with every other words/terms in the document in the range [0,1].</p>
 ```{r association-analysis}
-text_associations = findAssocs(text_tdm, "year", 0.10)
+text_associations = findAssocs(text_tdm, "year", 0.125)
 
 # Converting to dataframe for plot
 text_associations_df = list_vect2df(
@@ -513,7 +513,7 @@ wordcloud::wordcloud(bi_token_df$token, bi_token_df$freq, max.words = 150, color
 ```{r}
 ## Identifying the 95th quantile
 top_bigrams = bi_token_df %>%
-  filter(freq >= 3)
+  filter(freq > 1)
 save(top_bigrams, file = "../NGrams/top_bigrams.rda")
 ```
 
@@ -548,7 +548,7 @@ wordcloud::wordcloud(
 ```{r}
 ## Identifying the 95th quantile
 top_trigrams = tri_token_df %>%
-  filter(freq >= 2)
+  filter(freq > 1)
 save(top_trigrams, file = "../NGrams/top_trigrams.rda")
 ```
 
@@ -585,7 +585,7 @@ wordcloud::wordcloud(
 ```{r}
 ## Identifying the 95th quantile
 top_tetragrams = tetra_token_df %>%
-  filter(freq >= 2)
+  filter(freq > 1)
 save(top_tetragrams, file = "../NGrams/top_tetragrams.rda")
 ```
 
@@ -606,15 +606,26 @@ top_tetragrams = get(load("../NGrams/top_tetragrams.rda"))
 
 ## Function
 predictWord = function(str){
+  preds_ = ""
+  pred = ""
   str = removeWords(str, stopwords("en"))
   str = gsub("\\s+", " ", str)
   str = str_trim(str, side = c("both"))
   n_words = str_count(str, " ") + 1
   if(n_words == 3){
-    matching_tetragrams<-grepl(str, top_tetragrams[,1], ignore.case=TRUE)
-    matching_trigrams<-grep(str, top_trigrams[,1], ignore.case=TRUE)
-    matching_bigrams<-grep(str, top_bigrams[,1], ignore.case=TRUE)
+    matching_tetragrams = top_tetragrams[grepl(str, top_tetragrams[,1], ignore.case=TRUE),]
+    preds_ = data.frame(prediction = str_extract_all(matching_tetragrams[,1], paste0(str,"\\s([:alpha:]+)"), simplify = T),freq = matching_tetragrams[,2])  
   }
+  if(is.null(dim(preds_))){
+    matching_trigrams = top_trigrams[grep(str, top_trigrams[,1], ignore.case=TRUE),]
+    preds_ = data.frame(prediction = str_extract_all(matching_trigrams[,1], paste0(str,"\\s([:alpha:]+)"), simplify = T),freq = matching_trigrams[,2])  
+  }
+  if(is.null(dim(preds_))){
+    matching_bigrams = top_bigrams[grep(paste("(^[:alpha:])",str), top_bigrams[,1], ignore.case=TRUE),]
+    preds_ = data.frame(prediction = str_extract_all(matching_bigrams[,1], paste0(str,"\\s([:alpha:]+)"), simplify = T),freq = matching_bigrams[,2])  
+  }
+  pred = str_split_fixed(preds_[order(preds_[,2]),][1,1], " ", n=2)[2]
+  pred
 }
 ```
 
