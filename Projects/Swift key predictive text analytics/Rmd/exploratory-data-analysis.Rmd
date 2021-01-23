@@ -627,6 +627,7 @@ predictWord = function(str){
   pred = str_split_fixed(preds_[order(preds_[,2]),][1,1], " ", n=2)[2]
   pred
 }
+predictWord("achieving")
 ```
 
 
