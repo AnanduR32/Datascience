@@ -514,7 +514,7 @@ wordcloud::wordcloud(bi_token_df$token, bi_token_df$freq, max.words = 150, color
 ## Identifying the 95th quantile
 top_bigrams = bi_token_df %>%
   filter(freq > 1)
-save(top_bigrams, file = "../NGrams/top_bigrams.rda")
+write.csv(data.frame(top_bigrams), "../NGrams/top_bigrams.csv", fileEncoding = 'UTF-8')
 ```
 
 
@@ -550,6 +550,7 @@ wordcloud::wordcloud(
 top_trigrams = tri_token_df %>%
   filter(freq > 1)
 save(top_trigrams, file = "../NGrams/top_trigrams.rda")
+write.csv(data.frame(top_trigrams), "../NGrams/top_trigrams.csv")
 ```
 
 ```{r clean-up-trigram, echo = F, error=F, warning=F}
@@ -587,6 +588,7 @@ wordcloud::wordcloud(
 top_tetragrams = tetra_token_df %>%
   filter(freq > 1)
 save(top_tetragrams, file = "../NGrams/top_tetragrams.rda")
+write.csv(data.frame(top_tetragrams), "../NGrams/top_tetragrams.csv")
 ```
 
 
