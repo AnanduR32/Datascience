@@ -1,0 +1,45 @@
+---
+title: "swift-key text prediction"
+author: "Anandu R"
+date: "01/02/2021"
+output: ioslides_presentation 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The problem
+```{r echo = F, message= F, warning= F}
+library(dplyr); library(ggplot2); library(caret)
+library(glmnet)
+```
+House price prediction using Beijing, China house price dataset.  
+
+### The data
+Oh hi there mark
+
+## Exploratory analysis
+
+What nonsense
+
+### Analysing the median price of houses in each district
+Code
+ 
+
+***   
+Plot   
+
+
+## Creating a model using caret package
+
+  
+
+## Gauging the performance using RMSE score  
+
+On test data
+
+## Using lasso regression for feature selection
+
+
+
