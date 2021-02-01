@@ -746,6 +746,10 @@ predictWord = function(str){
   str = removePunctuation(str)
   str = str_trim(str, side = c("both"))
   n_words = str_count(str, " ") + 1
+  if(n_words>4){
+    str = str_split_fixed(str,pattern = " ", n_words)[(n_words-3):n_words]
+    n_words = 4
+  }
   if(n_words == 4){
     matching_tetragrams = filter(NGrams, which == 5)[grepl(str,
                                        filter(NGrams, which == 5)[,1], ignore.case=TRUE),]
@@ -775,28 +779,28 @@ predictWord = function(str){
     }
   }
   if(n_words == 2){
-    matching_trigrams = filter(NGrams, which == 4)[grep(str,
+    matching_trigrams = filter(NGrams, which == 3)[grep(str,
                                     filter(NGrams, which == 3)[,1], ignore.case=TRUE),]
     preds_ = data.frame(
       prediction = str_extract_all(matching_trigrams[,1], 
                                    paste0(str,"\\s([:alpha:]+)"),
                                    simplify = T),
       freq = matching_trigrams[,2])  
-    best_pred = preds_[order(-preds_$freq),]
+    best_pred = preds_[order(-preds_$freq),][1]
     if(is.na(best_pred)){
       str = str_split_fixed(str,pattern = " ", 3)[2]
       n_words = 1
     }
   }
   if(n_words == 1){
-    matching_bigrams = filter(NGrams, which == 4)[grep(str,
+    matching_bigrams = filter(NGrams, which == 2)[grep(str,
                                    filter(NGrams, which == 2)[,1], ignore.case=TRUE),]
     preds_ = data.frame(
       prediction = str_extract_all(matching_bigrams[,1],
                                    paste0(str,"\\s([:alpha:]+)"),
                                    simplify = T),
       freq = matching_bigrams[,2])  
-    best_pred = preds_[order(-preds_$freq),1]
+    best_pred = preds_[order(-preds_$freq),1][1]
   }
   pred = str_split_fixed(preds_[order(preds_[,2]),][1,1], " ", n=2)[2]
   pred
